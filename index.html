@@ -3,4 +3,104 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BTS Music Player | Borahae Sound
+  <title>BTS Discography | Purple Player</title>
+  <!-- Google Fonts & Phosphor Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-theme="dark">
+  <div class="app-container">
+    <!-- Header -->
+    <header class="navbar">
+      <div class="brand">
+        <span class="bts-logo">방탄소년단</span>
+        <span class="brand-sub">ARMY Playlist</span>
+      </div>
+      <div class="nav-actions">
+        <button id="themeToggle" class="icon-btn" aria-label="Đổi giao diện">
+          <i class="ph ph-sun"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-layout">
+      <!-- Player Card Section -->
+      <section class="player-card">
+        <div class="cover-wrapper">
+          <img id="trackCover" src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&auto=format&fit=crop&q=80" alt="Album Cover">
+          <div class="glow-effect"></div>
+        </div>
+
+        <div class="track-info">
+          <h2 id="trackTitle">Spring Day (봄날)</h2>
+          <p id="trackArtist">BTS • You Never Walk Alone</p>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress-container">
+          <span id="currentTime">0:00</span>
+          <div class="progress-bar-bg" id="progressTrack">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+          <span id="durationTime">4:34</span>
+        </div>
+
+        <!-- Audio Controls -->
+        <div class="controls">
+          <button id="shuffleBtn" class="icon-btn-secondary" title="Phát ngẫu nhiên">
+            <i class="ph ph-shuffle"></i>
+          </button>
+          <button id="prevBtn" class="icon-btn-secondary" title="Bài trước">
+            <i class="ph-fill ph-skip-back"></i>
+          </button>
+          <button id="playBtn" class="play-btn" title="Phát/Dừng">
+            <i class="ph-fill ph-play"></i>
+          </button>
+          <button id="nextBtn" class="icon-btn-secondary" title="Bài tiếp">
+            <i class="ph-fill ph-skip-forward"></i>
+          </button>
+          <button id="repeatBtn" class="icon-btn-secondary" title="Lặp lại">
+            <i class="ph ph-repeat"></i>
+          </button>
+        </div>
+
+        <!-- Volume Slider -->
+        <div class="volume-container">
+          <i class="ph ph-speaker-low"></i>
+          <input type="range" id="volumeSlider" min="0" max="1" step="0.05" value="0.8">
+          <i class="ph ph-speaker-high"></i>
+        </div>
+      </section>
+
+      <!-- Playlist / Library Section -->
+      <section class="playlist-section">
+        <div class="playlist-header">
+          <div class="search-box">
+            <i class="ph ph-magnifying-glass"></i>
+            <input type="text" id="searchInput" placeholder="Tìm bài hát, kỷ nguyên (Love Yourself, Proof...)...">
+          </div>
+          <div class="filter-pills">
+            <button class="pill active" data-filter="all">Tất cả</button>
+            <button class="pill" data-filter="hits">Bản Hit</button>
+            <button class="pill" data-filter="ballad">Ballad/Emotional</button>
+            <button class="pill" data-filter="cypher">Hype/Rap</button>
+          </div>
+        </div>
+
+        <div class="song-list" id="songList">
+          <!-- Danh sách bài hát tự động hiển thị từ script.js -->
+        </div>
+      </section>
+    </main>
+
+    <!-- Hidden Audio Element -->
+    <audio id="audioPlayer" preload="metadata"></audio>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
