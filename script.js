@@ -1,5 +1,5 @@
 /* =========================================================
-   PHÀM NHÂN THÍNH ÂM CÁC - BẢN CHUẨN ĐẦY ĐỦ TÍNH NĂNG
+   PHÀM NHÂN THÍNH ÂM CÁC - VẠN KIẾM & BÁT QUÁI HUYỀN ẢO
 ========================================================= */
 
 const DEFAULT_PLAYLIST = [
@@ -104,7 +104,7 @@ const urlForm = document.getElementById("url-form");
 const fileForm = document.getElementById("file-form");
 
 /* =========================================================
-   1. QUẢN LÝ PHÁT NHẠC
+   1. QUẢN LÝ PHÁT NHẠC & TRÍCH XUẤT MÀU SẮC ĐỒNG ĐIỆU (DYNAMIC AURA)
 ========================================================= */
 function savePlaylistToStorage() {
   try {
@@ -121,6 +121,36 @@ function initPlayer() {
   renderAlbumGrid();
   loadTrack(currentIndex);
   drawStaticWaveform();
+  initPetPills();
+}
+
+function extractCoverColor(imgElement) {
+  try {
+    const c = document.createElement("canvas");
+    c.width = 40;
+    c.height = 40;
+    const ctx = c.getContext("2d");
+    ctx.drawImage(imgElement, 0, 0, 40, 40);
+    const data = ctx.getImageData(0, 0, 40, 40).data;
+    let r = 0, g = 0, b = 0, count = 0;
+    for (let i = 0; i < data.length; i += 16) {
+      r += data[i];
+      g += data[i + 1];
+      b += data[i + 2];
+      count++;
+    }
+    r = Math.floor(r / count);
+    g = Math.floor(g / count);
+    b = Math.floor(b / count);
+
+    // Đồng bộ màu ánh sáng chủ đạo
+    document.body.style.setProperty("--primary-color", `rgb(${r}, ${g}, ${b})`);
+    document.body.style.setProperty("--primary-glow", `rgba(${r}, ${g}, ${b}, 0.65)`);
+    document.body.style.setProperty("--sword-trail-color", `${r}, ${g}, ${b}`);
+    document.body.style.setProperty("--panel-border", `rgba(${r}, ${g}, ${b}, 0.4)`);
+  } catch (e) {
+    // Giữ tông mặc định nếu ảnh khác origin
+  }
 }
 
 function loadTrack(index) {
@@ -133,6 +163,9 @@ function loadTrack(index) {
   trackTitle.textContent = track.title;
   trackArtist.textContent = track.artist;
   trackCover.src = track.cover || "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=600&auto=format&fit=crop";
+
+  trackCover.crossOrigin = "Anonymous";
+  trackCover.onload = () => extractCoverColor(trackCover);
 
   savePlaylistToStorage();
   updatePlaylistHighlight();
@@ -210,7 +243,7 @@ function playTrack() {
       disc.classList.add("spinning");
       setPetState("awake");
     }).catch(e => {
-      console.warn("Chờ người dùng tương tác:", e);
+      console.warn("Chờ tương tác người dùng:", e);
     });
   }
 }
@@ -338,7 +371,7 @@ function formatTime(seconds) {
 }
 
 /* =========================================================
-   2. NGỰ KIẾM PHI HÀNH (SWORD TRAIL CURSOR)
+   2. NGỰ KIẾM PHI HÀNH & MẶT HỒ GỢN SÓNG (WATER RIPPLE)
 ========================================================= */
 let mouseX = window.innerWidth / 2;
 let mouseY = window.innerHeight / 2;
@@ -346,6 +379,7 @@ let prevMouseX = mouseX;
 let prevMouseY = mouseY;
 let swordAngle = -Math.PI / 4;
 let swordTrailPoints = [];
+let waterRipples = [];
 
 window.addEventListener("mousemove", (e) => {
   mouseX = e.clientX;
@@ -374,6 +408,15 @@ window.addEventListener("mousemove", (e) => {
     });
   }
 
+  // Tương tác chạm vỡ bọt khí linh lực
+  for (let i = qiBubbles.length - 1; i >= 0; i--) {
+    const b = qiBubbles[i];
+    if (Math.hypot(mouseX - b.x, mouseY - b.y) < b.radius + 15) {
+      popBubble(b.x, b.y);
+      qiBubbles.splice(i, 1);
+    }
+  }
+
   prevMouseX = mouseX;
   prevMouseY = mouseY;
 
@@ -384,10 +427,21 @@ window.addEventListener("mousemove", (e) => {
   }
 });
 
+// Click chuột tạo Mặt Hồ Gợn Sóng & Trảm Kích Kiếm Quang
 window.addEventListener("mousedown", (e) => {
-  for (let i = 0; i < 8; i++) {
+  // Gợn sóng nước
+  waterRipples.push({
+    x: e.clientX,
+    y: e.clientY,
+    radius: 5,
+    maxRadius: 85,
+    alpha: 0.85
+  });
+
+  // Trảm kích kiếm quang
+  for (let i = 0; i < 7; i++) {
     const angle = Math.random() * Math.PI * 2;
-    const length = Math.random() * 90 + 50;
+    const length = Math.random() * 85 + 45;
     swordSlashes.push({
       x: e.clientX,
       y: e.clientY,
@@ -441,10 +495,16 @@ function drawStaticWaveform() {
 }
 
 /* =========================================================
-   5. LINH THÚ TIẾN HÓA & CHO ĂN ĐAN DƯỢC
+   5. LINH THÚ GẬT GÙ THEO NHẠC (HEADBOBBING) & TIẾN HÓA
 ========================================================= */
-let petPills = parseInt(localStorage.getItem("pntt_pet_pills")) || 5;
-let petEvolutionStage = parseInt(localStorage.getItem("pntt_pet_stage")) || 1;
+let petPills = 5;
+let petEvolutionStage = 1;
+
+function initPetPills() {
+  petPills = parseInt(localStorage.getItem("pntt_pet_pills")) || 5;
+  petEvolutionStage = parseInt(localStorage.getItem("pntt_pet_stage")) || 1;
+  updatePetPillDisplay();
+}
 
 const PET_STAGES = [
   { name: "Ấu Trùng Phệ Kim", icon: "fa-dragon" },
@@ -501,9 +561,9 @@ function setPetState(state) {
   if (state === "sleeping") {
     petSpeech.textContent = "Zzz...";
   } else if (state === "awake") {
-    petSpeech.textContent = "Thính âm tịnh tâm...";
+    petSpeech.textContent = "Thính âm ngộ đạo...";
   } else if (state === "excited") {
-    petSpeech.textContent = "Linh khí bạo phát!";
+    petSpeech.textContent = "Vạn kiếm xuất khiếu!";
   }
 }
 
@@ -554,7 +614,7 @@ if (spiritualPet) {
     spiritualPet.classList.add("pet-petted");
     playPetChimeSound();
 
-    const dialogue = ["Ngao ngao! (Vui vẻ)", "Linh lực +10!", "Hộ chủ đột phá!", "Khúc nhạc tuyệt diệu!"];
+    const dialogue = ["Ngao ngao! (Vui vẻ)", "Linh lực +10!", "Hộ chủ phi thăng!", "Khúc ca tuyệt diệu!"];
     petSpeech.textContent = dialogue[Math.floor(Math.random() * dialogue.length)];
 
     const petRect = spiritualPet.getBoundingClientRect();
@@ -574,13 +634,14 @@ if (spiritualPet) {
 }
 
 /* =========================================================
-   6. ĐẠI CANH KIẾM TRẬN (28 PHI KIẾM SẮC BÉN)
+   6. VẠN KIẾM QUY TÔNG & BÁT QUÁI TRẬN ĐỒ XOAY THEO NHỊP
 ========================================================= */
 const vCanvas = document.getElementById("visualizer-canvas");
 const vCtx = vCanvas ? vCanvas.getContext("2d") : null;
 let audioCtx = null;
-let isHighEnergy = false;
 let swordRotationAngle = 0;
+let baguaAngle = 0;
+let burstProgress = 0; // Tiến trình bộc phát Vạn Kiếm Quy Tông
 
 function setupAudioContext() {
   if (audioCtx) return;
@@ -591,6 +652,47 @@ function setupAudioContext() {
   } catch (err) {
     console.log("AudioContext Init Error:", err);
   }
+}
+
+// Vẽ Bát Quái Trận Đồ Âm Dương
+function drawBaguaTrigram(ctx, cx, cy, radius, pulse) {
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(baguaAngle);
+
+  // Vòng tròn trận đồ phát sáng
+  ctx.strokeStyle = `rgba(245, 158, 11, ${0.25 + pulse * 0.35})`;
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.arc(0, 0, radius, 0, Math.PI * 2);
+  ctx.stroke();
+
+  // 8 Quẻ Bát Quái (Càn, Khôn, v.v..)
+  const trigrams = [
+    [1, 1, 1], [0, 1, 1], [1, 0, 1], [0, 0, 1],
+    [1, 1, 0], [0, 1, 0], [1, 0, 0], [0, 0, 0]
+  ];
+
+  for (let i = 0; i < 8; i++) {
+    const angle = (i * Math.PI) / 4;
+    ctx.save();
+    ctx.rotate(angle);
+    ctx.translate(0, -radius - 12);
+
+    const bars = trigrams[i];
+    ctx.fillStyle = `rgba(245, 158, 11, ${0.45 + pulse * 0.5})`;
+    bars.forEach((type, lineIdx) => {
+      const y = lineIdx * 4;
+      if (type === 1) {
+        ctx.fillRect(-10, y, 20, 2);
+      } else {
+        ctx.fillRect(-10, y, 8, 2);
+        ctx.fillRect(2, y, 8, 2);
+      }
+    });
+    ctx.restore();
+  }
+  ctx.restore();
 }
 
 function drawFlyingSword(ctx, x, y, angle, length, color, glowColor) {
@@ -641,6 +743,23 @@ function drawVisualizer() {
 
   const time = Date.now() / 250;
   const bassAvg = 75 + Math.sin(time) * 45;
+  const isHighEnergy = bassAvg > 105;
+
+  // Sóng chấn động rung màn hình khi Bass cực mạnh
+  if (isHighEnergy) {
+    document.body.classList.add("bass-shake");
+    setTimeout(() => document.body.classList.remove("bass-shake"), 120);
+    setPetState("excited");
+    triggerPetSparks();
+  } else {
+    setPetState("awake");
+  }
+
+  // Linh thú gật gù theo phách nhạc
+  if (spiritualPet) {
+    const bob = Math.sin(time * 2.2) * 5;
+    spiritualPet.querySelector(".pet-body").style.transform = `translateY(${bob}px)`;
+  }
 
   const scale = 1 + (bassAvg / 255) * 0.08;
   disc.style.transform = `scale(${scale})`;
@@ -650,31 +769,24 @@ function drawVisualizer() {
     ambientGlow.style.opacity = `${0.4 + (bassAvg / 255) * 0.55}`;
   }
 
-  isHighEnergy = bassAvg > 105;
-
-  if (isHighEnergy) {
-    setPetState("excited");
-    triggerPetSparks();
-  } else {
-    setPetState("awake");
-  }
-
   const centerX = vCanvas.width / 2;
   const centerY = vCanvas.height / 2;
-  const numSwords = 28;
   const baseRadius = 126;
-  const mood = moodDropdown ? moodDropdown.value : "mood-thanhvan";
 
-  let swordColor = "#10b981";
-  let glowColor = "rgba(16, 185, 129, 0.95)";
-  if (mood === "mood-loantinhhai") {
-    swordColor = "#38bdf8";
-    glowColor = "rgba(56, 189, 248, 0.95)";
-  } else if (mood === "mood-dokiep") {
-    swordColor = "#c084fc";
-    glowColor = "rgba(192, 132, 252, 0.95)";
+  // Xoay Bát Quái trận đồ
+  baguaAngle += 0.005;
+  drawBaguaTrigram(vCtx, centerX, centerY, baseRadius - 8, bassAvg / 255);
+
+  // Hiệu ứng Vạn Kiếm Quy Tông (Phóng ra ngoài khi drop beat)
+  if (isHighEnergy && burstProgress === 0) {
+    burstProgress = 1.0;
+  }
+  if (burstProgress > 0) {
+    burstProgress -= 0.04;
+    if (burstProgress < 0) burstProgress = 0;
   }
 
+  const numSwords = 28;
   swordRotationAngle += 0.007;
 
   for (let i = 0; i < numSwords; i++) {
@@ -682,22 +794,32 @@ function drawVisualizer() {
     const progress = Math.max(0, val) / 255;
     const angle = (i * (Math.PI * 2)) / numSwords + swordRotationAngle;
 
-    const distance = baseRadius + progress * (isHighEnergy ? 45 : 25);
+    // Vạn Kiếm Quy Tông: Phóng vụt ra viền
+    const burstDist = burstProgress * 65;
+    const distance = baseRadius + progress * 25 + burstDist;
+
     const swordX = centerX + Math.cos(angle) * distance;
     const swordY = centerY + Math.sin(angle) * distance;
-    const swordLength = 22 + progress * 14;
-    const swordPointingAngle = angle + Math.PI / 2 + (progress * 0.2);
+    const swordLength = 22 + progress * 14 + burstProgress * 12;
 
-    drawFlyingSword(vCtx, swordX, swordY, swordPointingAngle, swordLength, swordColor, glowColor);
+    // Khi phóng ra, mũi kiếm chúc thẳng ra ngoài màn hình
+    const swordPointingAngle = burstProgress > 0.2 ? angle : angle + Math.PI / 2 + (progress * 0.2);
+
+    const style = getComputedStyle(document.body);
+    const primaryColor = style.getPropertyValue("--primary-color").trim() || "#10b981";
+
+    drawFlyingSword(vCtx, swordX, swordY, swordPointingAngle, swordLength, primaryColor, primaryColor);
   }
 }
 
 /* =========================================================
-   7. HẠT TRỌNG LỰC & VỆT RỒNG KIẾM KHÍ (SWORD TRAIL 60FPS)
+   7. LINH KHÍ THĂNG HOA (BUBBLES), CÁNH HOA & SÉT NỀN
 ========================================================= */
 const canvas = document.getElementById("ambient-canvas");
 const ctx = canvas ? canvas.getContext("2d") : null;
 let swordSlashes = [];
+let qiBubbles = [];
+let fallingPetals = [];
 
 function resizeCanvas() {
   if (!canvas) return;
@@ -707,66 +829,143 @@ function resizeCanvas() {
 window.addEventListener("resize", resizeCanvas);
 resizeCanvas();
 
-class QiParticle {
-  constructor() {
-    this.reset();
-  }
-  reset() {
-    if (!canvas) return;
-    this.x = Math.random() * canvas.width;
-    this.y = canvas.height + Math.random() * 20;
-    this.size = Math.random() * 2.5 + 0.8;
-    this.speedY = Math.random() * 0.7 + 0.2;
-    this.speedX = (Math.random() - 0.5) * 0.5;
-    this.opacity = Math.random() * 0.5 + 0.2;
-  }
-  update() {
-    if (!canvas) return;
-    if (isHighEnergy && isPlaying) {
-      const centerX = canvas.width / 2;
-      const centerY = canvas.height / 2;
-      const dx = centerX - this.x;
-      const dy = centerY - this.y;
-      const dist = Math.sqrt(dx * dx + dy * dy);
+// Khởi tạo Cánh Hoa / Lá Trúc rơi
+for (let i = 0; i < 30; i++) {
+  fallingPetals.push({
+    x: Math.random() * window.innerWidth,
+    y: Math.random() * window.innerHeight,
+    size: Math.random() * 6 + 4,
+    speedY: Math.random() * 1.2 + 0.6,
+    speedX: Math.random() * 0.8 - 0.4,
+    rot: Math.random() * Math.PI,
+    rotSpeed: (Math.random() - 0.5) * 0.03
+  });
+}
 
-      if (dist < 40) {
-        this.reset();
-      } else {
-        this.x += (dx / dist) * 3.5;
-        this.y += (dy / dist) * 3.5;
-      }
-    } else {
-      this.y -= this.speedY;
-      this.x += this.speedX;
-      if (this.y < -10) this.reset();
-    }
+// Tạo Bọt Khí Linh Lực
+setInterval(() => {
+  if (qiBubbles.length < 15 && isPlaying) {
+    qiBubbles.push({
+      x: Math.random() * (window.innerWidth - 60) + 30,
+      y: window.innerHeight + 10,
+      radius: Math.random() * 14 + 10,
+      speedY: Math.random() * 1.5 + 0.8,
+      wobble: Math.random() * Math.PI,
+      alpha: 0.75
+    });
   }
-  draw() {
-    if (!ctx) return;
-    const style = getComputedStyle(document.body);
-    ctx.fillStyle = style.getPropertyValue("--particle-color").trim() || "rgba(16, 185, 129, 0.7)";
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-    ctx.fill();
+}, 750);
+
+// Nổ bọt khí ra kiếm quang
+function popBubble(x, y) {
+  playPetChimeSound();
+  for (let i = 0; i < 6; i++) {
+    swordSlashes.push({
+      x: x,
+      y: y,
+      angle: Math.random() * Math.PI * 2,
+      length: 45,
+      life: 0.9,
+      speed: 0.06
+    });
   }
 }
 
-const particles = Array.from({ length: 65 }, () => new QiParticle());
+// Chớp Lôi Đình Tự Động ở chủ đề Độ Kiếp
+setInterval(() => {
+  if (moodDropdown && moodDropdown.value === "mood-dokiep" && isPlaying) {
+    if (Math.random() > 0.65 && lightningOverlay) {
+      lightningOverlay.classList.add("flash");
+      setTimeout(() => lightningOverlay.classList.remove("flash"), 120);
+    }
+  }
+}, 3200);
 
-function drawDragonSwordTrail() {
-  if (!ctx) return;
+function drawEffectsLoop() {
+  if (!ctx || !canvas) return;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
   const style = getComputedStyle(document.body);
   const rgb = style.getPropertyValue("--sword-trail-color").trim() || "16, 185, 129";
 
+  // 1. Vẽ Mặt Hồ Gợn Sóng (Water Ripple)
+  for (let i = waterRipples.length - 1; i >= 0; i--) {
+    const r = waterRipples[i];
+    r.radius += 2.2;
+    r.alpha -= 0.02;
+    if (r.alpha <= 0) {
+      waterRipples.splice(i, 1);
+      continue;
+    }
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(r.x, r.y, r.radius, 0, Math.PI * 2);
+    ctx.strokeStyle = `rgba(${rgb}, ${r.alpha})`;
+    ctx.lineWidth = 2;
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = `rgba(${rgb}, 0.8)`;
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  // 2. Vẽ Cánh Hoa / Lá Trúc rơi theo nhịp
+  fallingPetals.forEach(p => {
+    p.y += isPlaying ? p.speedY * 1.4 : p.speedY;
+    p.x += p.speedX;
+    p.rot += p.rotSpeed;
+    if (p.y > canvas.height + 10) {
+      p.y = -10;
+      p.x = Math.random() * canvas.width;
+    }
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    ctx.rotate(p.rot);
+    ctx.fillStyle = "rgba(16, 185, 129, 0.45)";
+    ctx.beginPath();
+    ctx.ellipse(0, 0, p.size, p.size / 2, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  });
+
+  // 3. Vẽ Bọt Khí Linh Lực (Floating Qi Bubbles)
+  for (let i = qiBubbles.length - 1; i >= 0; i--) {
+    const b = qiBubbles[i];
+    b.y -= b.speedY;
+    b.wobble += 0.03;
+    const wobbleX = b.x + Math.sin(b.wobble) * 8;
+
+    if (b.y < -30) {
+      qiBubbles.splice(i, 1);
+      continue;
+    }
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(wobbleX, b.y, b.radius, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(${rgb}, 0.15)`;
+    ctx.strokeStyle = `rgba(255, 255, 255, 0.8)`;
+    ctx.lineWidth = 1.2;
+    ctx.shadowBlur = 12;
+    ctx.shadowColor = `rgba(${rgb}, 0.7)`;
+    ctx.fill();
+    ctx.stroke();
+
+    // Điểm phản quang bọt khí
+    ctx.beginPath();
+    ctx.arc(wobbleX - b.radius * 0.35, b.y - b.radius * 0.35, b.radius * 0.25, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(255, 255, 255, 0.75)";
+    ctx.fill();
+    ctx.restore();
+  }
+
+  // 4. Vẽ Vệt Rồng Kiếm Khí Ngự Kiếm Phi Hành
   for (let i = swordTrailPoints.length - 1; i >= 0; i--) {
     const pt = swordTrailPoints[i];
     pt.life -= 0.038;
-
     if (pt.life <= 0) {
       swordTrailPoints.splice(i, 1);
       continue;
     }
-
     ctx.save();
     ctx.beginPath();
     ctx.arc(pt.x, pt.y, pt.size * pt.life, 0, Math.PI * 2);
@@ -774,34 +973,10 @@ function drawDragonSwordTrail() {
     ctx.shadowColor = `rgba(${rgb}, 0.9)`;
     ctx.shadowBlur = 14;
     ctx.fill();
-
-    ctx.beginPath();
-    ctx.arc(pt.x, pt.y, (pt.size * pt.life) / 2.8, 0, Math.PI * 2);
-    ctx.fillStyle = `rgba(255, 255, 255, ${pt.life * 0.9})`;
-    ctx.fill();
     ctx.restore();
   }
 
-  if (swordTrailPoints.length > 2) {
-    ctx.save();
-    ctx.beginPath();
-    ctx.moveTo(swordTrailPoints[0].x, swordTrailPoints[0].y);
-    for (let i = 1; i < swordTrailPoints.length - 1; i++) {
-      const xc = (swordTrailPoints[i].x + swordTrailPoints[i + 1].x) / 2;
-      const yc = (swordTrailPoints[i].y + swordTrailPoints[i + 1].y) / 2;
-      ctx.quadraticCurveTo(swordTrailPoints[i].x, swordTrailPoints[i].y, xc, yc);
-    }
-    ctx.strokeStyle = `rgba(${rgb}, 0.5)`;
-    ctx.lineWidth = 3.5;
-    ctx.shadowColor = `rgba(${rgb}, 0.8)`;
-    ctx.shadowBlur = 10;
-    ctx.stroke();
-    ctx.restore();
-  }
-}
-
-function drawSwordSlashes() {
-  if (!ctx) return;
+  // 5. Vẽ Trảm Kích Kiếm Quang
   for (let i = swordSlashes.length - 1; i >= 0; i--) {
     const s = swordSlashes[i];
     s.life -= s.speed;
@@ -813,43 +988,21 @@ function drawSwordSlashes() {
     const dx = Math.cos(s.angle) * (currentLen / 2);
     const dy = Math.sin(s.angle) * (currentLen / 2);
 
-    const mood = moodDropdown ? moodDropdown.value : "mood-thanhvan";
-    let slashColor = "16, 185, 129";
-    if (mood === "mood-loantinhhai") slashColor = "56, 189, 248";
-    if (mood === "mood-dokiep") slashColor = "236, 72, 153";
-
     ctx.save();
     ctx.shadowBlur = 18;
-    ctx.shadowColor = `rgba(${slashColor}, ${s.life})`;
+    ctx.shadowColor = `rgba(${rgb}, ${s.life})`;
     ctx.strokeStyle = `rgba(255, 255, 255, ${s.life})`;
     ctx.lineWidth = 3 * s.life;
     ctx.beginPath();
     ctx.moveTo(s.x - dx, s.y - dy);
     ctx.lineTo(s.x + dx, s.y + dy);
     ctx.stroke();
-
-    ctx.strokeStyle = `rgba(${slashColor}, ${s.life * 0.6})`;
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    ctx.arc(s.x, s.y, 25 * (1.5 - s.life), 0, Math.PI * 2);
-    ctx.stroke();
     ctx.restore();
   }
-}
 
-function animateLoop() {
-  if (ctx && canvas) {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    particles.forEach(p => {
-      p.update();
-      p.draw();
-    });
-    drawDragonSwordTrail();
-    drawSwordSlashes();
-  }
-  requestAnimationFrame(animateLoop);
+  requestAnimationFrame(drawEffectsLoop);
 }
-animateLoop();
+drawEffectsLoop();
 
 /* =========================================================
    8. HỆ THỐNG ALBUM CA SĨ
@@ -1425,5 +1578,4 @@ if (themeToggle) {
 // Khởi chạy hệ thống chuẩn xác
 initPlayer();
 updateCultivationUI();
-updatePetPillDisplay();
 setPetState("sleeping");
