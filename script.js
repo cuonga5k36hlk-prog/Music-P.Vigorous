@@ -6,10 +6,10 @@
 const DEFAULT_PLAYLIST = [
   {
     id: 1,
-    title: "Phàm Nhân Tông Môn Khúc",
-    artist: "Thanh Vân Tu Sĩ",
-    src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-    cover: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=600&auto=format&fit=crop"
+    title: "Món quà",
+    artist: "Dangrangto",
+    src: "https://files.catbox.moe/9fvwip.mp3",
+    cover: "https://img.youtube.com/vi/a6pUdErpOgw/maxresdefault.jpg"
   },
   {
     id: 2,
