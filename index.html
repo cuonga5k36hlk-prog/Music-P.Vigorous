@@ -22,10 +22,17 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body class="mood-thanhvan">
-  <canvas id="ambient-canvas"></canvas>
+  <!-- Các lớp hiệu ứng điện ảnh -->
+  <div id="cinematic-bar-top" class="cinematic-bar"></div>
+  <div id="cinematic-bar-bottom" class="cinematic-bar"></div>
+  <div id="shockwave-ring" class="shockwave-ring"></div>
+  <div id="mist-layer" class="mist-layer"></div>
   <div id="lightning-overlay"></div>
 
-  <div class="app-container">
+  <!-- Canvas hạt linh khí và kiếm khí click -->
+  <canvas id="ambient-canvas"></canvas>
+
+  <div class="app-container" id="app-container">
     <header class="app-header">
       <div class="logo">
         <i class="fa-solid fa-yin-yang logo-icon"></i>
@@ -48,6 +55,11 @@
       </div>
 
       <div class="header-actions">
+        <!-- Chế độ Điện Ảnh (Zen Mode) -->
+        <button id="cinematic-toggle" class="btn-icon" title="Chế Độ Điện Ảnh Tối Thượng [F]">
+          <i class="fa-solid fa-film"></i>
+        </button>
+
         <!-- Chuyển cảnh giới -->
         <div class="mood-selector" title="Chuyển Hóa Cảnh Động Phủ">
           <i class="fa-solid fa-mountain-sun"></i>
@@ -79,9 +91,9 @@
       </div>
     </header>
 
-    <main class="main-content">
-      <!-- Cột Trái: Trình phát trung tâm -->
-      <section class="player-section glass-panel">
+    <main class="main-content" id="main-content">
+      <!-- Cột Trái: Trình phát trung tâm với Parallax 3D Card -->
+      <section class="player-section glass-panel" id="player-card">
         <div class="disc-wrapper">
           <div class="ambient-glow" id="ambient-glow"></div>
           <canvas id="visualizer-canvas" width="360" height="360"></canvas>
@@ -132,9 +144,8 @@
       </section>
 
       <!-- Cột Phải: Bộ Quản Lý Album Tông Môn & Bài Hát -->
-      <section class="playlist-section glass-panel">
+      <section class="playlist-section glass-panel" id="playlist-card">
         <div class="playlist-header">
-          <!-- Switcher chuyển đổi Danh Sách & Album -->
           <div class="view-switch-tabs">
             <button class="view-tab-btn active" id="view-songs-btn">
               <i class="fa-solid fa-list-ul"></i> Linh Phổ
@@ -149,27 +160,22 @@
           </button>
         </div>
 
-        <!-- Thanh Tìm Kiếm -->
         <div class="search-container">
           <i class="fa-solid fa-magnifying-glass search-icon"></i>
           <input type="text" id="search-input" placeholder="Linh thức dò tìm (Tên khúc, ca sĩ)...">
         </div>
 
-        <!-- Khung 1: Danh sách bài hát bình thường -->
         <div class="view-content active" id="songs-view">
           <div class="playlist-items" id="playlist-items"></div>
         </div>
 
-        <!-- Khung 2: Danh sách Album theo từng Ca sĩ -->
         <div class="view-content" id="albums-view">
-          <!-- Header quay lại khi đang xem chi tiết 1 Album -->
           <div class="album-detail-header" id="album-detail-header" style="display: none;">
             <button class="btn-back-albums" id="btn-back-albums">
               <i class="fa-solid fa-chevron-left"></i> Toàn Bộ Album
             </button>
             <h4 id="album-detail-title">Dangrangto</h4>
           </div>
-          <!-- Lưới các Album Ca sĩ -->
           <div class="album-grid" id="album-grid"></div>
         </div>
       </section>
