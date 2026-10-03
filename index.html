@@ -1,339 +1,19 @@
-/* ==========================================================================
-   PHÀM NHÂN THÍNH ÂM CÁC - LOGIC & QUẢN LÝ NHẠC
-   ========================================================================== */
-
-// 1. Dữ liệu bài hát mẫu (Mặc định tiên hiệp)
-let playlist = [
-  {
-    title: "Phàm Nhân Tu Tiên Khúc",
-    artist: "Hàn Lập • Thanh Vân Môn",
-    src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-    cover: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=500&auto=format&fit=crop&q=80"
-  },
-  {
-    title: "Thanh Trúc Phong Vân Kiếm",
-    artist: "Thần Mật Kiếm Trận",
-    src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
-    cover: "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=500&auto=format&fit=crop&q=80"
-  },
-  {
-    title: "Hư Thiên Điện Trảm Yêu",
-    artist: "Chưởng Thiên Thần Niệm",
-    src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
-    cover: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=500&auto=format&fit=crop&q=80"
-  }
-];
-
-let currentIndex = 0;
-let isPlaying = false;
-let isShuffle = false;
-let isRepeat = false;
-
-// DOM Elements
-const audio = document.getElementById("audio-engine");
-const playBtn = document.getElementById("play-btn");
-const prevBtn = document.getElementById("prev-btn");
-const nextBtn = document.getElementById("next-btn");
-const shuffleBtn = document.getElementById("shuffle-btn");
-const repeatBtn = document.getElementById("repeat-btn");
-const progressWrapper = document.getElementById("progress-wrapper");
-const progressBar = document.getElementById("progress-bar");
-const currentTimeEl = document.getElementById("current-time");
-const durationTimeEl = document.getElementById("duration-time");
-const volumeSlider = document.getElementById("volume-slider");
-const volumeIcon = document.getElementById("volume-icon");
-
-const trackTitle = document.getElementById("track-title");
-const trackArtist = document.getElementById("track-artist");
-const trackCover = document.getElementById("track-cover");
-const diskArt = document.getElementById("disk-art");
-const playlistContainer = document.getElementById("playlist-items");
-const localFileInput = document.getElementById("local-file-input");
-
-// Modal Elements
-const urlModal = document.getElementById("url-modal");
-const addUrlBtn = document.getElementById("add-url-btn");
-const cancelModal = document.getElementById("cancel-modal");
-const confirmModal = document.getElementById("confirm-modal");
-const modalTitle = document.getElementById("modal-title");
-const modalArtist = document.getElementById("modal-artist");
-const modalUrl = document.getElementById("modal-url");
-const modalCover = document.getElementById("modal-cover");
-
-// Theme Toggle
-const themeToggle = document.getElementById("theme-toggle");
-
-// Canvas
-const visualizerCanvas = document.getElementById("audio-visualizer");
-const vCtx = visualizerCanvas.getContext("2d");
-let audioCtx, analyser, source, dataArray;
-
-/* ==========================================================================
-   KHỞI TẠO & PHÁT NHẠC
-   ========================================================================== */
-function loadTrack(index) {
-  if (playlist.length === 0) return;
-  const current = playlist[index];
-  trackTitle.textContent = current.title;
-  trackArtist.textContent = current.artist;
-  trackCover.src = current.cover || "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=500&auto=format&fit=crop&q=80";
-  audio.src = current.src;
-  
-  renderPlaylist();
-}
-
-function playTrack() {
-  initAudioContext();
-  audio.play().then(() => {
-    isPlaying = true;
-    document.querySelector(".cultivation-disk-wrapper").classList.add("playing");
-    playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
-  }).catch(err => console.log("Trình duyệt chờ tương tác: ", err));
-}
-
-function pauseTrack() {
-  audio.pause();
-  isPlaying = false;
-  document.querySelector(".cultivation-disk-wrapper").classList.remove("playing");
-  playBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
-}
-
-function togglePlay() {
-  if (playlist.length === 0) return;
-  if (isPlaying) {
-    pauseTrack();
-  } else {
-    playTrack();
-  }
-}
-
-function nextTrack() {
-  if (playlist.length === 0) return;
-  if (isShuffle) {
-    currentIndex = Math.floor(Math.random() * playlist.length);
-  } else {
-    currentIndex = (currentIndex + 1) % playlist.length;
-  }
-  loadTrack(currentIndex);
-  playTrack();
-}
-
-function prevTrack() {
-  if (playlist.length === 0) return;
-  currentIndex = (currentIndex - 1 + playlist.length) % playlist.length;
-  loadTrack(currentIndex);
-  playTrack();
-}
-
-/* ==========================================================================
-   TIẾN TRÌNH & THỜI LƯỢNG
-   ========================================================================== */
-function formatTime(seconds) {
-  if (isNaN(seconds)) return "00:00";
-  const mins = Math.floor(seconds / 60);
-  const secs = Math.floor(seconds % 60);
-  return `${mins < 10 ? '0' : ''}${mins}:${secs < 10 ? '0' : ''}${secs}`;
-}
-
-audio.addEventListener("timeupdate", () => {
-  const { currentTime, duration } = audio;
-  if (duration) {
-    const progressPercent = (currentTime / duration) * 100;
-    progressBar.style.width = `${progressPercent}%`;
-    currentTimeEl.textContent = formatTime(currentTime);
-    durationTimeEl.textContent = formatTime(duration);
-  }
-});
-
-progressWrapper.addEventListener("click", (e) => {
-  const width = progressWrapper.clientWidth;
-  const clickX = e.offsetX;
-  const duration = audio.duration;
-  if (duration) {
-    audio.currentTime = (clickX / width) * duration;
-  }
-});
-
-audio.addEventListener("ended", () => {
-  if (isRepeat) {
-    playTrack();
-  } else {
-    nextTrack();
-  }
-});
-
-/* ==========================================================================
-   ÂM LƯỢNG & TÍNH NĂNG PHỤ
-   ========================================================================== */
-volumeSlider.addEventListener("input", (e) => {
-  const val = e.target.value;
-  audio.volume = val;
-  if (val == 0) {
-    volumeIcon.className = "fa-solid fa-volume-xmark";
-  } else if (val < 0.5) {
-    volumeIcon.className = "fa-solid fa-volume-low";
-  } else {
-    volumeIcon.className = "fa-solid fa-volume-high";
-  }
-});
-
-shuffleBtn.addEventListener("click", () => {
-  isShuffle = !isShuffle;
-  shuffleBtn.classList.toggle("active", isShuffle);
-});
-
-repeatBtn.addEventListener("click", () => {
-  isRepeat = !isRepeat;
-  repeatBtn.classList.toggle("active", isRepeat);
-});
-
-// Chuyển đổi Dark / Light Mode
-themeToggle.addEventListener("click", () => {
-  document.body.classList.toggle("light-mode");
-  const isLight = document.body.classList.contains("light-mode");
-  themeToggle.innerHTML = isLight ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
-});
-
-/* ==========================================================================
-   QUẢN LÝ PLAYLIST & THÊM BÀI HÁT TÙY Ý
-   ========================================================================== */
-function renderPlaylist() {
-  playlistContainer.innerHTML = "";
-  playlist.forEach((track, idx) => {
-    const li = document.createElement("li");
-    li.className = `track-item ${idx === currentIndex ? "active" : ""}`;
-    li.innerHTML = `
-      <div class="track-item-left">
-        <img class="track-item-img" src="${track.cover || 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=100'}" alt="Bìa">
-        <div class="track-item-meta">
-          <span class="track-item-name">${track.title}</span>
-          <span class="track-item-by">${track.artist}</span>
-        </div>
-      </div>
-      <button class="track-delete-btn" title="Trừ Khử Âm Luật" onclick="deleteTrack(event, ${idx})">
-        <i class="fa-solid fa-trash-can"></i>
-      </button>
-    `;
-    li.addEventListener("click", () => {
-      currentIndex = idx;
-      loadTrack(currentIndex);
-      playTrack();
-    });
-    playlistContainer.appendChild(li);
-  });
-}
-
-function deleteTrack(e, idx) {
-  e.stopPropagation();
-  if (playlist.length <= 1) {
-    alert("Cần giữ lại ít nhất một khúc âm luật!");
-    return;
-  }
-  playlist.splice(idx, 1);
-  if (currentIndex >= playlist.length) {
-    currentIndex = 0;
-  }
-  loadTrack(currentIndex);
-  if (isPlaying) playTrack();
-}
-
-// 1. Tải nhạc cục bộ từ máy (Local MP3 Files)
-localFileInput.addEventListener("change", (e) => {
-  const files = Array.from(e.target.files);
-  files.forEach((file) => {
-    const objectUrl = URL.createObjectURL(file);
-    playlist.push({
-      title: file.name.replace(/\.[^/.]+$/, ""), // Cắt đuôi mở rộng
-      artist: "Tàng Bản Địa Phương",
-      src: objectUrl,
-      cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=500&auto=format&fit=crop&q=80"
-    });
-  });
-  renderPlaylist();
-});
-
-// 2. Thêm nhạc bằng URL Online (Modal)
-addUrlBtn.addEventListener("click", () => urlModal.classList.add("active"));
-cancelModal.addEventListener("click", () => urlModal.classList.remove("active"));
-
-confirmModal.addEventListener("click", () => {
-  const urlVal = modalUrl.value.trim();
-  if (!urlVal) {
-    alert("Vui lòng cung cấp linh nguyên URL hợp lệ!");
-    return;
-  }
-  playlist.push({
-    title: modalTitle.value.trim() || "Âm Luật Ngoại Cảnh",
-    artist: modalArtist.value.trim() || "Vô Danh Tu Sĩ",
-    src: urlVal,
-    cover: modalCover.value.trim() || "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=500&auto=format&fit=crop&q=80"
-  });
-  modalTitle.value = "";
-  modalArtist.value = "";
-  modalUrl.value = "";
-  modalCover.value = "";
-  urlModal.classList.remove("active");
-  renderPlaylist();
-});
-
-// Sự kiện nút
-playBtn.addEventListener("click", togglePlay);
-nextBtn.addEventListener("click", nextTrack);
-prevBtn.addEventListener("click", prevTrack);
-
-/* ==========================================================================
-   WEB AUDIO API VISUALIZER (SÓNG LINH KHÍ)
-   ========================================================================== */
-function initAudioContext() {
-  if (audioCtx) return;
-  try {
-    const AudioContext = window.AudioContext || window.webkitAudioContext;
-    audioCtx = new AudioContext();
-    analyser = audioCtx.createAnalyser();
-    source = audioCtx.createMediaElementSource(audio);
-    source.connect(analyser);
-    analyser.connect(audioCtx.destination);
-    analyser.fftSize = 64;
-    dataArray = new Uint8Array(analyser.frequencyBinCount);
-    drawVisualizer();
-  } catch (e) {
-    console.log("Audio Context Web API đã khởi tạo hoặc gặp giới hạn CORS:", e);
-  }
-}
-
-function drawVisualizer() {
-  requestAnimationFrame(drawVisualizer);
-  if (!analyser) return;
-
-  analyser.getByteFrequencyData(dataArray);
-  vCtx.clearRect(0, 0, visualizerCanvas.width, visualizerCanvas.height);
-
-  const barWidth = (visualizerCanvas.width / dataArray.length) * 1.5;
-  let x = 0;
-
-  for (let i = 0; i < dataArray.length; i++) {Dưới đây là trọn bộ mã nguồn được tách bạch rõ ràng thành 3 file: `index.html`, `style.css`, và `script.js`.
-
----
-
-### 1. `index.html`
-
-```html
 <!DOCTYPE html>
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Phàm Nhân Thính Âm Các - Tu Tiên Lạc Phổ</title>
-  <!-- Google Fonts: Font thư pháp hiện đại Noto Serif SC & Cinzel -->
-  <link rel="preconnect" href="[https://fonts.googleapis.com](https://fonts.googleapis.com)">
-  <link rel="preconnect" href="[https://fonts.gstatic.com](https://fonts.gstatic.com)" crossorigin>
-  <link href="[https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Montserrat:wght@400;500;600&family=Noto+Serif+SC:wght@600;700&display=swap](https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Montserrat:wght@400;500;600&family=Noto+Serif+SC:wght@600;700&display=swap)" rel="stylesheet">
+  <!-- Google Fonts: Font chữ thư pháp cổ phong & hiện đại -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Montserrat:wght@400;500;600&family=Noto+Serif+SC:wght@600;700&display=swap" rel="stylesheet">
   <!-- FontAwesome Icons -->
-  <link rel="stylesheet" href="[https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css](https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css)">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="style.css">
 </head>
 <body class="dark-theme">
-  <!-- Canvas hiệu ứng linh khí bay lơ lửng -->
+  <!-- Nền Canvas hiệu ứng linh khí bay lơ lửng -->
   <canvas id="ambient-canvas"></canvas>
 
   <div class="app-container">
@@ -346,20 +26,19 @@ function drawVisualizer() {
           <span>Phàm Nhân Tu Tiên</span>
         </div>
       </div>
-      <button id="theme-toggle" class="btn-icon" title="Chuyển đổi Quang Ảnh">
+      <button id="theme-toggle" class="btn-icon" title="Chuyển đổi Quang Ảnh (Sáng/Tối)">
         <i class="fa-solid fa-moon"></i>
       </button>
     </header>
 
-    <!-- Main Content Layout -->
+    <!-- Khu vực chính -->
     <main class="main-content">
-      <!-- Cột Trái: Trình phát nhạc trung tâm -->
+      <!-- Cột Trái: Trình phát trung tâm (Đĩa trận pháp) -->
       <section class="player-section glass-panel">
         <div class="disc-wrapper">
-          <!-- Vòng sáng linh khí / Trận pháp -->
           <div class="magic-circle" id="magic-circle"></div>
           <div class="disc" id="disc">
-            <img src="[https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=600&auto=format&fit=crop](https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=600&auto=format&fit=crop)" id="track-cover" alt="Bìa nhạc">
+            <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=600&auto=format&fit=crop" id="track-cover" alt="Bìa nhạc">
             <div class="disc-core"></div>
           </div>
         </div>
@@ -369,7 +48,7 @@ function drawVisualizer() {
           <p id="track-artist" class="track-artist">Hàn Lập • Thanh Vân Môn</p>
         </div>
 
-        <!-- Thanh tiến trình bài hát -->
+        <!-- Thanh thời lượng -->
         <div class="progress-container">
           <span id="current-time">00:00</span>
           <div class="progress-bar" id="progress-bar">
@@ -378,15 +57,15 @@ function drawVisualizer() {
           <span id="duration">00:00</span>
         </div>
 
-        <!-- Cụm nút điều khiển -->
+        <!-- Nút điều khiển -->
         <div class="player-controls">
-          <button id="shuffle-btn" class="btn-ctrl" title="Hư Không Luân Hồi (Shuffle)">
+          <button id="shuffle-btn" class="btn-ctrl" title="Hư Không Luân Hồi (Ngẫu nhiên)">
             <i class="fa-solid fa-shuffle"></i>
           </button>
           <button id="prev-btn" class="btn-ctrl" title="Nghịch Chuyển (Trước)">
             <i class="fa-solid fa-backward-step"></i>
           </button>
-          <button id="play-btn" class="btn-ctrl btn-play" title="Tác Động Linh Khí (Phát/Tạm dừng)">
+          <button id="play-btn" class="btn-ctrl btn-play" title="Tác Động Linh Khí (Phát/Dừng)">
             <i class="fa-solid fa-play"></i>
           </button>
           <button id="next-btn" class="btn-ctrl" title="Thuận Hành (Sau)">
@@ -397,14 +76,14 @@ function drawVisualizer() {
           </button>
         </div>
 
-        <!-- Điều chỉnh âm lượng -->
+        <!-- Thanh âm lượng -->
         <div class="volume-container">
           <i class="fa-solid fa-volume-high" id="vol-icon"></i>
           <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.7">
         </div>
       </section>
 
-      <!-- Cột Phải: Danh sách & Thêm nhạc -->
+      <!-- Cột Phải: Danh sách & Quản lý bài hát -->
       <section class="playlist-section glass-panel">
         <div class="playlist-header">
           <h3><i class="fa-solid fa-scroll"></i> Nhập Khúc Bảng</h3>
@@ -413,18 +92,16 @@ function drawVisualizer() {
           </button>
         </div>
 
-        <!-- Danh sách bài hát -->
-        <div class="playlist-items" id="playlist-items">
-          <!-- JS sẽ render các bài hát vào đây -->
-        </div>
+        <!-- Danh sách hiển thị các bài hát -->
+        <div class="playlist-items" id="playlist-items"></div>
       </section>
     </main>
   </div>
 
-  <!-- Audio Element Ẩn -->
+  <!-- Audio Engine ngầm -->
   <audio id="audio-engine" preload="metadata"></audio>
 
-  <!-- Modal thêm bài hát mới -->
+  <!-- Modal nạp thêm nhạc -->
   <div class="modal" id="add-modal">
     <div class="modal-box glass-panel">
       <div class="modal-header">
@@ -432,42 +109,41 @@ function drawVisualizer() {
         <button class="modal-close" id="close-modal-btn">&times;</button>
       </div>
 
-      <!-- Tab chọn phương thức nạp -->
       <div class="modal-tabs">
-        <button class="tab-btn active" data-tab="url">Dẫn Khí (Liên kết URL)</button>
+        <button class="tab-btn active" data-tab="url">Dẫn Khí (Link URL)</button>
         <button class="tab-btn" data-tab="file">Bản Địa (Tệp MP3)</button>
       </div>
 
       <div class="modal-body">
-        <!-- Tab 1: URL -->
+        <!-- Tab nạp link MP3 trực tuyến -->
         <form id="url-form" class="tab-content active">
           <div class="input-group">
             <label>Khúc Danh (Tên bài)*</label>
-            <input type="text" id="url-title" placeholder="VD: Bất Nhiễm, Thanh Phong..." required>
+            <input type="text" id="url-title" placeholder="VD: Bất Nhiễm, Vấn Đạo..." required>
           </div>
           <div class="input-group">
-            <label>Đạo Lữ / Cổ Sư (Nghệ sĩ)</label>
+            <label>Đạo Lữ / Ca Giả (Nghệ sĩ)</label>
             <input type="text" id="url-artist" placeholder="VD: Mao Bất Dịch">
           </div>
           <div class="input-group">
             <label>Phù Lục Âm Thanh (URL MP3)*</label>
-            <input type="url" id="url-audio" placeholder="[https://domain.com/sound.mp3](https://domain.com/sound.mp3)" required>
+            <input type="url" id="url-audio" placeholder="https://domain.com/sound.mp3" required>
           </div>
           <div class="input-group">
             <label>Bìa Linh Ảnh (URL Hình ảnh)</label>
-            <input type="url" id="url-cover" placeholder="[https://domain.com/cover.jpg](https://domain.com/cover.jpg)">
+            <input type="url" id="url-cover" placeholder="https://domain.com/cover.jpg">
           </div>
           <button type="submit" class="btn-submit">Khắc Sâu Vào Phổ</button>
         </form>
 
-        <!-- Tab 2: File upload -->
+        <!-- Tab nạp file mp3 từ máy tính/điện thoại -->
         <form id="file-form" class="tab-content">
           <div class="input-group">
             <label>Khúc Danh (Tên bài)</label>
-            <input type="text" id="file-title" placeholder="Để trống sẽ lấy tên tệp">
+            <input type="text" id="file-title" placeholder="Để trống sẽ tự nhận diện theo tên file">
           </div>
           <div class="input-group">
-            <label>Đạo Lữ / Cổ Sư (Nghệ sĩ)</label>
+            <label>Đạo Lữ / Ca Giả (Nghệ sĩ)</label>
             <input type="text" id="file-artist" placeholder="Bản địa tu sĩ">
           </div>
           <div class="input-group">
