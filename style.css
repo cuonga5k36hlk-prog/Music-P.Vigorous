@@ -1,5 +1,5 @@
 /* =========================================================
-   GIAO DIỆN THEME PHÀM NHÂN TU TIÊN (NGỰ KIẾM PHI HÀNH)
+   PHÀM NHÂN THÍNH ÂM CÁC - GIAO DIỆN HIỆU ỨNG TỐI THƯỢNG
 ========================================================= */
 
 body, body.mood-thanhvan {
@@ -64,7 +64,6 @@ body.light-theme {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* ẨN CON TRỎ CHUỘT WINDOWS ĐỂ NGỰ KIẾM PHI HÀNH */
 html, body {
   cursor: none !important;
 }
@@ -108,6 +107,19 @@ body {
   transition: background-image 0.8s ease, color 0.3s ease;
 }
 
+/* HIỆU ỨNG SÓNG CHẤN ĐỘNG MÀN HÌNH (BASS CAMERA SHAKE) */
+body.bass-shake {
+  animation: cameraImpact 0.14s ease-in-out;
+}
+
+@keyframes cameraImpact {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(-3px, 2px) rotate(-0.2deg); }
+  50% { transform: translate(3px, -2px) rotate(0.2deg); }
+  75% { transform: translate(-1.5px, 1px); }
+  100% { transform: translate(0, 0); }
+}
+
 /* DẢI ĐIỆN ẢNH CINEMATIC 21:9 */
 .cinematic-bar {
   position: fixed;
@@ -140,18 +152,6 @@ body.cinematic-mode .main-content {
   margin: 50px auto 0 auto;
 }
 
-body.bass-impact {
-  animation: cameraShake 0.16s ease-in-out;
-}
-
-@keyframes cameraShake {
-  0% { transform: translate(0, 0); }
-  25% { transform: translate(-2px, 2px); }
-  50% { transform: translate(2px, -2px); }
-  75% { transform: translate(-1px, 1px); }
-  100% { transform: translate(0, 0); }
-}
-
 .mist-layer {
   position: fixed;
   bottom: 0;
@@ -174,7 +174,7 @@ body.bass-impact {
 #lightning-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(255, 255, 255, 0.4);
+  background: rgba(192, 132, 252, 0.25);
   opacity: 0;
   pointer-events: none;
   z-index: 2;
@@ -353,7 +353,7 @@ body.bass-impact {
   border: 1px solid var(--panel-border);
   border-radius: 24px;
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
-  transition: background 0.5s ease, border-color 0.5s ease;
+  transition: background 0.6s ease, border-color 0.6s ease;
 }
 
 .main-content {
@@ -390,15 +390,15 @@ body.bass-impact {
 
 .ambient-glow {
   position: absolute;
-  width: 200px;
-  height: 200px;
+  width: 220px;
+  height: 220px;
   border-radius: 50%;
   background: var(--primary-glow);
-  filter: blur(55px);
-  opacity: 0.6;
+  filter: blur(60px);
+  opacity: 0.65;
   pointer-events: none;
   z-index: 0;
-  transition: background 0.6s ease;
+  transition: background 0.8s ease, transform 0.15s ease-out;
 }
 
 #visualizer-canvas {
@@ -419,10 +419,10 @@ body.bass-impact {
   position: relative;
   overflow: hidden;
   box-shadow: 0 12px 35px rgba(0, 0, 0, 0.7);
-  border: 3px solid rgba(255, 255, 255, 0.15);
+  border: 3px solid rgba(255, 255, 255, 0.2);
   z-index: 3;
   transform: translateZ(40px);
-  transition: transform 0.15s ease-out;
+  transition: transform 0.12s ease-out;
 }
 
 .disc img {
@@ -439,9 +439,10 @@ body.bass-impact {
   width: 38px;
   height: 38px;
   border-radius: 50%;
-  background: var(--bg-color);
+  background: #050a0e;
   border: 4px solid var(--primary-color);
-  box-shadow: 0 0 12px var(--primary-glow);
+  box-shadow: 0 0 14px var(--primary-glow);
+  transition: border-color 0.6s ease;
 }
 
 .disc.spinning {
@@ -465,7 +466,7 @@ body.bass-impact {
   font-size: 0.9rem;
 }
 
-/* DẢI SÓNG ÂM WAVEFORM CANVAS BAR */
+/* DẢI SÓNG ÂM WAVEFORM CANVAS */
 .waveform-container {
   width: 100%;
   display: flex;
@@ -546,7 +547,6 @@ body.bass-impact {
   box-shadow: 0 0 30px var(--primary-glow);
 }
 
-/* HÀNG PHỤ CHỨA TỐC ĐỘ & VOLUME */
 .sub-controls-row {
   display: flex;
   align-items: center;
@@ -593,7 +593,7 @@ body.bass-impact {
 }
 
 /* =========================================================
-   HỘ ĐẠO LINH THÚ TIẾN HÓA (INTERACTIVE SPIRITUAL PET)
+   HỘ ĐẠO LINH THÚ GẬT GÙ THEO NHẠC (HEADBOBBING PET)
 ========================================================= */
 .spiritual-pet-wrapper {
   position: fixed;
@@ -629,13 +629,13 @@ body.bass-impact {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
+  transition: transform 0.08s ease-out;
 }
 
 .pet-icon {
   font-size: 1.8rem;
   color: var(--accent-gold);
-  transition: transform 0.3s ease, color 0.3s ease;
+  transition: transform 0.1s ease-out, color 0.3s ease;
 }
 
 .pet-meta-info {
@@ -677,16 +677,6 @@ body.bass-impact {
   transform: rotate(-15deg);
 }
 
-.spiritual-pet-wrapper.excited .pet-body {
-  animation: petExcitedDance 0.35s ease-in-out infinite alternate;
-  border-color: #f43f5e;
-  box-shadow: 0 0 35px #f43f5e;
-}
-.spiritual-pet-wrapper.excited .pet-icon {
-  color: #fbbf24;
-  transform: scale(1.22) rotate(10deg);
-}
-
 .spiritual-pet-wrapper.pet-petted {
   animation: petBounce 0.45s ease;
 }
@@ -694,11 +684,6 @@ body.bass-impact {
 @keyframes petBreathe {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.06); }
-}
-
-@keyframes petExcitedDance {
-  0% { transform: translateY(0) rotate(-6deg); }
-  100% { transform: translateY(-10px) rotate(6deg); }
 }
 
 @keyframes petBounce {
