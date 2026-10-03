@@ -1,37 +1,62 @@
 /* =========================================================
-   GIAO DIỆN THEME PHÀM NHÂN TU TIÊN (HH3D AESTHETIC)
+   GIAO DIỆN THEME PHÀM NHÂN TU TIÊN (HH3D VISUAL ENHANCED)
 ========================================================= */
 
-/* Chế độ mặc định: Dark Mode (U Dạ Động Phủ) */
-:root {
+/* --- CẢNH 1: THANH VÂN PHONG (Mặc định: Xanh Ngọc & Sương Khí) --- */
+body.mood-thanhvan {
   --bg-color: #070d12;
-  --bg-gradient: radial-gradient(circle at 50% 20%, #0d2822 0%, #050d12 70%);
+  --bg-gradient: radial-gradient(circle at 50% 20%, #0d2822 0%, #050d12 80%);
   --panel-bg: rgba(10, 25, 23, 0.65);
-  --panel-border: rgba(16, 185, 129, 0.25);
+  --panel-border: rgba(16, 185, 129, 0.3);
+  --primary-color: #10b981;
+  --primary-glow: rgba(16, 185, 129, 0.5);
+  --accent-gold: #f59e0b;
+  --accent-gold-glow: rgba(245, 158, 11, 0.4);
+  --particle-color: rgba(16, 185, 129, 0.7);
+}
+
+/* --- CẢNH 2: LOẠN TINH HẢI (Xanh Lam Biển Tinh Không Huyền Bí) --- */
+body.mood-loantinhhai {
+  --bg-color: #050b14;
+  --bg-gradient: radial-gradient(circle at 50% 20%, #0b223d 0%, #03070d 80%);
+  --panel-bg: rgba(10, 20, 36, 0.7);
+  --panel-border: rgba(56, 189, 248, 0.35);
+  --primary-color: #38bdf8;
+  --primary-glow: rgba(56, 189, 248, 0.6);
+  --accent-gold: #c084fc;
+  --accent-gold-glow: rgba(192, 132, 252, 0.4);
+  --particle-color: rgba(56, 189, 248, 0.8);
+}
+
+/* --- CẢNH 3: ĐỘ KIẾP PHONG VÂN (Tím Lôi Điện Hào Hùng) --- */
+body.mood-dokiep {
+  --bg-color: #0f0714;
+  --bg-gradient: radial-gradient(circle at 50% 20%, #2e1047 0%, #09030d 80%);
+  --panel-bg: rgba(27, 12, 40, 0.7);
+  --panel-border: rgba(168, 85, 247, 0.4);
+  --primary-color: #a855f7;
+  --primary-glow: rgba(168, 85, 247, 0.65);
+  --accent-gold: #ec4899;
+  --accent-gold-glow: rgba(236, 72, 153, 0.5);
+  --particle-color: rgba(192, 132, 252, 0.85);
+}
+
+/* Sáng / Tối */
+:root {
   --text-main: #f0fdf4;
   --text-muted: #94a3b8;
-  --primary-color: #10b981; /* Xanh ngọc bích linh khí */
-  --primary-glow: rgba(16, 185, 129, 0.45);
-  --accent-gold: #f59e0b;   /* Màu vàng kim đan */
-  --accent-gold-glow: rgba(245, 158, 11, 0.4);
-  --hover-overlay: rgba(16, 185, 129, 0.12);
   --font-title: 'Cinzel', 'Noto Serif SC', serif;
   --font-body: 'Montserrat', sans-serif;
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Chế độ Light Mode (Bạch Nhật Độ Kiếp) */
 body.light-theme {
-  --bg-color: #f1f5f9;
-  --bg-gradient: radial-gradient(circle at 50% 20%, #e2ece9 0%, #f1f5f9 70%);
-  --panel-bg: rgba(255, 255, 255, 0.75);
-  --panel-border: rgba(16, 185, 129, 0.3);
+  --bg-color: #f1f5f9 !important;
+  --bg-gradient: radial-gradient(circle at 50% 20%, #e2ece9 0%, #f1f5f9 80%) !important;
+  --panel-bg: rgba(255, 255, 255, 0.75) !important;
+  --panel-border: rgba(16, 185, 129, 0.3) !important;
   --text-main: #0f172a;
   --text-muted: #64748b;
-  --primary-color: #059669;
-  --primary-glow: rgba(5, 150, 105, 0.3);
-  --accent-gold: #d97706;
-  --hover-overlay: rgba(5, 150, 105, 0.08);
 }
 
 * {
@@ -49,10 +74,24 @@ body {
   min-height: 100vh;
   position: relative;
   overflow-x: hidden;
-  transition: background 0.5s ease;
+  transition: background 0.8s ease, color 0.3s ease;
 }
 
-/* Nền linh khí lơ lửng */
+/* Nền chớp sét khi ở cảnh Độ Kiếp */
+#lightning-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.35);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 2;
+  transition: opacity 0.08s ease;
+}
+
+#lightning-overlay.flash {
+  opacity: 1;
+}
+
 #ambient-canvas {
   position: fixed;
   top: 0;
@@ -60,12 +99,12 @@ body {
   width: 100%;
   height: 100%;
   pointer-events: none;
-  z-index: 0;
+  z-index: 1;
 }
 
 .app-container {
   position: relative;
-  z-index: 1;
+  z-index: 3;
   max-width: 1100px;
   margin: 0 auto;
   padding: 20px;
@@ -94,6 +133,7 @@ body {
   color: var(--primary-color);
   text-shadow: 0 0 15px var(--primary-glow);
   animation: slowSpin 25s linear infinite;
+  transition: color 0.4s ease;
 }
 
 .logo-text h1 {
@@ -109,17 +149,51 @@ body {
   letter-spacing: 1px;
 }
 
-/* Khung kính mờ Glassmorphism */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+/* Hộp chọn Cảnh Giới Động Phủ */
+.mood-selector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--panel-border);
+  padding: 6px 12px;
+  border-radius: 20px;
+  color: var(--primary-color);
+  font-size: 0.85rem;
+}
+
+.mood-selector select {
+  background: transparent;
+  border: none;
+  color: var(--text-main);
+  outline: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.mood-selector select option {
+  background: #0f172a;
+  color: #fff;
+}
+
+/* Glassmorphism Panel */
 .glass-panel {
   background: var(--panel-bg);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--panel-border);
   border-radius: 20px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+  transition: background 0.5s ease, border-color 0.5s ease;
 }
 
-/* Bố cục 2 cột chính */
 .main-content {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -128,7 +202,7 @@ body {
   flex: 1;
 }
 
-/* Cột Trình phát nhạc */
+/* Player Section */
 .player-section {
   display: flex;
   flex-direction: column;
@@ -139,40 +213,55 @@ body {
 
 .disc-wrapper {
   position: relative;
-  width: 240px;
-  height: 240px;
+  width: 270px;
+  height: 270px;
   margin: 10px 0 25px 0;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
+/* Canvas Audio Visualizer bao quanh đĩa */
+#visualizer-canvas {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 320px;
+  height: 320px;
+  pointer-events: none;
+  z-index: 1;
+}
+
 .magic-circle {
   position: absolute;
-  width: 100%;
-  height: 100%;
+  width: 240px;
+  height: 240px;
   border-radius: 50%;
   border: 2px dashed var(--primary-color);
   box-shadow: 0 0 25px var(--primary-glow), inset 0 0 20px var(--primary-glow);
-  opacity: 0.5;
+  opacity: 0.45;
   transition: var(--transition);
+  z-index: 2;
 }
 
 .magic-circle.active {
-  opacity: 0.9;
+  opacity: 0.85;
   border-color: var(--accent-gold);
   box-shadow: 0 0 35px var(--accent-gold-glow);
   animation: slowSpin 20s linear infinite reverse;
 }
 
 .disc {
-  width: 200px;
-  height: 200px;
+  width: 190px;
+  height: 190px;
   border-radius: 50%;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-  border: 3px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  border: 3px solid rgba(255, 255, 255, 0.12);
+  z-index: 3;
+  transition: transform 0.15s ease-out;
 }
 
 .disc img {
@@ -186,8 +275,8 @@ body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   background: var(--bg-color);
   border: 4px solid var(--primary-color);
@@ -200,6 +289,7 @@ body {
 
 .track-meta {
   margin-bottom: 20px;
+  z-index: 4;
 }
 
 .track-title {
@@ -240,7 +330,6 @@ body {
   background: linear-gradient(90deg, var(--primary-color), var(--accent-gold));
   border-radius: 6px;
   box-shadow: 0 0 10px var(--primary-glow);
-  position: relative;
 }
 
 /* Nút Điều Khiển */
@@ -259,9 +348,6 @@ body {
   font-size: 1.1rem;
   cursor: pointer;
   transition: var(--transition);
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .btn-ctrl:hover, .btn-icon:hover {
@@ -289,7 +375,6 @@ body {
   box-shadow: 0 0 25px var(--primary-glow);
 }
 
-/* Điều khiển âm lượng */
 .volume-container {
   display: flex;
   align-items: center;
@@ -305,7 +390,7 @@ body {
   cursor: pointer;
 }
 
-/* Cột Danh Sách Nhạc */
+/* Playlist */
 .playlist-section {
   display: flex;
   flex-direction: column;
@@ -339,8 +424,8 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-  transition: var(--transition);
   box-shadow: 0 0 15px var(--primary-glow);
+  transition: var(--transition);
 }
 
 .btn-primary:hover {
@@ -378,12 +463,12 @@ body {
 }
 
 .song-card:hover {
-  background: var(--hover-overlay);
+  background: rgba(255, 255, 255, 0.07);
   border-color: var(--panel-border);
 }
 
 .song-card.active {
-  background: var(--hover-overlay);
+  background: rgba(255, 255, 255, 0.08);
   border-color: var(--primary-color);
   box-shadow: inset 3px 0 0 var(--primary-color);
 }
@@ -427,7 +512,7 @@ body {
   color: #ef4444;
 }
 
-/* Modal Popup */
+/* Modal */
 .modal {
   position: fixed;
   inset: 0;
@@ -493,7 +578,7 @@ body {
 }
 
 .tab-btn.active {
-  background: var(--hover-overlay);
+  background: rgba(255, 255, 255, 0.1);
   color: var(--primary-color);
   border-color: var(--primary-color);
 }
@@ -547,25 +632,31 @@ body {
   margin-top: 10px;
 }
 
-/* Chuyển động xoay trận pháp */
 @keyframes slowSpin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
 
-/* Responsive cho thiết bị di động */
 @media (max-width: 768px) {
   .main-content {
     grid-template-columns: 1fr;
     gap: 20px;
   }
   .disc-wrapper {
-    width: 200px;
-    height: 200px;
+    width: 230px;
+    height: 230px;
+  }
+  #visualizer-canvas {
+    width: 270px;
+    height: 270px;
   }
   .disc {
-    width: 160px;
-    height: 160px;
+    width: 155px;
+    height: 155px;
+  }
+  .magic-circle {
+    width: 200px;
+    height: 200px;
   }
   .playlist-section {
     max-height: 400px;
