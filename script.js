@@ -130,6 +130,7 @@ function loadTrack(index) {
   const track = playlist[currentIndex];
 
   audio.src = track.src;
+  audio.load(); // Kích hoạt nạp lại dữ liệu âm thanh
   trackTitle.textContent = track.title;
   trackArtist.textContent = track.artist;
   trackCover.src = track.cover || "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=600&auto=format&fit=crop";
@@ -201,12 +202,18 @@ function playTrack() {
   if (audioCtx && audioCtx.state === "suspended") {
     audioCtx.resume();
   }
-  audio.play().then(() => {
-    isPlaying = true;
-    playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
-    disc.classList.add("spinning");
-    setPetState("awake");
-  }).catch(e => console.log("Chờ tương tác từ người dùng:", e));
+
+  const playPromise = audio.play();
+  if (playPromise !== undefined) {
+    playPromise.then(() => {
+      isPlaying = true;
+      playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+      disc.classList.add("spinning");
+      setPetState("awake");
+    }).catch(e => {
+      console.warn("Trình duyệt chờ tương tác:", e);
+    });
+  }
 }
 
 function pauseTrack() {
@@ -408,7 +415,7 @@ btnBackAlbums.addEventListener("click", () => {
 });
 
 /* =========================================================
-   3. BỘ CÂN BẰNG ÂM THANH NGŨ HÀNH (5-BAND MASTER EQUALIZER)
+   3. BỘ CÂN BẰNG ÂM THANH NGŨ HÀNH (5-BAND EQUALIZER)
 ========================================================= */
 let eqFilters = [];
 
@@ -427,7 +434,7 @@ function initEqualizer(ctx, sourceNode) {
     return filter;
   });
 
-  return lastNode; // Node cuối nối vào Analyser
+  return lastNode;
 }
 
 eqToggleBtn.addEventListener("click", () => eqModal.classList.toggle("open"));
@@ -442,11 +449,13 @@ const eqSliders = {
 };
 
 Object.keys(eqSliders).forEach((freq, index) => {
-  eqSliders[freq].addEventListener("input", (e) => {
-    if (eqFilters[index]) {
-      eqFilters[index].gain.value = parseFloat(e.target.value);
-    }
-  });
+  if (eqSliders[freq]) {
+    eqSliders[freq].addEventListener("input", (e) => {
+      if (eqFilters[index]) {
+        eqFilters[index].gain.value = parseFloat(e.target.value);
+      }
+    });
+  }
 });
 
 const PRESETS = {
@@ -465,17 +474,17 @@ presetBtns.forEach(btn => {
       preset.forEach((val, i) => {
         if (eqFilters[i]) eqFilters[i].gain.value = val;
       });
-      document.getElementById("eq-60").value = preset[0];
-      document.getElementById("eq-250").value = preset[1];
-      document.getElementById("eq-1k").value = preset[2];
-      document.getElementById("eq-4k").value = preset[3];
-      document.getElementById("eq-12k").value = preset[4];
+      if (document.getElementById("eq-60")) document.getElementById("eq-60").value = preset[0];
+      if (document.getElementById("eq-250")) document.getElementById("eq-250").value = preset[1];
+      if (document.getElementById("eq-1k")) document.getElementById("eq-1k").value = preset[2];
+      if (document.getElementById("eq-4k")) document.getElementById("eq-4k").value = preset[3];
+      if (document.getElementById("eq-12k")) document.getElementById("eq-12k").value = preset[4];
     }
   });
 });
 
 /* =========================================================
-   4. ĐẠI CANH KIẾM TRẬN (28 THANH TRÚC PHONG VÂN KIẾM)
+   4. ĐẠI CANH KIẾM TRẬN (ĐÃ TỐI ƯU AN TOÀN - KHÔNG CHẶN ÂM THANH)
 ========================================================= */
 const vCanvas = document.getElementById("visualizer-canvas");
 const vCtx = vCanvas.getContext("2d");
@@ -485,26 +494,34 @@ let source = null;
 let dataArray = null;
 let isHighEnergy = false;
 let swordRotationAngle = 0;
+let hasSourceConnected = false;
 
 function setupAudioContext() {
   if (audioCtx) return;
   try {
     const AudioContext = window.AudioContext || window.webkitAudioContext;
     audioCtx = new AudioContext();
-    source = audioCtx.createMediaElementSource(audio);
-
-    // Nối qua bộ Master EQ 5-band
-    const finalNode = initEqualizer(audioCtx, source);
 
     analyser = audioCtx.createAnalyser();
     analyser.fftSize = 256;
-    finalNode.connect(analyser);
-    analyser.connect(audioCtx.destination);
-
     dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+    // KẾT NỐI AN TOÀN TRÁNH LỖI CORS LÀM CÂM TIẾNG AUDIO
+    try {
+      if (!hasSourceConnected) {
+        source = audioCtx.createMediaElementSource(audio);
+        const finalNode = initEqualizer(audioCtx, source);
+        finalNode.connect(analyser);
+        analyser.connect(audioCtx.destination);
+        hasSourceConnected = true;
+      }
+    } catch (corsErr) {
+      console.warn("Chạy ở chế độ âm thanh tương thích trực tiếp:", corsErr);
+    }
+
     drawVisualizer();
   } catch (err) {
-    console.log("AudioContext CORS:", err);
+    console.log("AudioContext Init Error:", err);
   }
 }
 
@@ -559,7 +576,13 @@ function drawVisualizer() {
   for (let i = 0; i < 8; i++) {
     bassSum += dataArray[i];
   }
-  const bassAvg = bassSum / 8;
+  let bassAvg = bassSum / 8;
+
+  // Nếu bị CORS chặn tín hiệu phân tích, tự tạo sóng mượt tự nhiên
+  if (bassAvg === 0 && isPlaying) {
+    bassAvg = 80 + Math.sin(Date.now() / 250) * 40;
+  }
+
   const scale = 1 + (bassAvg / 255) * 0.08;
   disc.style.transform = `scale(${scale})`;
 
@@ -596,7 +619,11 @@ function drawVisualizer() {
   swordRotationAngle += 0.007;
 
   for (let i = 0; i < numSwords; i++) {
-    const val = dataArray[i % dataArray.length] || 0;
+    let val = dataArray[i % dataArray.length] || 0;
+    if (val === 0 && isPlaying) {
+      val = 60 + Math.sin(i * 0.5 + Date.now() / 300) * 50;
+    }
+
     const progress = val / 255;
     const angle = (i * (Math.PI * 2)) / numSwords + swordRotationAngle;
 
@@ -652,7 +679,7 @@ function triggerPetSparks() {
 function playPetChimeSound() {
   try {
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
-    const pCtx = audioCtx || new AudioCtx();
+    const pCtx = new AudioCtx();
     const osc = pCtx.createOscillator();
     const gain = pCtx.createGain();
 
@@ -1256,6 +1283,7 @@ themeToggle.addEventListener("click", () => {
   themeToggle.innerHTML = isLight ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
 });
 
+// Khởi chạy hệ thống
 initPlayer();
 updateCultivationUI();
 setPetState("sleeping");
