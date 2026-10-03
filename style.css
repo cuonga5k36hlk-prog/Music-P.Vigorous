@@ -1,47 +1,46 @@
 /* =========================================================
-   GIAO DIỆN THEME PHÀM NHÂN TU TIÊN (HH3D VISUAL & UX ENHANCED)
+   GIAO DIỆN THEME PHÀM NHÂN TU TIÊN (ALBUM SYSTEM ENHANCED)
 ========================================================= */
 
 /* CẢNH 1: THANH VÂN PHONG */
 body, body.mood-thanhvan {
-  --bg-color: #070d12;
-  --bg-gradient: radial-gradient(circle at 50% 20%, #0d2822 0%, #050d12 80%);
-  --panel-bg: rgba(10, 25, 23, 0.72);
-  --panel-border: rgba(16, 185, 129, 0.35);
+  --bg-image: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1920&auto=format&fit=crop');
+  --bg-overlay: linear-gradient(180deg, rgba(6, 12, 16, 0.78) 0%, rgba(4, 10, 14, 0.92) 100%);
+  --panel-bg: rgba(9, 23, 21, 0.74);
+  --panel-border: rgba(16, 185, 129, 0.38);
   --primary-color: #10b981;
-  --primary-glow: rgba(16, 185, 129, 0.5);
+  --primary-glow: rgba(16, 185, 129, 0.55);
   --accent-gold: #f59e0b;
-  --accent-gold-glow: rgba(245, 158, 11, 0.4);
-  --particle-color: rgba(16, 185, 129, 0.75);
+  --accent-gold-glow: rgba(245, 158, 11, 0.45);
+  --particle-color: rgba(16, 185, 129, 0.8);
 }
 
 /* CẢNH 2: LOẠN TINH HẢI */
 body.mood-loantinhhai {
-  --bg-color: #050b14;
-  --bg-gradient: radial-gradient(circle at 50% 20%, #0b2545 0%, #03070d 80%);
-  --panel-bg: rgba(10, 24, 46, 0.75);
-  --panel-border: rgba(56, 189, 248, 0.4);
+  --bg-image: url('https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=1920&auto=format&fit=crop');
+  --bg-overlay: linear-gradient(180deg, rgba(4, 10, 20, 0.78) 0%, rgba(3, 7, 14, 0.92) 100%);
+  --panel-bg: rgba(8, 20, 38, 0.76);
+  --panel-border: rgba(56, 189, 248, 0.42);
   --primary-color: #38bdf8;
-  --primary-glow: rgba(56, 189, 248, 0.6);
+  --primary-glow: rgba(56, 189, 248, 0.65);
   --accent-gold: #38bdf8;
-  --accent-gold-glow: rgba(56, 189, 248, 0.4);
-  --particle-color: rgba(56, 189, 248, 0.85);
+  --accent-gold-glow: rgba(56, 189, 248, 0.45);
+  --particle-color: rgba(56, 189, 248, 0.9);
 }
 
 /* CẢNH 3: ĐỘ KIẾP PHONG VÂN */
 body.mood-dokiep {
-  --bg-color: #0f0714;
-  --bg-gradient: radial-gradient(circle at 50% 20%, #3b1159 0%, #09030d 80%);
-  --panel-bg: rgba(35, 12, 50, 0.75);
-  --panel-border: rgba(168, 85, 247, 0.45);
+  --bg-image: url('https://images.unsplash.com/photo-1516466723877-a4bc14b60f38?q=80&w=1920&auto=format&fit=crop');
+  --bg-overlay: linear-gradient(180deg, rgba(16, 6, 22, 0.78) 0%, rgba(8, 2, 12, 0.92) 100%);
+  --panel-bg: rgba(30, 10, 42, 0.76);
+  --panel-border: rgba(168, 85, 247, 0.48);
   --primary-color: #c084fc;
-  --primary-glow: rgba(192, 132, 252, 0.65);
+  --primary-glow: rgba(192, 132, 252, 0.7);
   --accent-gold: #f43f5e;
   --accent-gold-glow: rgba(244, 63, 94, 0.5);
-  --particle-color: rgba(216, 180, 254, 0.85);
+  --particle-color: rgba(216, 180, 254, 0.9);
 }
 
-/* Biến chung */
 :root {
   --text-main: #f0fdf4;
   --text-muted: #94a3b8;
@@ -50,11 +49,9 @@ body.mood-dokiep {
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Chế độ Sáng */
 body.light-theme {
-  --bg-color: #f1f5f9 !important;
-  --bg-gradient: radial-gradient(circle at 50% 20%, #e2ece9 0%, #f1f5f9 80%) !important;
-  --panel-bg: rgba(255, 255, 255, 0.85) !important;
+  --bg-overlay: linear-gradient(180deg, rgba(241, 245, 249, 0.88) 0%, rgba(226, 236, 233, 0.95) 100%) !important;
+  --panel-bg: rgba(255, 255, 255, 0.88) !important;
   --panel-border: rgba(16, 185, 129, 0.35) !important;
   --text-main: #0f172a !important;
   --text-muted: #64748b !important;
@@ -69,21 +66,23 @@ body.light-theme {
 
 body {
   font-family: var(--font-body);
-  background: var(--bg-color);
-  background-image: var(--bg-gradient);
-  background-attachment: fixed;
+  background-color: #050a0e;
+  background-image: var(--bg-overlay), var(--bg-image);
+  background-position: center;
+  background-repeat: no-repeat;
   background-size: cover;
+  background-attachment: fixed;
   color: var(--text-main);
   min-height: 100vh;
   position: relative;
   overflow-x: hidden;
-  transition: background 0.6s ease, color 0.3s ease;
+  transition: background-image 0.8s ease, color 0.3s ease;
 }
 
 #lightning-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.4);
   opacity: 0;
   pointer-events: none;
   z-index: 2;
@@ -115,7 +114,6 @@ body {
   min-height: 100vh;
 }
 
-/* Header */
 .app-header {
   display: flex;
   justify-content: space-between;
@@ -133,9 +131,9 @@ body {
 }
 
 .logo-icon {
-  font-size: 2rem;
+  font-size: 2.2rem;
   color: var(--primary-color);
-  text-shadow: 0 0 15px var(--primary-glow);
+  text-shadow: 0 0 18px var(--primary-glow);
   animation: slowSpin 25s linear infinite;
   transition: color 0.4s ease;
 }
@@ -150,7 +148,59 @@ body {
 .logo-text span {
   font-size: 0.75rem;
   color: var(--accent-gold);
-  letter-spacing: 1px;
+  letter-spacing: 1.5px;
+}
+
+/* Huy hiệu Tu Vi */
+.cultivation-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--accent-gold);
+  box-shadow: 0 0 14px var(--accent-gold-glow);
+  padding: 6px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.cultivation-badge i {
+  color: var(--accent-gold);
+  font-size: 1.1rem;
+}
+
+.badge-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.realm-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--accent-gold);
+  letter-spacing: 0.5px;
+}
+
+.exp-bar {
+  width: 75px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.exp-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-color), var(--accent-gold));
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+.exp-text {
+  font-size: 0.72rem;
+  color: var(--text-muted);
 }
 
 .header-actions {
@@ -160,7 +210,6 @@ body {
   flex-wrap: wrap;
 }
 
-/* Mood & Timer Pills */
 .mood-selector, .sleep-timer-wrapper {
   display: flex;
   align-items: center;
@@ -195,14 +244,13 @@ body {
   margin-left: 2px;
 }
 
-/* Glassmorphism Panel */
 .glass-panel {
   background: var(--panel-bg);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
   border: 1px solid var(--panel-border);
-  border-radius: 20px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+  border-radius: 24px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
   transition: background 0.5s ease, border-color 0.5s ease;
 }
 
@@ -225,12 +273,25 @@ body {
 
 .disc-wrapper {
   position: relative;
-  width: 270px;
-  height: 270px;
+  width: 290px;
+  height: 290px;
   margin: 10px 0 25px 0;
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.ambient-glow {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: var(--primary-glow);
+  filter: blur(55px);
+  opacity: 0.6;
+  pointer-events: none;
+  z-index: 0;
+  transition: background 0.6s ease;
 }
 
 #visualizer-canvas {
@@ -238,29 +299,44 @@ body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 320px;
-  height: 320px;
+  width: 350px;
+  height: 350px;
   pointer-events: none;
   z-index: 1;
 }
 
-.magic-circle {
+.magic-circle.outer-circle {
   position: absolute;
-  width: 240px;
-  height: 240px;
+  width: 260px;
+  height: 260px;
   border-radius: 50%;
   border: 2px dashed var(--primary-color);
-  box-shadow: 0 0 25px var(--primary-glow), inset 0 0 20px var(--primary-glow);
+  box-shadow: 0 0 25px var(--primary-glow), inset 0 0 15px var(--primary-glow);
   opacity: 0.45;
-  transition: var(--transition);
   z-index: 2;
+  transition: var(--transition);
 }
 
-.magic-circle.active {
+.magic-circle.inner-circle {
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  border: 1px dotted var(--accent-gold);
+  box-shadow: 0 0 15px var(--accent-gold-glow);
+  opacity: 0.35;
+  z-index: 2;
+  transition: var(--transition);
+}
+
+.magic-circle.active.outer-circle {
   opacity: 0.85;
-  border-color: var(--accent-gold);
-  box-shadow: 0 0 35px var(--accent-gold-glow);
-  animation: slowSpin 20s linear infinite reverse;
+  animation: slowSpin 24s linear infinite reverse;
+}
+
+.magic-circle.active.inner-circle {
+  opacity: 0.8;
+  animation: slowSpin 14s linear infinite normal;
 }
 
 .disc {
@@ -269,8 +345,8 @@ body {
   border-radius: 50%;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
-  border: 3px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.7);
+  border: 3px solid rgba(255, 255, 255, 0.15);
   z-index: 3;
   transition: transform 0.15s ease-out;
 }
@@ -291,7 +367,7 @@ body {
   border-radius: 50%;
   background: var(--bg-color);
   border: 4px solid var(--primary-color);
-  box-shadow: 0 0 10px var(--primary-glow);
+  box-shadow: 0 0 12px var(--primary-glow);
 }
 
 .disc.spinning {
@@ -315,7 +391,6 @@ body {
   font-size: 0.9rem;
 }
 
-/* Thanh Tiến Trình */
 .progress-container {
   width: 100%;
   display: flex;
@@ -343,7 +418,6 @@ body {
   box-shadow: 0 0 10px var(--primary-glow);
 }
 
-/* Nút Điều Khiển */
 .player-controls {
   display: flex;
   align-items: center;
@@ -356,7 +430,7 @@ body {
   background: transparent;
   border: none;
   color: var(--text-muted);
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   cursor: pointer;
   transition: var(--transition);
 }
@@ -372,18 +446,18 @@ body {
 }
 
 .btn-play {
-  width: 55px;
-  height: 55px;
+  width: 58px;
+  height: 58px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--primary-color), #047857);
   color: #fff !important;
-  font-size: 1.3rem;
-  box-shadow: 0 0 20px var(--primary-glow);
+  font-size: 1.35rem;
+  box-shadow: 0 0 25px var(--primary-glow);
 }
 
 .btn-play:hover {
   transform: scale(1.08);
-  box-shadow: 0 0 25px var(--primary-glow);
+  box-shadow: 0 0 30px var(--primary-glow);
 }
 
 .volume-container {
@@ -410,7 +484,9 @@ body {
   cursor: pointer;
 }
 
-/* Playlist Section */
+/* =========================================================
+   HỆ THỐNG ALBUM CA SĨ & SWITCHER
+========================================================= */
 .playlist-section {
   display: flex;
   flex-direction: column;
@@ -425,17 +501,47 @@ body {
   margin-bottom: 15px;
   padding-bottom: 12px;
   border-bottom: 1px solid var(--panel-border);
+  gap: 10px;
 }
 
-.playlist-header h3 {
-  font-family: var(--font-title);
-  font-size: 1.15rem;
+/* Switcher giữa Danh sách và Album */
+.view-switch-tabs {
+  display: flex;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--panel-border);
+  border-radius: 12px;
+  padding: 3px;
+  gap: 4px;
 }
 
-/* Thanh Tìm Kiếm Linh Thức Dò Tìm */
+.view-tab-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  padding: 6px 14px;
+  border-radius: 9px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: var(--transition);
+}
+
+.view-tab-btn:hover {
+  color: var(--text-main);
+}
+
+.view-tab-btn.active {
+  background: var(--primary-color);
+  color: #fff;
+  box-shadow: 0 0 10px var(--primary-glow);
+}
+
 .search-container {
   position: relative;
-  margin-bottom: 15px;
+  margin-bottom: 12px;
 }
 
 .search-icon {
@@ -462,6 +568,125 @@ body {
 .search-container input:focus {
   border-color: var(--primary-color);
   box-shadow: 0 0 10px var(--primary-glow);
+}
+
+.view-content {
+  display: none;
+  flex: 1;
+  overflow: hidden;
+}
+
+.view-content.active {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Lưới hiển thị các Album Ca sĩ */
+.album-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 15px;
+  overflow-y: auto;
+  padding: 5px 5px 15px 5px;
+  flex: 1;
+}
+
+.album-grid::-webkit-scrollbar {
+  width: 4px;
+}
+.album-grid::-webkit-scrollbar-thumb {
+  background: var(--panel-border);
+  border-radius: 4px;
+}
+
+.album-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--panel-border);
+  border-radius: 16px;
+  padding: 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.album-card:hover {
+  background: rgba(255, 255, 255, 0.09);
+  border-color: var(--primary-color);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+.album-cover-wrap {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-bottom: 10px;
+  border: 2px solid var(--panel-border);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  transition: var(--transition);
+}
+
+.album-card:hover .album-cover-wrap {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 16px var(--primary-glow);
+}
+
+.album-cover-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.album-artist-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  margin-bottom: 4px;
+}
+
+.album-track-count {
+  font-size: 0.75rem;
+  color: var(--accent-gold);
+}
+
+/* Chi tiết Album đang chọn */
+.album-detail-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed var(--panel-border);
+}
+
+.btn-back-albums {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--panel-border);
+  color: var(--text-main);
+  padding: 5px 12px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-back-albums:hover {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.album-detail-header h4 {
+  font-size: 1rem;
+  color: var(--accent-gold);
+  font-weight: 600;
 }
 
 .btn-primary {
@@ -703,22 +928,29 @@ body {
     gap: 20px;
   }
   .disc-wrapper {
-    width: 230px;
-    height: 230px;
+    width: 250px;
+    height: 250px;
   }
   #visualizer-canvas {
-    width: 270px;
-    height: 270px;
+    width: 290px;
+    height: 290px;
+  }
+  .magic-circle.outer-circle {
+    width: 220px;
+    height: 220px;
+  }
+  .magic-circle.inner-circle {
+    width: 185px;
+    height: 185px;
   }
   .disc {
     width: 155px;
     height: 155px;
   }
-  .magic-circle {
-    width: 200px;
-    height: 200px;
-  }
   .playlist-section {
-    max-height: 440px;
+    max-height: 480px;
+  }
+  .album-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
