@@ -124,7 +124,10 @@ function updatePlaylistHighlight() {
 
 function playTrack() {
   if (playlist.length === 0) return;
-  setupAudioContext(); // Khởi tạo sóng nhạc khi bấm nghe
+  setupAudioContext();
+  if (audioCtx && audioCtx.state === "suspended") {
+    audioCtx.resume();
+  }
   audio.play().then(() => {
     isPlaying = true;
     playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
@@ -283,7 +286,7 @@ function drawVisualizer() {
     const x2 = centerX + Math.cos(angle) * (baseRadius + barHeight);
     const y2 = centerY + Math.sin(angle) * (baseRadius + barHeight);
 
-    const mood = moodDropdown.value;
+    const mood = moodDropdown ? moodDropdown.value : "mood-thanhvan";
     let strokeColor = "rgba(16, 185, 129, 0.85)";
     if (mood === "mood-loantinhhai") strokeColor = "rgba(56, 189, 248, 0.85)";
     if (mood === "mood-dokiep") strokeColor = "rgba(168, 85, 247, 0.9)";
@@ -313,6 +316,10 @@ window.addEventListener("resize", resizeCanvas);
 resizeCanvas();
 
 window.addEventListener("click", (e) => {
+  // Tránh tạo kiếm khí khi bấm vào nút hoặc input
+  if (e.target.closest("button") || e.target.closest("input") || e.target.closest("select") || e.target.closest(".modal-box")) {
+    return;
+  }
   createSwordSlash(e.clientX, e.clientY);
 });
 
@@ -343,12 +350,11 @@ function drawSwordSlashes() {
     const dx = Math.cos(s.angle) * (currentLen / 2);
     const dy = Math.sin(s.angle) * (currentLen / 2);
 
-    const mood = moodDropdown.value;
+    const mood = moodDropdown ? moodDropdown.value : "mood-thanhvan";
     let slashColor = "16, 185, 129";
     if (mood === "mood-loantinhhai") slashColor = "56, 189, 248";
     if (mood === "mood-dokiep") slashColor = "236, 72, 153";
 
-    // Vạch kiếm khí sắc nhọn
     ctx.save();
     ctx.shadowBlur = 18;
     ctx.shadowColor = `rgba(${slashColor}, ${s.life})`;
@@ -359,7 +365,6 @@ function drawSwordSlashes() {
     ctx.lineTo(s.x + dx, s.y + dy);
     ctx.stroke();
 
-    // Vòng bát quái linh lực phụ trợ
     ctx.strokeStyle = `rgba(${slashColor}, ${s.life * 0.6})`;
     ctx.lineWidth = 1.5;
     ctx.beginPath();
@@ -370,16 +375,26 @@ function drawSwordSlashes() {
 }
 
 /* =========================================================
-   4. CẢNH GIỚI ĐỘNG PHỦ & CHỚP SÉT ĐỘ KIẾP
+   4. CẢNH GIỚI ĐỘNG PHỦ & CHUYỂN NỀN CẢNH (ĐÃ SỬA CHUẨN)
 ========================================================= */
-moodDropdown.addEventListener("change", (e) => {
-  document.body.classList.remove("mood-thanhvan", "mood-loantinhhai", "mood-dokiep");
-  document.body.classList.add(e.target.value);
-});
+if (moodDropdown) {
+  moodDropdown.addEventListener("change", (e) => {
+    const selectedMood = e.target.value;
+    
+    // Gỡ toàn bộ class cảnh cũ trước khi thêm cảnh mới
+    document.body.classList.remove("mood-thanhvan", "mood-loantinhhai", "mood-dokiep");
+    document.body.classList.add(selectedMood);
+
+    // Cập nhật lại màu sắc tức thời nếu đang phát visualizer
+    if (vCtx) {
+      vCtx.clearRect(0, 0, vCanvas.width, vCanvas.height);
+    }
+  });
+}
 
 // Chớp sét tự nhiên ngẫu nhiên khi ở cảnh Độ Kiếp Phong Vân
 setInterval(() => {
-  if (moodDropdown.value === "mood-dokiep" && Math.random() > 0.65) {
+  if (moodDropdown && moodDropdown.value === "mood-dokiep" && lightningOverlay && Math.random() > 0.65) {
     lightningOverlay.classList.add("flash");
     setTimeout(() => {
       lightningOverlay.classList.remove("flash");
@@ -495,7 +510,7 @@ class QiParticle {
   }
   draw() {
     const style = getComputedStyle(document.body);
-    ctx.fillStyle = style.getPropertyValue("--particle-color") || "rgba(16, 185, 129, 0.7)";
+    ctx.fillStyle = style.getPropertyValue("--particle-color").trim() || "rgba(16, 185, 129, 0.7)";
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
     ctx.fill();
@@ -510,9 +525,10 @@ function animateLoop() {
     p.update();
     p.draw();
   });
-  drawSwordSlashes(); // Vẽ kiếm khí click
+  drawSwordSlashes();
   requestAnimationFrame(animateLoop);
 }
 animateLoop();
 
+// Khởi tạo trình phát
 initPlayer();
