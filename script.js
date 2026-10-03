@@ -1,5 +1,5 @@
 /* =========================================================
-   PHÀM NHÂN THÍNH ÂM CÁC - STUDIO EQUALIZER & COLOR FUSION
+   PHÀM NHÂN THÍNH ÂM CÁC - KHÔI PHỤC HOẠT ĐỘNG CHUẨN
 ========================================================= */
 
 const DEFAULT_PLAYLIST = [
@@ -19,13 +19,6 @@ const DEFAULT_PLAYLIST = [
   },
   {
     id: 3,
-    title: "Trivia 轉 : Seesaw",
-    artist: "BTS (SUGA)",
-    src: "https://files.catbox.moe/kv7avv.mp3",
-    cover: "https://img.youtube.com/vi/BEIwwuQY_Cg/hqdefault.jpg"
-  },
-  {
-    id: 4,
     title: "Tinh Hải Phiêu Lưu Bi Ký",
     artist: "Loạn Tinh Hải Cổ Tu",
     src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
@@ -130,7 +123,7 @@ function loadTrack(index) {
   const track = playlist[currentIndex];
 
   audio.src = track.src;
-  audio.load(); // Kích hoạt nạp lại dữ liệu âm thanh
+  audio.load();
   trackTitle.textContent = track.title;
   trackArtist.textContent = track.artist;
   trackCover.src = track.cover || "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=600&auto=format&fit=crop";
@@ -203,6 +196,8 @@ function playTrack() {
     audioCtx.resume();
   }
 
+  audio.volume = parseFloat(volumeSlider.value) || 0.7;
+
   const playPromise = audio.play();
   if (playPromise !== undefined) {
     playPromise.then(() => {
@@ -211,7 +206,7 @@ function playTrack() {
       disc.classList.add("spinning");
       setPetState("awake");
     }).catch(e => {
-      console.warn("Trình duyệt chờ tương tác:", e);
+      console.warn("Chờ tương tác từ người dùng:", e);
     });
   }
 }
@@ -484,7 +479,7 @@ presetBtns.forEach(btn => {
 });
 
 /* =========================================================
-   4. ĐẠI CANH KIẾM TRẬN (ĐÃ TỐI ƯU AN TOÀN - KHÔNG CHẶN ÂM THANH)
+   4. ĐẠI CANH KIẾM TRẬN (28 THANH PHI KIẾM)
 ========================================================= */
 const vCanvas = document.getElementById("visualizer-canvas");
 const vCtx = vCanvas.getContext("2d");
@@ -506,7 +501,6 @@ function setupAudioContext() {
     analyser.fftSize = 256;
     dataArray = new Uint8Array(analyser.frequencyBinCount);
 
-    // KẾT NỐI AN TOÀN TRÁNH LỖI CORS LÀM CÂM TIẾNG AUDIO
     try {
       if (!hasSourceConnected) {
         source = audioCtx.createMediaElementSource(audio);
@@ -516,7 +510,7 @@ function setupAudioContext() {
         hasSourceConnected = true;
       }
     } catch (corsErr) {
-      console.warn("Chạy ở chế độ âm thanh tương thích trực tiếp:", corsErr);
+      console.warn("Chế độ phát tự nhiên bảo toàn âm thanh:", corsErr);
     }
 
     drawVisualizer();
@@ -578,9 +572,8 @@ function drawVisualizer() {
   }
   let bassAvg = bassSum / 8;
 
-  // Nếu bị CORS chặn tín hiệu phân tích, tự tạo sóng mượt tự nhiên
   if (bassAvg === 0 && isPlaying) {
-    bassAvg = 80 + Math.sin(Date.now() / 250) * 40;
+    bassAvg = 85 + Math.sin(Date.now() / 250) * 45;
   }
 
   const scale = 1 + (bassAvg / 255) * 0.08;
@@ -621,7 +614,7 @@ function drawVisualizer() {
   for (let i = 0; i < numSwords; i++) {
     let val = dataArray[i % dataArray.length] || 0;
     if (val === 0 && isPlaying) {
-      val = 60 + Math.sin(i * 0.5 + Date.now() / 300) * 50;
+      val = 65 + Math.sin(i * 0.5 + Date.now() / 300) * 50;
     }
 
     const progress = val / 255;
