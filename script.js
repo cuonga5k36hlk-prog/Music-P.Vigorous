@@ -1,5 +1,5 @@
 /* =========================================================
-   PHÀM NHÂN THÍNH ÂM CÁC - AUDIO VISUALIZER & HỆ THỐNG ALBUM
+   PHÀM NHÂN THÍNH ÂM CÁC - CINEMATIC & BASS IMPACT SYSTEM
 ========================================================= */
 
 const DEFAULT_PLAYLIST = [
@@ -76,8 +76,11 @@ const moodDropdown = document.getElementById("mood-dropdown");
 const sleepTimerSelect = document.getElementById("sleep-timer-select");
 const timerDisplay = document.getElementById("timer-display");
 const lightningOverlay = document.getElementById("lightning-overlay");
+const cinematicToggle = document.getElementById("cinematic-toggle");
+const shockwaveRing = document.getElementById("shockwave-ring");
+const playerCard = document.getElementById("player-card");
 
-// View Switcher Elements (Linh Phổ vs Album)
+// View Switcher Elements
 const viewSongsBtn = document.getElementById("view-songs-btn");
 const viewAlbumsBtn = document.getElementById("view-albums-btn");
 const songsView = document.getElementById("songs-view");
@@ -322,7 +325,6 @@ function formatTime(seconds) {
 /* =========================================================
    2. HỆ THỐNG QUẢN LÝ ALBUM TỪNG CA SĨ
 ========================================================= */
-// Switcher chuyển đổi tab
 viewSongsBtn.addEventListener("click", () => {
   viewSongsBtn.classList.add("active");
   viewAlbumsBtn.classList.remove("active");
@@ -338,7 +340,6 @@ viewAlbumsBtn.addEventListener("click", () => {
   renderAlbumGrid();
 });
 
-// Tự động gom nhóm các Album theo Ca sĩ
 function getAlbumsData() {
   const albumsMap = {};
   playlist.forEach(track => {
@@ -380,7 +381,6 @@ function renderAlbumGrid() {
   });
 }
 
-// Mở danh sách chi tiết các bài hát trong 1 Album
 function openAlbumDetail(album) {
   albumGrid.style.display = "none";
   albumDetailHeader.style.display = "flex";
@@ -404,110 +404,32 @@ btnBackAlbums.addEventListener("click", () => {
 });
 
 /* =========================================================
-   3. HẸN GIỜ TẮT NHẠC
+   3. KỸ XẢO ĐIỆN ẢNH: SHOCKWAVE, PARALLAX 3D & ZEN MODE
 ========================================================= */
-let sleepTimerInterval = null;
-let remainingSeconds = 0;
-
-function resetSleepTimer() {
-  if (sleepTimerInterval) clearInterval(sleepTimerInterval);
-  sleepTimerInterval = null;
-  remainingSeconds = 0;
-  timerDisplay.textContent = "";
-  sleepTimerSelect.value = "0";
-}
-
-sleepTimerSelect.addEventListener("change", (e) => {
-  const val = e.target.value;
-  if (sleepTimerInterval) clearInterval(sleepTimerInterval);
-
-  if (val === "0") {
-    timerDisplay.textContent = "";
-    return;
-  }
-
-  if (val === "end_of_track") {
-    timerDisplay.textContent = "⏳ Kết khúc";
-    return;
-  }
-
-  const minutes = parseInt(val);
-  remainingSeconds = minutes * 60;
-  updateTimerDisplay();
-
-  sleepTimerInterval = setInterval(() => {
-    remainingSeconds--;
-    if (remainingSeconds <= 0) {
-      pauseTrack();
-      resetSleepTimer();
-    } else {
-      updateTimerDisplay();
-    }
-  }, 1000);
+// Chế độ Điện Ảnh (Cinematic Zen Mode)
+cinematicToggle.addEventListener("click", () => {
+  document.body.classList.toggle("cinematic-mode");
 });
 
-function updateTimerDisplay() {
-  const m = Math.floor(remainingSeconds / 60);
-  const s = remainingSeconds % 60;
-  timerDisplay.textContent = `⏳ ${m}:${s < 10 ? "0" : ""}${s}`;
-}
-
-/* =========================================================
-   4. PHÍM TẮT ĐIỀU KHIỂN NHANH
-========================================================= */
-window.addEventListener("keydown", (e) => {
-  const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : "";
-  if (activeTag === "input" || activeTag === "textarea" || activeTag === "select") {
-    return;
+// Hiệu ứng Parallax 3D góc nghiêng theo con trỏ chuột
+window.addEventListener("mousemove", (e) => {
+  if (window.innerWidth < 768) return;
+  const xAxis = (window.innerWidth / 2 - e.pageX) / 45;
+  const yAxis = (window.innerHeight / 2 - e.pageY) / 45;
+  if (playerCard) {
+    playerCard.style.transform = `rotateY(${xAxis}deg) rotateX(${-yAxis}deg)`;
   }
+});
 
-  switch (e.code) {
-    case "Space":
-      e.preventDefault();
-      isPlaying ? pauseTrack() : playTrack();
-      break;
-    case "ArrowRight":
-      e.preventDefault();
-      audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + 5);
-      break;
-    case "ArrowLeft":
-      e.preventDefault();
-      audio.currentTime = Math.max(0, audio.currentTime - 5);
-      break;
-    case "ArrowUp":
-      e.preventDefault();
-      setVolume(audio.volume + 0.05);
-      break;
-    case "ArrowDown":
-      e.preventDefault();
-      setVolume(audio.volume - 0.05);
-      break;
-    case "KeyM":
-      e.preventDefault();
-      if (audio.volume > 0) {
-        lastVolume = audio.volume;
-        setVolume(0);
-      } else {
-        setVolume(lastVolume || 0.7);
-      }
-      break;
+// Khi rời chuột khỏi màn hình, trả khung 3D về vị trí thăng bằng
+window.addEventListener("mouseleave", () => {
+  if (playerCard) {
+    playerCard.style.transform = `rotateY(0deg) rotateX(0deg)`;
   }
 });
 
 /* =========================================================
-   5. TÌM KIẾM BÀI HÁT
-========================================================= */
-searchInput.addEventListener("input", (e) => {
-  renderPlaylist(e.target.value);
-  const detailList = document.getElementById("album-detail-list");
-  if (detailList && detailList.style.display !== "none") {
-    const currentArtist = albumDetailTitle.textContent.replace("Album: ", "").split(" (")[0];
-    renderPlaylist(e.target.value, detailList, currentArtist);
-  }
-});
-
-/* =========================================================
-   6. AUDIO VISUALIZER
+   4. AUDIO VISUALIZER & SÓNG XUNG KÍCH THEO BASS
 ========================================================= */
 const vCanvas = document.getElementById("visualizer-canvas");
 const vCtx = vCanvas.getContext("2d");
@@ -515,6 +437,7 @@ let audioCtx = null;
 let analyser = null;
 let source = null;
 let dataArray = null;
+let lastShockwaveTime = 0;
 
 function setupAudioContext() {
   if (audioCtx) return;
@@ -533,6 +456,19 @@ function setupAudioContext() {
   }
 }
 
+function triggerCinematicShockwave() {
+  const now = Date.now();
+  if (now - lastShockwaveTime > 650) { // Giới hạn kích hoạt tối đa mỗi 650ms để không bị giật mắt
+    lastShockwaveTime = now;
+    document.body.classList.add("bass-impact");
+    shockwaveRing.classList.add("pulse");
+    setTimeout(() => {
+      document.body.classList.remove("bass-impact");
+      shockwaveRing.classList.remove("pulse");
+    }, 450);
+  }
+}
+
 function drawVisualizer() {
   requestAnimationFrame(drawVisualizer);
   vCtx.clearRect(0, 0, vCanvas.width, vCanvas.height);
@@ -541,6 +477,7 @@ function drawVisualizer() {
 
   analyser.getByteFrequencyData(dataArray);
 
+  // Tính trung bình cường độ Bass
   let bassSum = 0;
   for (let i = 0; i < 8; i++) {
     bassSum += dataArray[i];
@@ -550,8 +487,13 @@ function drawVisualizer() {
   disc.style.transform = `scale(${scale})`;
 
   if (ambientGlow) {
-    ambientGlow.style.transform = `scale(${1 + (bassAvg / 255) * 0.25})`;
-    ambientGlow.style.opacity = `${0.4 + (bassAvg / 255) * 0.5}`;
+    ambientGlow.style.transform = `scale(${1 + (bassAvg / 255) * 0.28})`;
+    ambientGlow.style.opacity = `${0.4 + (bassAvg / 255) * 0.55}`;
+  }
+
+  // Nếu Bass cực mạnh (Kick bass > 215), kích hoạt Sóng Xung Kích Điện Ảnh
+  if (bassAvg > 215) {
+    triggerCinematicShockwave();
   }
 
   const centerX = vCanvas.width / 2;
@@ -586,7 +528,7 @@ function drawVisualizer() {
 }
 
 /* =========================================================
-   7. HIỆU ỨNG KIẾM KHÍ CLICK CHUỘT
+   5. HIỆU ỨNG KIẾM KHÍ CLICK CHUỘT
 ========================================================= */
 const canvas = document.getElementById("ambient-canvas");
 const ctx = canvas.getContext("2d");
@@ -658,7 +600,114 @@ function drawSwordSlashes() {
 }
 
 /* =========================================================
-   8. CẢNH GIỚI ĐỘNG PHỦ
+   6. HẸN GIỜ TẮT NHẠC
+========================================================= */
+let sleepTimerInterval = null;
+let remainingSeconds = 0;
+
+function resetSleepTimer() {
+  if (sleepTimerInterval) clearInterval(sleepTimerInterval);
+  sleepTimerInterval = null;
+  remainingSeconds = 0;
+  timerDisplay.textContent = "";
+  sleepTimerSelect.value = "0";
+}
+
+sleepTimerSelect.addEventListener("change", (e) => {
+  const val = e.target.value;
+  if (sleepTimerInterval) clearInterval(sleepTimerInterval);
+
+  if (val === "0") {
+    timerDisplay.textContent = "";
+    return;
+  }
+
+  if (val === "end_of_track") {
+    timerDisplay.textContent = "⏳ Kết khúc";
+    return;
+  }
+
+  const minutes = parseInt(val);
+  remainingSeconds = minutes * 60;
+  updateTimerDisplay();
+
+  sleepTimerInterval = setInterval(() => {
+    remainingSeconds--;
+    if (remainingSeconds <= 0) {
+      pauseTrack();
+      resetSleepTimer();
+    } else {
+      updateTimerDisplay();
+    }
+  }, 1000);
+});
+
+function updateTimerDisplay() {
+  const m = Math.floor(remainingSeconds / 60);
+  const s = remainingSeconds % 60;
+  timerDisplay.textContent = `⏳ ${m}:${s < 10 ? "0" : ""}${s}`;
+}
+
+/* =========================================================
+   7. PHÍM TẮT ĐIỀU KHIỂN & PHÍM F ĐIỆN ẢNH
+========================================================= */
+window.addEventListener("keydown", (e) => {
+  const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : "";
+  if (activeTag === "input" || activeTag === "textarea" || activeTag === "select") {
+    return;
+  }
+
+  switch (e.code) {
+    case "Space":
+      e.preventDefault();
+      isPlaying ? pauseTrack() : playTrack();
+      break;
+    case "KeyF":
+      e.preventDefault();
+      document.body.classList.toggle("cinematic-mode");
+      break;
+    case "ArrowRight":
+      e.preventDefault();
+      audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + 5);
+      break;
+    case "ArrowLeft":
+      e.preventDefault();
+      audio.currentTime = Math.max(0, audio.currentTime - 5);
+      break;
+    case "ArrowUp":
+      e.preventDefault();
+      setVolume(audio.volume + 0.05);
+      break;
+    case "ArrowDown":
+      e.preventDefault();
+      setVolume(audio.volume - 0.05);
+      break;
+    case "KeyM":
+      e.preventDefault();
+      if (audio.volume > 0) {
+        lastVolume = audio.volume;
+        setVolume(0);
+      } else {
+        setVolume(lastVolume || 0.7);
+      }
+      break;
+  }
+});
+
+/* =========================================================
+   8. TÌM KIẾM BÀI HÁT
+========================================================= */
+searchInput.addEventListener("input", (e) => {
+  renderPlaylist(e.target.value);
+  const detailList = document.getElementById("album-detail-list");
+  if (detailList && detailList.style.display !== "none") {
+    const currentArtist = albumDetailTitle.textContent.replace("Album: ", "").split(" (")[0];
+    renderPlaylist(e.target.value, detailList, currentArtist);
+  }
+});
+
+/* =========================================================
+   9. CẢNH GIỚI ĐỘNG PHỦ
 ========================================================= */
 if (moodDropdown) {
   moodDropdown.addEventListener("change", (e) => {
@@ -682,7 +731,7 @@ setInterval(() => {
 }, 4500);
 
 /* =========================================================
-   9. HỆ THỐNG TU VI & CẢNH GIỚI THÍNH GIẢ
+   10. HỆ THỐNG TU VI & CẢNH GIỚI THÍNH GIẢ
 ========================================================= */
 let totalListenSeconds = parseInt(localStorage.getItem("pntt_listen_seconds")) || 0;
 
@@ -732,7 +781,7 @@ setInterval(() => {
 }, 1000);
 
 /* =========================================================
-   10. NẠP NHẠC TÙY Ý & MODAL
+   11. NẠP NHẠC TÙY Ý & MODAL
 ========================================================= */
 openModalBtn.addEventListener("click", () => addModal.classList.add("open"));
 closeModalBtn.addEventListener("click", () => addModal.classList.remove("open"));
@@ -823,7 +872,7 @@ themeToggle.addEventListener("click", () => {
 });
 
 /* =========================================================
-   11. HẠT LINH KHÍ NỀN
+   12. HẠT LINH KHÍ NỀN
 ========================================================= */
 class QiParticle {
   constructor() {
