@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Phàm Nhân Thính Âm Các - Tu Tiên Lạc Phổ</title>
-  <!-- Google Fonts: Font chữ thư pháp cổ phong & hiện đại -->
+  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Montserrat:wght@400;500;600&family=Noto+Serif+SC:wght@600;700&display=swap" rel="stylesheet">
@@ -29,8 +29,9 @@
         </div>
       </div>
 
-      <!-- Khu vực đổi Cảnh Giới Động Phủ & Chế độ Sáng/Tối -->
+      <!-- Khu vực đổi Cảnh Giới Động Phủ, Hẹn Giờ Tắt & Sáng/Tối -->
       <div class="header-actions">
+        <!-- Chuyển cảnh giới -->
         <div class="mood-selector" title="Chuyển Hóa Cảnh Động Phủ">
           <i class="fa-solid fa-mountain-sun"></i>
           <select id="mood-dropdown">
@@ -40,6 +41,21 @@
           </select>
         </div>
 
+        <!-- Hẹn giờ tắt nhạc (Tịnh Tâm Chi Hạn) -->
+        <div class="sleep-timer-wrapper" title="Tịnh Tâm Chi Hạn (Hẹn Giờ)">
+          <i class="fa-solid fa-hourglass-half"></i>
+          <select id="sleep-timer-select">
+            <option value="0">Tắt hẹn giờ</option>
+            <option value="15">15 Phút</option>
+            <option value="30">30 Phút</option>
+            <option value="45">45 Phút</option>
+            <option value="60">60 Phút</option>
+            <option value="end_of_track">Hết khúc này</option>
+          </select>
+          <span id="timer-display" class="timer-display"></span>
+        </div>
+
+        <!-- Sáng / Tối -->
         <button id="theme-toggle" class="btn-icon" title="Chuyển đổi Quang Ảnh">
           <i class="fa-solid fa-moon"></i>
         </button>
@@ -51,7 +67,6 @@
       <!-- Cột Trái: Trình phát trung tâm tích hợp Audio Visualizer -->
       <section class="player-section glass-panel">
         <div class="disc-wrapper">
-          <!-- Canvas sóng nhạc linh khí ôm sát đĩa -->
           <canvas id="visualizer-canvas" width="340" height="340"></canvas>
           <div class="magic-circle" id="magic-circle"></div>
           <div class="disc" id="disc">
@@ -79,13 +94,13 @@
           <button id="shuffle-btn" class="btn-ctrl" title="Hư Không Luân Hồi (Ngẫu nhiên)">
             <i class="fa-solid fa-shuffle"></i>
           </button>
-          <button id="prev-btn" class="btn-ctrl" title="Nghịch Chuyển (Trước)">
+          <button id="prev-btn" class="btn-ctrl" title="Nghịch Chuyển (Trước) [←]">
             <i class="fa-solid fa-backward-step"></i>
           </button>
-          <button id="play-btn" class="btn-ctrl btn-play" title="Tác Động Linh Khí (Phát/Dừng)">
+          <button id="play-btn" class="btn-ctrl btn-play" title="Tác Động Linh Khí (Phát/Dừng) [Space]">
             <i class="fa-solid fa-play"></i>
           </button>
-          <button id="next-btn" class="btn-ctrl" title="Thuận Hành (Sau)">
+          <button id="next-btn" class="btn-ctrl" title="Thuận Hành (Sau) [→]">
             <i class="fa-solid fa-forward-step"></i>
           </button>
           <button id="repeat-btn" class="btn-ctrl" title="Trường Sinh Chu Kỳ (Lặp lại)">
@@ -95,12 +110,12 @@
 
         <!-- Thanh âm lượng -->
         <div class="volume-container">
-          <i class="fa-solid fa-volume-high" id="vol-icon"></i>
+          <i class="fa-solid fa-volume-high" id="vol-icon" title="Tắt/Bật tiếng [M]"></i>
           <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.7">
         </div>
       </section>
 
-      <!-- Cột Phải: Danh sách & Quản lý bài hát -->
+      <!-- Cột Phải: Danh sách, Tìm kiếm & Thêm bài hát -->
       <section class="playlist-section glass-panel">
         <div class="playlist-header">
           <h3><i class="fa-solid fa-scroll"></i> Nhập Khúc Bảng</h3>
@@ -109,13 +124,18 @@
           </button>
         </div>
 
+        <!-- Linh Thức Dò Tìm: Ô tìm kiếm tức thì -->
+        <div class="search-container">
+          <i class="fa-solid fa-magnifying-glass search-icon"></i>
+          <input type="text" id="search-input" placeholder="Linh thức dò tìm (Tên khúc, tác giả)...">
+        </div>
+
         <!-- Danh sách hiển thị bài hát -->
         <div class="playlist-items" id="playlist-items"></div>
       </section>
     </main>
   </div>
 
-  <!-- Audio Engine có thuộc tính crossorigin để chạy Web Audio API không lỗi -->
   <audio id="audio-engine" crossorigin="anonymous" preload="metadata"></audio>
 
   <!-- Modal nạp thêm nhạc -->
