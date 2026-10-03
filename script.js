@@ -18,11 +18,11 @@ const DEFAULT_PLAYLIST = [
     cover: "https://img.youtube.com/vi/Tv0w9-bpPpk/maxresdefault.jpg"
   },
   {
-    id: 3,
+    id: 5,
     title: "Trivia 轉 : Seesaw",
     artist: "BTS (SUGA)",
     src: "https://files.catbox.moe/kv7avv.mp3",
-    cover: "https://img.youtube.com/vi/BEIwwuQY_Cg/maxresdefault.jpg"
+    cover: "https://img.youtube.com/vi/BEIwwuQY_Cg/hqdefault.jpg"
   },
   {
     id: 4,
