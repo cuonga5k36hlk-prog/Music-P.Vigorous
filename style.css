@@ -1,8 +1,8 @@
 /* =========================================================
-   GIAO DIỆN THEME PHÀM NHÂN TU TIÊN (HH3D VISUAL FULL)
+   GIAO DIỆN THEME PHÀM NHÂN TU TIÊN (HH3D VISUAL & UX ENHANCED)
 ========================================================= */
 
-/* --- CẢNH 1: THANH VÂN PHONG (Mặc định: Xanh Ngọc & Sương Khí) --- */
+/* CẢNH 1: THANH VÂN PHONG */
 body, body.mood-thanhvan {
   --bg-color: #070d12;
   --bg-gradient: radial-gradient(circle at 50% 20%, #0d2822 0%, #050d12 80%);
@@ -15,7 +15,7 @@ body, body.mood-thanhvan {
   --particle-color: rgba(16, 185, 129, 0.75);
 }
 
-/* --- CẢNH 2: LOẠN TINH HẢI (Xanh Lam Biển Tinh Không Huyền Bí) --- */
+/* CẢNH 2: LOẠN TINH HẢI */
 body.mood-loantinhhai {
   --bg-color: #050b14;
   --bg-gradient: radial-gradient(circle at 50% 20%, #0b2545 0%, #03070d 80%);
@@ -28,7 +28,7 @@ body.mood-loantinhhai {
   --particle-color: rgba(56, 189, 248, 0.85);
 }
 
-/* --- CẢNH 3: ĐỘ KIẾP PHONG VÂN (Tím Lôi Điện Ma Giới) --- */
+/* CẢNH 3: ĐỘ KIẾP PHONG VÂN */
 body.mood-dokiep {
   --bg-color: #0f0714;
   --bg-gradient: radial-gradient(circle at 50% 20%, #3b1159 0%, #09030d 80%);
@@ -80,7 +80,6 @@ body {
   transition: background 0.6s ease, color 0.3s ease;
 }
 
-/* Nền chớp sét khi ở cảnh Độ Kiếp */
 #lightning-overlay {
   position: fixed;
   inset: 0;
@@ -123,6 +122,8 @@ body {
   align-items: center;
   padding-bottom: 20px;
   border-bottom: 1px solid var(--panel-border);
+  gap: 15px;
+  flex-wrap: wrap;
 }
 
 .logo {
@@ -155,11 +156,12 @@ body {
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
-/* Hộp chọn Cảnh Giới Động Phủ */
-.mood-selector {
+/* Mood & Timer Pills */
+.mood-selector, .sleep-timer-wrapper {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -171,7 +173,7 @@ body {
   font-size: 0.85rem;
 }
 
-.mood-selector select {
+.mood-selector select, .sleep-timer-wrapper select {
   background: transparent;
   border: none;
   color: var(--text-main);
@@ -181,9 +183,16 @@ body {
   font-weight: 500;
 }
 
-.mood-selector select option {
+.mood-selector select option, .sleep-timer-wrapper select option {
   background: #0f172a;
   color: #fff;
+}
+
+.timer-display {
+  font-size: 0.75rem;
+  color: var(--accent-gold);
+  font-weight: 600;
+  margin-left: 2px;
 }
 
 /* Glassmorphism Panel */
@@ -385,6 +394,15 @@ body {
   width: 70%;
 }
 
+.volume-container i {
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.volume-container i:hover {
+  color: var(--primary-color);
+}
+
 .volume-container input[type="range"] {
   flex: 1;
   accent-color: var(--primary-color);
@@ -392,7 +410,7 @@ body {
   cursor: pointer;
 }
 
-/* Playlist */
+/* Playlist Section */
 .playlist-section {
   display: flex;
   flex-direction: column;
@@ -404,7 +422,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
   padding-bottom: 12px;
   border-bottom: 1px solid var(--panel-border);
 }
@@ -412,6 +430,38 @@ body {
 .playlist-header h3 {
   font-family: var(--font-title);
   font-size: 1.15rem;
+}
+
+/* Thanh Tìm Kiếm Linh Thức Dò Tìm */
+.search-container {
+  position: relative;
+  margin-bottom: 15px;
+}
+
+.search-icon {
+  position: absolute;
+  top: 50%;
+  left: 14px;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.search-container input {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--panel-border);
+  padding: 9px 12px 9px 38px;
+  border-radius: 12px;
+  color: var(--text-main);
+  outline: none;
+  font-size: 0.85rem;
+  transition: var(--transition);
+}
+
+.search-container input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 10px var(--primary-glow);
 }
 
 .btn-primary {
@@ -640,6 +690,14 @@ body {
 }
 
 @media (max-width: 768px) {
+  .app-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
   .main-content {
     grid-template-columns: 1fr;
     gap: 20px;
@@ -661,6 +719,6 @@ body {
     height: 200px;
   }
   .playlist-section {
-    max-height: 400px;
+    max-height: 440px;
   }
 }
