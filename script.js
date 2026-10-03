@@ -1,8 +1,7 @@
 /* =========================================================
-   PHÀM NHÂN THÍNH ÂM CÁC - XỬ LÝ ÂM THANH & TƯƠNG TÁC
+   PHÀM NHÂN THÍNH ÂM CÁC - AUDIO VISUALIZER & KIẾM KHÍ
 ========================================================= */
 
-// Danh sách bài hát khởi đầu
 let playlist = [
   {
     id: 1,
@@ -32,7 +31,7 @@ let isPlaying = false;
 let isShuffle = false;
 let isRepeat = false;
 
-// Truy vấn các phần tử DOM
+// DOM Elements
 const audio = document.getElementById("audio-engine");
 const playBtn = document.getElementById("play-btn");
 const prevBtn = document.getElementById("prev-btn");
@@ -51,8 +50,10 @@ const durationEl = document.getElementById("duration");
 const volumeSlider = document.getElementById("volume-slider");
 const playlistContainer = document.getElementById("playlist-items");
 const themeToggle = document.getElementById("theme-toggle");
+const moodDropdown = document.getElementById("mood-dropdown");
+const lightningOverlay = document.getElementById("lightning-overlay");
 
-// Phần tử Modal
+// Modal Elements
 const openModalBtn = document.getElementById("open-modal-btn");
 const closeModalBtn = document.getElementById("close-modal-btn");
 const addModal = document.getElementById("add-modal");
@@ -60,7 +61,9 @@ const tabBtns = document.querySelectorAll(".tab-btn");
 const urlForm = document.getElementById("url-form");
 const fileForm = document.getElementById("file-form");
 
-/* 1. KHỞI CHẠY & TẢI NHẠC */
+/* =========================================================
+   1. QUẢN LÝ PHÁT NHẠC
+========================================================= */
 function initPlayer() {
   renderPlaylist();
   loadTrack(currentIndex);
@@ -119,14 +122,15 @@ function updatePlaylistHighlight() {
   });
 }
 
-/* 2. ĐIỀU KHIỂN PHÁT NHẠC */
 function playTrack() {
   if (playlist.length === 0) return;
-  isPlaying = true;
-  audio.play().catch(e => console.log("Cần tương tác của người dùng:", e));
-  playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
-  disc.classList.add("spinning");
-  magicCircle.classList.add("active");
+  setupAudioContext(); // Khởi tạo sóng nhạc khi bấm nghe
+  audio.play().then(() => {
+    isPlaying = true;
+    playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+    disc.classList.add("spinning");
+    magicCircle.classList.add("active");
+  }).catch(e => console.log("Chờ tương tác của người dùng:", e));
 }
 
 function pauseTrack() {
@@ -184,7 +188,6 @@ audio.addEventListener("ended", () => {
   }
 });
 
-// Tua & Hiển thị tiến trình
 audio.addEventListener("timeupdate", () => {
   if (audio.duration) {
     const current = audio.currentTime;
@@ -219,7 +222,174 @@ function formatTime(seconds) {
   return `${min < 10 ? "0" : ""}${min}:${sec < 10 ? "0" : ""}${sec}`;
 }
 
-/* 3. TÍNH NĂNG THÊM NHẠC TÙY Ý */
+/* =========================================================
+   2. AUDIO VISUALIZER (SÓNG LINH KHÍ QUANH ĐĨA)
+========================================================= */
+const vCanvas = document.getElementById("visualizer-canvas");
+const vCtx = vCanvas.getContext("2d");
+let audioCtx = null;
+let analyser = null;
+let source = null;
+let dataArray = null;
+
+function setupAudioContext() {
+  if (audioCtx) return;
+  try {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    audioCtx = new AudioContext();
+    analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 128;
+    source = audioCtx.createMediaElementSource(audio);
+    source.connect(analyser);
+    analyser.connect(audioCtx.destination);
+    dataArray = new Uint8Array(analyser.frequencyBinCount);
+    drawVisualizer();
+  } catch (err) {
+    console.log("AudioContext hạn chế CORS hoặc trình duyệt:", err);
+  }
+}
+
+function drawVisualizer() {
+  requestAnimationFrame(drawVisualizer);
+  vCtx.clearRect(0, 0, vCanvas.width, vCanvas.height);
+
+  if (!analyser || !isPlaying) return;
+
+  analyser.getByteFrequencyData(dataArray);
+
+  // Tính trung bình dải bass để tạo hiệu ứng nhịp đập cho đĩa
+  let bassSum = 0;
+  for (let i = 0; i < 8; i++) {
+    bassSum += dataArray[i];
+  }
+  const bassAvg = bassSum / 8;
+  const scale = 1 + (bassAvg / 255) * 0.08;
+  disc.style.transform = `scale(${scale})`;
+
+  // Vẽ các tia sáng sóng năng lượng tỏa tròn
+  const centerX = vCanvas.width / 2;
+  const centerY = vCanvas.height / 2;
+  const baseRadius = 110;
+  const bars = 48;
+  const step = (Math.PI * 2) / bars;
+
+  for (let i = 0; i < bars; i++) {
+    const val = dataArray[i % dataArray.length] || 0;
+    const barHeight = (val / 255) * 38;
+    const angle = i * step;
+
+    const x1 = centerX + Math.cos(angle) * baseRadius;
+    const y1 = centerY + Math.sin(angle) * baseRadius;
+    const x2 = centerX + Math.cos(angle) * (baseRadius + barHeight);
+    const y2 = centerY + Math.sin(angle) * (baseRadius + barHeight);
+
+    const mood = moodDropdown.value;
+    let strokeColor = "rgba(16, 185, 129, 0.85)";
+    if (mood === "mood-loantinhhai") strokeColor = "rgba(56, 189, 248, 0.85)";
+    if (mood === "mood-dokiep") strokeColor = "rgba(168, 85, 247, 0.9)";
+
+    vCtx.strokeStyle = strokeColor;
+    vCtx.lineWidth = 2.5;
+    vCtx.lineCap = "round";
+    vCtx.beginPath();
+    vCtx.moveTo(x1, y1);
+    vCtx.lineTo(x2, y2);
+    vCtx.stroke();
+  }
+}
+
+/* =========================================================
+   3. HIỆU ỨNG CHUỘT: KIẾM KHÍ TRẢM HƯ KHÔNG
+========================================================= */
+const canvas = document.getElementById("ambient-canvas");
+const ctx = canvas.getContext("2d");
+let swordSlashes = [];
+
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+window.addEventListener("resize", resizeCanvas);
+resizeCanvas();
+
+window.addEventListener("click", (e) => {
+  createSwordSlash(e.clientX, e.clientY);
+});
+
+function createSwordSlash(x, y) {
+  const angle = Math.random() * Math.PI * 2;
+  const length = Math.random() * 80 + 70;
+  swordSlashes.push({
+    x,
+    y,
+    angle,
+    length,
+    life: 1.0,
+    speed: 0.04
+  });
+}
+
+function drawSwordSlashes() {
+  for (let i = swordSlashes.length - 1; i >= 0; i--) {
+    const s = swordSlashes[i];
+    s.life -= s.speed;
+
+    if (s.life <= 0) {
+      swordSlashes.splice(i, 1);
+      continue;
+    }
+
+    const currentLen = s.length * (1 - s.life * 0.2);
+    const dx = Math.cos(s.angle) * (currentLen / 2);
+    const dy = Math.sin(s.angle) * (currentLen / 2);
+
+    const mood = moodDropdown.value;
+    let slashColor = "16, 185, 129";
+    if (mood === "mood-loantinhhai") slashColor = "56, 189, 248";
+    if (mood === "mood-dokiep") slashColor = "236, 72, 153";
+
+    // Vạch kiếm khí sắc nhọn
+    ctx.save();
+    ctx.shadowBlur = 18;
+    ctx.shadowColor = `rgba(${slashColor}, ${s.life})`;
+    ctx.strokeStyle = `rgba(255, 255, 255, ${s.life})`;
+    ctx.lineWidth = 3 * s.life;
+    ctx.beginPath();
+    ctx.moveTo(s.x - dx, s.y - dy);
+    ctx.lineTo(s.x + dx, s.y + dy);
+    ctx.stroke();
+
+    // Vòng bát quái linh lực phụ trợ
+    ctx.strokeStyle = `rgba(${slashColor}, ${s.life * 0.6})`;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, 25 * (1.5 - s.life), 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.restore();
+  }
+}
+
+/* =========================================================
+   4. CẢNH GIỚI ĐỘNG PHỦ & CHỚP SÉT ĐỘ KIẾP
+========================================================= */
+moodDropdown.addEventListener("change", (e) => {
+  document.body.classList.remove("mood-thanhvan", "mood-loantinhhai", "mood-dokiep");
+  document.body.classList.add(e.target.value);
+});
+
+// Chớp sét tự nhiên ngẫu nhiên khi ở cảnh Độ Kiếp Phong Vân
+setInterval(() => {
+  if (moodDropdown.value === "mood-dokiep" && Math.random() > 0.65) {
+    lightningOverlay.classList.add("flash");
+    setTimeout(() => {
+      lightningOverlay.classList.remove("flash");
+    }, 120);
+  }
+}, 4500);
+
+/* =========================================================
+   5. NẠP NHẠC TÙY Ý & MODAL
+========================================================= */
 openModalBtn.addEventListener("click", () => addModal.classList.add("open"));
 closeModalBtn.addEventListener("click", () => addModal.classList.remove("open"));
 
@@ -233,7 +403,6 @@ tabBtns.forEach(btn => {
   });
 });
 
-// Nạp nhạc qua Link URL
 urlForm.addEventListener("submit", (e) => {
   e.preventDefault();
   const title = document.getElementById("url-title").value.trim();
@@ -251,7 +420,6 @@ urlForm.addEventListener("submit", (e) => {
   playTrack();
 });
 
-// Nạp file MP3 từ thiết bị
 fileForm.addEventListener("submit", (e) => {
   e.preventDefault();
   const fileInput = document.getElementById("local-audio-file");
@@ -299,25 +467,15 @@ function removeSong(id) {
   }
 }
 
-/* 4. CHUYỂN ĐỔI GIAO DIỆN (DARK/LIGHT) */
 themeToggle.addEventListener("click", () => {
   document.body.classList.toggle("light-theme");
   const isLight = document.body.classList.contains("light-theme");
   themeToggle.innerHTML = isLight ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
 });
 
-/* 5. CANVAS HẠT LINH KHÍ BAY */
-const canvas = document.getElementById("ambient-canvas");
-const ctx = canvas.getContext("2d");
-
-let particles = [];
-function resizeCanvas() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-}
-window.addEventListener("resize", resizeCanvas);
-resizeCanvas();
-
+/* =========================================================
+   6. HẠT LINH KHÍ NỀN (AMBIENT PARTICLES)
+========================================================= */
 class QiParticle {
   constructor() {
     this.reset();
@@ -326,7 +484,7 @@ class QiParticle {
     this.x = Math.random() * canvas.width;
     this.y = canvas.height + Math.random() * 20;
     this.size = Math.random() * 2.5 + 0.8;
-    this.speedY = Math.random() * 0.8 + 0.2;
+    this.speedY = Math.random() * 0.7 + 0.2;
     this.speedX = (Math.random() - 0.5) * 0.5;
     this.opacity = Math.random() * 0.5 + 0.2;
   }
@@ -336,26 +494,25 @@ class QiParticle {
     if (this.y < -10) this.reset();
   }
   draw() {
-    ctx.fillStyle = `rgba(16, 185, 129, ${this.opacity})`;
+    const style = getComputedStyle(document.body);
+    ctx.fillStyle = style.getPropertyValue("--particle-color") || "rgba(16, 185, 129, 0.7)";
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
     ctx.fill();
   }
 }
 
-for (let i = 0; i < 40; i++) {
-  particles.push(new QiParticle());
-}
+const particles = Array.from({ length: 45 }, () => new QiParticle());
 
-function animateParticles() {
+function animateLoop() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   particles.forEach(p => {
     p.update();
     p.draw();
   });
-  requestAnimationFrame(animateParticles);
+  drawSwordSlashes(); // Vẽ kiếm khí click
+  requestAnimationFrame(animateLoop);
 }
-animateParticles();
+animateLoop();
 
-// Chạy hàm khởi động
 initPlayer();
