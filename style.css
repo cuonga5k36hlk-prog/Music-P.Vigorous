@@ -1,5 +1,5 @@
 /* =========================================================
-   GIAO DIỆN THEME PHÀM NHÂN TU TIÊN (STUDIO HI-END EDITION)
+   GIAO DIỆN THEME PHÀM NHÂN TU TIÊN (NGỰ KIẾM PHI HÀNH)
 ========================================================= */
 
 body, body.mood-thanhvan {
@@ -12,6 +12,7 @@ body, body.mood-thanhvan {
   --accent-gold: #f59e0b;
   --accent-gold-glow: rgba(245, 158, 11, 0.45);
   --particle-color: rgba(16, 185, 129, 0.8);
+  --sword-trail-color: 16, 185, 129;
 }
 
 body.mood-loantinhhai {
@@ -24,6 +25,7 @@ body.mood-loantinhhai {
   --accent-gold: #38bdf8;
   --accent-gold-glow: rgba(56, 189, 248, 0.45);
   --particle-color: rgba(56, 189, 248, 0.9);
+  --sword-trail-color: 56, 189, 248;
 }
 
 body.mood-dokiep {
@@ -36,6 +38,7 @@ body.mood-dokiep {
   --accent-gold: #f43f5e;
   --accent-gold-glow: rgba(244, 63, 94, 0.5);
   --particle-color: rgba(216, 180, 254, 0.9);
+  --sword-trail-color: 192, 132, 252;
 }
 
 :root {
@@ -61,6 +64,34 @@ body.light-theme {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* ẨN CON TRỎ CHUỘT WINDOWS ĐỂ NGỰ KIẾM PHI HÀNH */
+html, body {
+  cursor: none !important;
+}
+
+a, button, input, select, .song-card, .album-card, .qte-circle-btn, .oracle-cylinder {
+  cursor: none !important;
+}
+
+/* TIỂU PHI KIẾM CON TRỎ CHUỘT */
+.sword-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 34px;
+  height: 34px;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  filter: drop-shadow(0 0 6px var(--primary-glow)) drop-shadow(0 0 12px var(--accent-gold-glow));
+  transition: transform 0.04s ease-out;
+}
+
+.sword-svg {
+  width: 100%;
+  height: 100%;
+}
+
 body {
   font-family: var(--font-body);
   background-color: #050a0e;
@@ -75,31 +106,6 @@ body {
   overflow-x: hidden;
   perspective: 1000px;
   transition: background-image 0.8s ease, color 0.3s ease;
-}
-
-/* THƯ PHÁP THẤU KÍNH (FLOATING CALLIGRAPHY BANNER) */
-.calligraphy-banner {
-  position: fixed;
-  top: 18px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(15, 23, 42, 0.65);
-  border: 1px solid var(--accent-gold);
-  box-shadow: 0 0 20px var(--accent-gold-glow);
-  padding: 5px 22px;
-  border-radius: 20px;
-  backdrop-filter: blur(8px);
-  z-index: 50;
-  pointer-events: none;
-  animation: fadeIn 0.6s ease;
-}
-
-.calligraphy-text {
-  font-family: var(--font-title);
-  font-size: 0.85rem;
-  color: var(--accent-gold);
-  letter-spacing: 1.5px;
-  font-style: italic;
 }
 
 /* DẢI ĐIỆN ẢNH CINEMATIC 21:9 */
@@ -247,7 +253,6 @@ body.bass-impact {
   box-shadow: 0 0 14px var(--accent-gold-glow);
   padding: 6px 14px;
   border-radius: 20px;
-  cursor: pointer;
   transition: var(--transition);
 }
 
@@ -325,7 +330,6 @@ body.bass-impact {
   border: none;
   color: var(--text-main);
   outline: none;
-  cursor: pointer;
   font-size: 0.85rem;
   font-weight: 500;
 }
@@ -479,7 +483,6 @@ body.bass-impact {
   border: 1px solid var(--panel-border);
   border-radius: 8px;
   position: relative;
-  cursor: pointer;
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -515,7 +518,6 @@ body.bass-impact {
   border: none;
   color: var(--text-muted);
   font-size: 1.15rem;
-  cursor: pointer;
   transition: var(--transition);
 }
 
@@ -561,7 +563,6 @@ body.bass-impact {
   border-radius: 12px;
   font-size: 0.75rem;
   font-weight: 700;
-  cursor: pointer;
   display: flex;
   align-items: center;
   gap: 5px;
@@ -581,11 +582,6 @@ body.bass-impact {
   flex: 1;
 }
 
-.volume-container i {
-  cursor: pointer;
-  transition: var(--transition);
-}
-
 .volume-container i:hover {
   color: var(--primary-color);
 }
@@ -594,7 +590,6 @@ body.bass-impact {
   flex: 1;
   accent-color: var(--primary-color);
   height: 4px;
-  cursor: pointer;
 }
 
 /* =========================================================
@@ -634,7 +629,6 @@ body.bass-impact {
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
   transition: all 0.3s ease;
 }
 
@@ -667,7 +661,6 @@ body.bass-impact {
   font-weight: 800;
   padding: 3px 8px;
   border-radius: 10px;
-  cursor: pointer;
   box-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
   transition: var(--transition);
 }
@@ -752,7 +745,6 @@ body.bass-impact {
   border-radius: 9px;
   font-size: 0.82rem;
   font-weight: 600;
-  cursor: pointer;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -834,7 +826,6 @@ body.bass-impact {
   border-radius: 16px;
   padding: 12px;
   text-align: center;
-  cursor: pointer;
   transition: var(--transition);
   display: flex;
   flex-direction: column;
@@ -902,7 +893,6 @@ body.bass-impact {
   padding: 5px 12px;
   border-radius: 12px;
   font-size: 0.8rem;
-  cursor: pointer;
   transition: var(--transition);
 }
 
@@ -925,7 +915,6 @@ body.bass-impact {
   border-radius: 12px;
   font-size: 0.85rem;
   font-weight: 600;
-  cursor: pointer;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -963,7 +952,6 @@ body.bass-impact {
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid transparent;
   border-radius: 12px;
-  cursor: pointer;
   transition: var(--transition);
 }
 
@@ -1008,7 +996,6 @@ body.bass-impact {
   background: none;
   border: none;
   color: var(--text-muted);
-  cursor: pointer;
   padding: 6px;
   transition: var(--transition);
 }
@@ -1052,7 +1039,6 @@ body.bass-impact {
   border: none;
   color: var(--text-muted);
   font-size: 1.2rem;
-  cursor: pointer;
 }
 
 .ambient-track {
@@ -1072,7 +1058,6 @@ body.bass-impact {
   width: 100%;
   accent-color: var(--primary-color);
   height: 4px;
-  cursor: pointer;
 }
 
 /* GIAO DIỆN THIÊN KIẾP (QTE) */
@@ -1146,7 +1131,6 @@ body.bass-impact {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
   user-select: none;
   transition: transform 0.08s ease, box-shadow 0.08s ease;
   margin-bottom: 25px;
@@ -1209,7 +1193,6 @@ body.bass-impact {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
   transition: var(--transition);
 }
 
@@ -1305,7 +1288,6 @@ body.bass-impact {
   border: none;
   font-size: 1.5rem;
   color: var(--text-muted);
-  cursor: pointer;
 }
 
 .modal-tabs {
@@ -1322,7 +1304,6 @@ body.bass-impact {
   color: var(--text-muted);
   border-radius: 8px;
   font-size: 0.85rem;
-  cursor: pointer;
 }
 
 .tab-btn.active {
@@ -1375,7 +1356,6 @@ body.bass-impact {
   padding: 12px;
   border-radius: 8px;
   font-weight: 600;
-  cursor: pointer;
   box-shadow: 0 0 15px var(--primary-glow);
   margin-top: 10px;
 }
@@ -1391,6 +1371,12 @@ body.bass-impact {
 }
 
 @media (max-width: 768px) {
+  html, body, a, button, input, select {
+    cursor: auto !important;
+  }
+  .sword-cursor {
+    display: none !important;
+  }
   .app-header {
     flex-direction: column;
     align-items: flex-start;
