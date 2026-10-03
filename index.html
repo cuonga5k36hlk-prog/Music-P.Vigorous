@@ -42,8 +42,8 @@
         </div>
       </div>
 
-      <!-- Huy Hiệu Tu Vi Cảnh Giới -->
-      <div class="cultivation-badge" id="cultivation-badge" title="Tích lũy linh khí theo thời gian thính âm">
+      <!-- Huy Hiệu Tu Vi Cảnh Giới (Click để xem chi tiết / cưỡng ép độ kiếp) -->
+      <div class="cultivation-badge" id="cultivation-badge" title="Tích lũy linh khí theo thời gian thính âm (Click để thử Lôi Kiếp)">
         <i class="fa-solid fa-gem"></i>
         <div class="badge-info">
           <span class="realm-title" id="realm-title">Phàm Nhân</span>
@@ -55,6 +55,16 @@
       </div>
 
       <div class="header-actions">
+        <!-- Nút Vấn Đạo Bốc Quẻ -->
+        <button id="divine-oracle-btn" class="btn-icon gold-glow" title="Vấn Đạo Bốc Quẻ (Gợi Ý Bài Hát)">
+          <i class="fa-solid fa-scroll"></i>
+        </button>
+
+        <!-- Nút Mở Linh Hạp Chi Âm (Hòa Âm Thiên Nhiên) -->
+        <button id="ambient-drawer-toggle" class="btn-icon" title="Linh Hạp Chi Âm (Mưa / Gió / Lửa Trại)">
+          <i class="fa-solid fa-sliders"></i>
+        </button>
+
         <!-- Chế độ Điện Ảnh (Zen Mode) -->
         <button id="cinematic-toggle" class="btn-icon" title="Chế Độ Điện Ảnh Tối Thượng [F]">
           <i class="fa-solid fa-film"></i>
@@ -92,11 +102,12 @@
     </header>
 
     <main class="main-content" id="main-content">
-      <!-- Cột Trái: Trình phát trung tâm với Parallax 3D Card -->
+      <!-- Cột Trái: Trình phát trung tâm với Parallax 3D Card & Kiếm Trận Visualizer -->
       <section class="player-section glass-panel" id="player-card">
         <div class="disc-wrapper">
           <div class="ambient-glow" id="ambient-glow"></div>
-          <canvas id="visualizer-canvas" width="360" height="360"></canvas>
+          <!-- Canvas 72 Thanh Trúc Phong Vân Kiếm Visualizer -->
+          <canvas id="visualizer-canvas" width="400" height="400"></canvas>
           <div class="magic-circle outer-circle" id="magic-circle-outer"></div>
           <div class="magic-circle inner-circle" id="magic-circle-inner"></div>
 
@@ -183,6 +194,69 @@
   </div>
 
   <audio id="audio-engine" crossorigin="anonymous" preload="metadata"></audio>
+
+  <!-- 2. NGĂN KÉO LINH HẠP CHI ÂM (AMBIENT SOUND MIXER) -->
+  <div class="ambient-drawer glass-panel" id="ambient-drawer">
+    <div class="ambient-drawer-header">
+      <h4><i class="fa-solid fa-wind"></i> Linh Hạp Chi Âm</h4>
+      <button id="close-ambient-drawer" class="btn-close-sm">&times;</button>
+    </div>
+    <div class="ambient-track">
+      <div class="ambient-info"><i class="fa-solid fa-cloud-rain"></i> Linh Vũ Trúc Lâm</div>
+      <input type="range" class="ambient-slider" id="amb-rain" min="0" max="1" step="0.05" value="0">
+    </div>
+    <div class="ambient-track">
+      <div class="ambient-info"><i class="fa-solid fa-fire"></i> Luyện Đan Lô Hỏa</div>
+      <input type="range" class="ambient-slider" id="amb-fire" min="0" max="1" step="0.05" value="0">
+    </div>
+    <div class="ambient-track">
+      <div class="ambient-info"><i class="fa-solid fa-water"></i> Loạn Tinh Ba Đào</div>
+      <input type="range" class="ambient-slider" id="amb-waves" min="0" max="1" step="0.05" value="0">
+    </div>
+    <div class="ambient-track">
+      <div class="ambient-info"><i class="fa-solid fa-bell"></i> Thanh Phong Linh</div>
+      <input type="range" class="ambient-slider" id="amb-wind" min="0" max="1" step="0.05" value="0">
+    </div>
+  </div>
+
+  <!-- 1. GIAO DIỆN THIÊN KIẾP LÔI ĐÌNH (QUICK-TIME EVENT MINI-BOSS) -->
+  <div class="tribulation-overlay" id="tribulation-overlay">
+    <div class="tribulation-core">
+      <div class="thunder-vortex"></div>
+      <h2 class="tribulation-title">THIÊN KIẾP GIÁNG THẾ!</h2>
+      <p class="tribulation-subtitle">Vận chuyển linh lực chống đỡ 9 đạo Thần Lôi</p>
+      <div class="qte-circle-btn" id="qte-strike-btn">
+        <i class="fa-solid fa-bolt-lightning"></i>
+        <span>VẬN CÔNG [SPACE]</span>
+      </div>
+      <div class="qte-progress-bar">
+        <div class="qte-progress-fill" id="qte-progress-fill" style="width: 0%;"></div>
+      </div>
+      <div class="qte-timer" id="qte-timer">10s</div>
+    </div>
+  </div>
+
+  <!-- 5. GIAO DIỆN VẤN ĐẠO BỐC QUẺ -->
+  <div class="modal" id="oracle-modal">
+    <div class="modal-box glass-panel oracle-box">
+      <div class="modal-header">
+        <h4>Vấn Đạo Tiên Tri</h4>
+        <button class="modal-close" id="close-oracle-btn">&times;</button>
+      </div>
+      <div class="oracle-body">
+        <div class="oracle-cylinder" id="oracle-cylinder">
+          <i class="fa-solid fa-scroll"></i>
+          <span>LẮC QUẺ</span>
+        </div>
+        <div class="oracle-result" id="oracle-result" style="display: none;">
+          <div class="oracle-tag" id="oracle-grade">Thượng Thượng Quẻ</div>
+          <div class="oracle-verse" id="oracle-verse">"Đạo tâm an tịnh, vạn ma bất xâm."</div>
+          <p class="oracle-advice" id="oracle-advice">Linh thức thư thái, hữu duyên ngộ nhập khúc ca sau:</p>
+          <button class="btn-submit" id="oracle-play-btn">Phát Khúc Nhân Duyên</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Modal Nạp Nhạc -->
   <div class="modal" id="add-modal">
