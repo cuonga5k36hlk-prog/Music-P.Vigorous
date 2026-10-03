@@ -12,9 +12,11 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="style.css">
 </head>
-<body class="dark-theme">
-  <!-- Nền Canvas hiệu ứng linh khí bay lơ lửng -->
+<body class="mood-thanhvan">
+  <!-- Canvas nền hạt linh khí và kiếm khí click -->
   <canvas id="ambient-canvas"></canvas>
+  <!-- Lớp phủ chớp sét Độ Kiếp -->
+  <div id="lightning-overlay"></div>
 
   <div class="app-container">
     <!-- Header -->
@@ -26,16 +28,31 @@
           <span>Phàm Nhân Tu Tiên</span>
         </div>
       </div>
-      <button id="theme-toggle" class="btn-icon" title="Chuyển đổi Quang Ảnh (Sáng/Tối)">
-        <i class="fa-solid fa-moon"></i>
-      </button>
+
+      <!-- Khu vực đổi Cảnh Giới Động Phủ & Chế độ Sáng/Tối -->
+      <div class="header-actions">
+        <div class="mood-selector" title="Chuyển Hóa Cảnh Động Phủ">
+          <i class="fa-solid fa-mountain-sun"></i>
+          <select id="mood-dropdown">
+            <option value="mood-thanhvan">Thanh Vân Phong</option>
+            <option value="mood-loantinhhai">Loạn Tinh Hải</option>
+            <option value="mood-dokiep">Độ Kiếp Phong Vân</option>
+          </select>
+        </div>
+
+        <button id="theme-toggle" class="btn-icon" title="Chuyển đổi Quang Ảnh">
+          <i class="fa-solid fa-moon"></i>
+        </button>
+      </div>
     </header>
 
     <!-- Khu vực chính -->
     <main class="main-content">
-      <!-- Cột Trái: Trình phát trung tâm (Đĩa trận pháp) -->
+      <!-- Cột Trái: Trình phát trung tâm tích hợp Audio Visualizer -->
       <section class="player-section glass-panel">
         <div class="disc-wrapper">
+          <!-- Canvas sóng nhạc linh khí ôm sát đĩa -->
+          <canvas id="visualizer-canvas" width="340" height="340"></canvas>
           <div class="magic-circle" id="magic-circle"></div>
           <div class="disc" id="disc">
             <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=600&auto=format&fit=crop" id="track-cover" alt="Bìa nhạc">
@@ -92,14 +109,14 @@
           </button>
         </div>
 
-        <!-- Danh sách hiển thị các bài hát -->
+        <!-- Danh sách hiển thị bài hát -->
         <div class="playlist-items" id="playlist-items"></div>
       </section>
     </main>
   </div>
 
-  <!-- Audio Engine ngầm -->
-  <audio id="audio-engine" preload="metadata"></audio>
+  <!-- Audio Engine có thuộc tính crossorigin để chạy Web Audio API không lỗi -->
+  <audio id="audio-engine" crossorigin="anonymous" preload="metadata"></audio>
 
   <!-- Modal nạp thêm nhạc -->
   <div class="modal" id="add-modal">
@@ -115,7 +132,6 @@
       </div>
 
       <div class="modal-body">
-        <!-- Tab nạp link MP3 trực tuyến -->
         <form id="url-form" class="tab-content active">
           <div class="input-group">
             <label>Khúc Danh (Tên bài)*</label>
@@ -136,7 +152,6 @@
           <button type="submit" class="btn-submit">Khắc Sâu Vào Phổ</button>
         </form>
 
-        <!-- Tab nạp file mp3 từ máy tính/điện thoại -->
         <form id="file-form" class="tab-content">
           <div class="input-group">
             <label>Khúc Danh (Tên bài)</label>
