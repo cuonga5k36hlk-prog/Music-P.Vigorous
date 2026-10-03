@@ -15,7 +15,7 @@
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Montserrat:wght@400;500;600;700&family=Noto+Serif+SC:wght@600;700&display=swap" rel="stylesheet">
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -27,6 +27,11 @@
   <div id="mist-layer" class="mist-layer"></div>
   <div id="lightning-overlay"></div>
 
+  <!-- Thư Pháp Thấu Kính (Floating Calligraphy Zen Banner) -->
+  <div class="calligraphy-banner" id="calligraphy-banner">
+    <span class="calligraphy-text" id="calligraphy-text">"Đạo khả đạo, phi thường đạo."</span>
+  </div>
+
   <canvas id="ambient-canvas"></canvas>
 
   <div class="app-container" id="app-container">
@@ -35,7 +40,7 @@
         <i class="fa-solid fa-yin-yang logo-icon"></i>
         <div class="logo-text">
           <h1>THÍNH ÂM CÁC</h1>
-          <span>Phàm Nhân Tu Tiên</span>
+          <span>Phàm Nhân Tu Tiên • VIP PRO MAX</span>
         </div>
       </div>
 
@@ -52,11 +57,6 @@
       </div>
 
       <div class="header-actions">
-        <!-- Bảng Cân Bằng Âm Thanh EQ Hi-Fi -->
-        <button id="eq-toggle-btn" class="btn-icon" title="Ngũ Hành Âm Căn (Master Equalizer)">
-          <i class="fa-solid fa-wave-square"></i>
-        </button>
-
         <!-- Vấn Đạo Bốc Quẻ -->
         <button id="divine-oracle-btn" class="btn-icon gold-glow" title="Vấn Đạo Bốc Quẻ">
           <i class="fa-solid fa-scroll"></i>
@@ -103,9 +103,9 @@
     </header>
 
     <main class="main-content" id="main-content">
-      <!-- Cột Trái: Trình phát trung tâm -->
+      <!-- Cột Trái: Trình phát trung tâm 3D Parallax -->
       <section class="player-section glass-panel" id="player-card">
-        <div class="disc-wrapper">
+        <div class="disc-wrapper" id="parallax-wrapper">
           <div class="ambient-glow" id="ambient-glow"></div>
           <canvas id="visualizer-canvas" width="420" height="420"></canvas>
 
@@ -120,14 +120,17 @@
           <p id="track-artist" class="track-artist">Hàn Lập • Thanh Vân Môn</p>
         </div>
 
-        <div class="progress-container">
+        <!-- DẢI SÓNG ÂM WAVEFORM CANVAS BAR -->
+        <div class="waveform-container">
           <span id="current-time">00:00</span>
-          <div class="progress-bar" id="progress-bar">
-            <div class="progress-fill" id="progress-fill"></div>
+          <div class="waveform-box" id="waveform-box">
+            <canvas id="waveform-canvas" width="280" height="26"></canvas>
+            <div class="waveform-progress" id="waveform-progress"></div>
           </div>
           <span id="duration">00:00</span>
         </div>
 
+        <!-- BỘ ĐIỀU KHIỂN & CHƯỞNG THIÊN BÌNH TỐC ĐỘ -->
         <div class="player-controls">
           <button id="shuffle-btn" class="btn-ctrl" title="Hư Không Luân Hồi (Ngẫu nhiên)">
             <i class="fa-solid fa-shuffle"></i>
@@ -146,9 +149,16 @@
           </button>
         </div>
 
-        <div class="volume-container">
-          <i class="fa-solid fa-volume-high" id="vol-icon" title="Tắt/Bật tiếng [M]"></i>
-          <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.7">
+        <div class="sub-controls-row">
+          <!-- Chưởng Thiên Bình - Thần Thâu Tốc Độ -->
+          <button class="btn-speed-badge" id="speed-toggle-btn" title="Chưởng Thiên Bình - Tăng/Giảm Tốc Độ Thính Âm">
+            <i class="fa-solid fa-forward"></i> <span id="speed-text">1.0x</span>
+          </button>
+
+          <div class="volume-container">
+            <i class="fa-solid fa-volume-high" id="vol-icon" title="Tắt/Bật tiếng [M]"></i>
+            <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.7">
+          </div>
         </div>
       </section>
 
@@ -191,53 +201,24 @@
     </main>
   </div>
 
-  <!-- BẢNG BỘ CÂN BẰNG ÂM THANH NGŨ HÀNH (5-BAND EQUALIZER) -->
-  <div class="eq-modal glass-panel" id="eq-modal">
-    <div class="eq-header">
-      <h4><i class="fa-solid fa-sliders"></i> Ngũ Hành Cân Bằng Âm (5-Band EQ)</h4>
-      <button id="close-eq-btn" class="btn-close-sm">&times;</button>
-    </div>
-    <div class="eq-presets">
-      <button class="preset-btn active" data-preset="flat">Cân Bằng</button>
-      <button class="preset-btn" data-preset="bass">Bạo Liệt Trầm</button>
-      <button class="preset-btn" data-preset="vocal">Thanh Âm Cổ Xưa</button>
-      <button class="preset-btn" data-preset="cinema">Điện Ảnh 3D</button>
-    </div>
-    <div class="eq-sliders-wrap">
-      <div class="eq-band">
-        <span>60Hz</span>
-        <input type="range" class="eq-slider" id="eq-60" min="-12" max="12" step="1" value="0" orient="vertical">
-      </div>
-      <div class="eq-band">
-        <span>250Hz</span>
-        <input type="range" class="eq-slider" id="eq-250" min="-12" max="12" step="1" value="0" orient="vertical">
-      </div>
-      <div class="eq-band">
-        <span>1kHz</span>
-        <input type="range" class="eq-slider" id="eq-1k" min="-12" max="12" step="1" value="0" orient="vertical">
-      </div>
-      <div class="eq-band">
-        <span>4kHz</span>
-        <input type="range" class="eq-slider" id="eq-4k" min="-12" max="12" step="1" value="0" orient="vertical">
-      </div>
-      <div class="eq-band">
-        <span>12kHz</span>
-        <input type="range" class="eq-slider" id="eq-12k" min="-12" max="12" step="1" value="0" orient="vertical">
-      </div>
-    </div>
-  </div>
-
-  <!-- HỘ ĐẠO LINH THÚ -->
-  <div class="spiritual-pet-wrapper" id="spiritual-pet" title="Hộ Đạo Linh Thú (Click để tương tác)">
+  <!-- HỘ ĐẠO LINH THÚ TIẾN HÓA & CHO ĂN ĐAN DƯỢC -->
+  <div class="spiritual-pet-wrapper" id="spiritual-pet" title="Hộ Đạo Linh Thú">
     <div class="pet-speech" id="pet-speech">Zzz...</div>
     <div class="pet-body" id="pet-body">
       <div class="pet-glow"></div>
       <i class="fa-solid fa-dragon pet-icon" id="pet-icon"></i>
     </div>
-    <div class="pet-name">Phệ Kim Linh Thú</div>
+    <div class="pet-meta-info">
+      <span class="pet-name" id="pet-name">Ấu Trùng Phệ Kim</span>
+      <div class="pet-feed-action">
+        <button id="pet-feed-btn" class="btn-feed-pill" title="Cho ăn Tụ Khí Đan">
+          <i class="fa-solid fa-pills"></i> Cho Ăn (<span id="pill-count">3</span>)
+        </button>
+      </div>
+    </div>
   </div>
 
-  <!-- THẺ AUDIO PHÁT TỰ NHIÊN (KHÔNG DÙNG CROSSORIGIN ĐỂ KHÔNG BỊ CHẶN) -->
+  <!-- THẺ AUDIO TỰ NHIÊN -->
   <audio id="audio-engine" preload="metadata"></audio>
 
   <!-- LINH HẠP CHI ÂM -->
