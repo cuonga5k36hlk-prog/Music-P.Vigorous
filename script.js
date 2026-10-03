@@ -1,8 +1,7 @@
 /* =========================================================
-   PHÀM NHÂN THÍNH ÂM CÁC - AUDIO VISUALIZER & TÍNH NĂNG UX
+   PHÀM NHÂN THÍNH ÂM CÁC - AUDIO VISUALIZER & HỆ THỐNG ALBUM
 ========================================================= */
 
-// Danh sách bài hát mặc định
 const DEFAULT_PLAYLIST = [
   {
     id: 1,
@@ -20,6 +19,13 @@ const DEFAULT_PLAYLIST = [
   },
   {
     id: 3,
+    title: "Phàm Nhân Tông Môn Khúc",
+    artist: "Thanh Vân Tu Sĩ",
+    src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+    cover: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=600&auto=format&fit=crop"
+  },
+  {
+    id: 4,
     title: "Tinh Hải Phiêu Lưu Bi Ký",
     artist: "Loạn Tinh Hải Cổ Tu",
     src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
@@ -27,7 +33,6 @@ const DEFAULT_PLAYLIST = [
   }
 ];
 
-// 1. Tải Playlist & Trạng thái từ LocalStorage
 let playlist = [];
 try {
   const saved = localStorage.getItem("pntt_playlist");
@@ -55,7 +60,9 @@ const trackCover = document.getElementById("track-cover");
 const trackTitle = document.getElementById("track-title");
 const trackArtist = document.getElementById("track-artist");
 const disc = document.getElementById("disc");
-const magicCircle = document.getElementById("magic-circle");
+const magicCircleOuter = document.getElementById("magic-circle-outer");
+const magicCircleInner = document.getElementById("magic-circle-inner");
+const ambientGlow = document.getElementById("ambient-glow");
 const progressBar = document.getElementById("progress-bar");
 const progressFill = document.getElementById("progress-fill");
 const currentTimeEl = document.getElementById("current-time");
@@ -70,6 +77,16 @@ const sleepTimerSelect = document.getElementById("sleep-timer-select");
 const timerDisplay = document.getElementById("timer-display");
 const lightningOverlay = document.getElementById("lightning-overlay");
 
+// View Switcher Elements (Linh Phổ vs Album)
+const viewSongsBtn = document.getElementById("view-songs-btn");
+const viewAlbumsBtn = document.getElementById("view-albums-btn");
+const songsView = document.getElementById("songs-view");
+const albumsView = document.getElementById("albums-view");
+const albumGrid = document.getElementById("album-grid");
+const albumDetailHeader = document.getElementById("album-detail-header");
+const albumDetailTitle = document.getElementById("album-detail-title");
+const btnBackAlbums = document.getElementById("btn-back-albums");
+
 // Modal Elements
 const openModalBtn = document.getElementById("open-modal-btn");
 const closeModalBtn = document.getElementById("close-modal-btn");
@@ -79,11 +96,10 @@ const urlForm = document.getElementById("url-form");
 const fileForm = document.getElementById("file-form");
 
 /* =========================================================
-   1. QUẢN LÝ PHÁT NHẠC & LOCALSTORAGE
+   1. QUẢN LÝ PHÁT NHẠC
 ========================================================= */
 function savePlaylistToStorage() {
   try {
-    // Chỉ lưu các bài hát URL (loại trừ blob url máy cá nhân vì sẽ hết hạn khi reload)
     const filterSaved = playlist.filter(track => !track.src.startsWith("blob:"));
     localStorage.setItem("pntt_playlist", JSON.stringify(filterSaved));
     localStorage.setItem("pntt_current_index", currentIndex);
@@ -94,6 +110,7 @@ function savePlaylistToStorage() {
 
 function initPlayer() {
   renderPlaylist();
+  renderAlbumGrid();
   loadTrack(currentIndex);
 }
 
@@ -112,13 +129,14 @@ function loadTrack(index) {
   resetProgress();
 }
 
-function renderPlaylist(filterKeyword = "") {
-  playlistContainer.innerHTML = "";
+function renderPlaylist(filterKeyword = "", targetContainer = playlistContainer, filterArtist = null) {
+  targetContainer.innerHTML = "";
   const keyword = filterKeyword.toLowerCase().trim();
 
   let hasItems = false;
   playlist.forEach((track, index) => {
-    // Linh Thức Dò Tìm: Lọc theo tên bài hát hoặc tác giả
+    if (filterArtist && track.artist !== filterArtist) return;
+
     const match = track.title.toLowerCase().includes(keyword) || track.artist.toLowerCase().includes(keyword);
     if (!match) return;
 
@@ -148,11 +166,11 @@ function renderPlaylist(filterKeyword = "") {
       removeSong(track.id);
     });
 
-    playlistContainer.appendChild(card);
+    targetContainer.appendChild(card);
   });
 
   if (!hasItems) {
-    playlistContainer.innerHTML = `<div style="text-align:center; padding: 20px; color: var(--text-muted); font-size:0.85rem;">Không tìm thấy khúc âm luật phù hợp...</div>`;
+    targetContainer.innerHTML = `<div style="text-align:center; padding: 25px; color: var(--text-muted); font-size:0.85rem;">Không tìm thấy khúc âm luật phù hợp...</div>`;
   }
 }
 
@@ -177,7 +195,8 @@ function playTrack() {
     isPlaying = true;
     playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
     disc.classList.add("spinning");
-    magicCircle.classList.add("active");
+    magicCircleOuter.classList.add("active");
+    magicCircleInner.classList.add("active");
   }).catch(e => console.log("Chờ tương tác từ người dùng:", e));
 }
 
@@ -186,7 +205,8 @@ function pauseTrack() {
   audio.pause();
   playBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
   disc.classList.remove("spinning");
-  magicCircle.classList.remove("active");
+  magicCircleOuter.classList.remove("active");
+  magicCircleInner.classList.remove("active");
 }
 
 playBtn.addEventListener("click", () => {
@@ -229,7 +249,6 @@ repeatBtn.addEventListener("click", () => {
 });
 
 audio.addEventListener("ended", () => {
-  // Nếu đang bật hẹn giờ "Hết khúc này"
   if (sleepTimerSelect.value === "end_of_track") {
     pauseTrack();
     resetSleepTimer();
@@ -278,7 +297,6 @@ function setVolume(val) {
   }
 }
 
-// Click icon loa để Mute / Unmute
 volIcon.addEventListener("click", () => {
   if (audio.volume > 0) {
     lastVolume = audio.volume;
@@ -302,7 +320,91 @@ function formatTime(seconds) {
 }
 
 /* =========================================================
-   2. HẸN GIỜ TẮT NHẠC (TỊNH TÂM CHI HẠN)
+   2. HỆ THỐNG QUẢN LÝ ALBUM TỪNG CA SĨ
+========================================================= */
+// Switcher chuyển đổi tab
+viewSongsBtn.addEventListener("click", () => {
+  viewSongsBtn.classList.add("active");
+  viewAlbumsBtn.classList.remove("active");
+  songsView.classList.add("active");
+  albumsView.classList.remove("active");
+});
+
+viewAlbumsBtn.addEventListener("click", () => {
+  viewAlbumsBtn.classList.add("active");
+  viewSongsBtn.classList.remove("active");
+  albumsView.classList.add("active");
+  songsView.classList.remove("active");
+  renderAlbumGrid();
+});
+
+// Tự động gom nhóm các Album theo Ca sĩ
+function getAlbumsData() {
+  const albumsMap = {};
+  playlist.forEach(track => {
+    const artistName = track.artist ? track.artist.trim() : "Vô Danh";
+    if (!albumsMap[artistName]) {
+      albumsMap[artistName] = {
+        artist: artistName,
+        cover: track.cover,
+        tracks: []
+      };
+    }
+    albumsMap[artistName].tracks.push(track);
+  });
+  return Object.values(albumsMap);
+}
+
+function renderAlbumGrid() {
+  albumGrid.innerHTML = "";
+  albumDetailHeader.style.display = "none";
+  albumGrid.style.display = "grid";
+
+  const albums = getAlbumsData();
+  albums.forEach(album => {
+    const card = document.createElement("div");
+    card.className = "album-card";
+    card.innerHTML = `
+      <div class="album-cover-wrap">
+        <img src="${album.cover || 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=600&auto=format&fit=crop'}" alt="cover">
+      </div>
+      <div class="album-artist-name">${album.artist}</div>
+      <div class="album-track-count">${album.tracks.length} Khúc Phổ</div>
+    `;
+
+    card.addEventListener("click", () => {
+      openAlbumDetail(album);
+    });
+
+    albumGrid.appendChild(card);
+  });
+}
+
+// Mở danh sách chi tiết các bài hát trong 1 Album
+function openAlbumDetail(album) {
+  albumGrid.style.display = "none";
+  albumDetailHeader.style.display = "flex";
+  albumDetailTitle.textContent = `Album: ${album.artist} (${album.tracks.length} bài)`;
+
+  let detailList = document.getElementById("album-detail-list");
+  if (!detailList) {
+    detailList = document.createElement("div");
+    detailList.id = "album-detail-list";
+    detailList.className = "playlist-items";
+    albumsView.appendChild(detailList);
+  }
+  detailList.style.display = "flex";
+  renderPlaylist(searchInput.value, detailList, album.artist);
+}
+
+btnBackAlbums.addEventListener("click", () => {
+  const detailList = document.getElementById("album-detail-list");
+  if (detailList) detailList.style.display = "none";
+  renderAlbumGrid();
+});
+
+/* =========================================================
+   3. HẸN GIỜ TẮT NHẠC
 ========================================================= */
 let sleepTimerInterval = null;
 let remainingSeconds = 0;
@@ -351,10 +453,9 @@ function updateTimerDisplay() {
 }
 
 /* =========================================================
-   3. PHÍM TẮT ĐIỀU KHIỂN NHANH (BÀN PHÍM)
+   4. PHÍM TẮT ĐIỀU KHIỂN NHANH
 ========================================================= */
 window.addEventListener("keydown", (e) => {
-  // Bỏ qua khi người dùng đang nhập liệu trong ô input / textarea
   const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : "";
   if (activeTag === "input" || activeTag === "textarea" || activeTag === "select") {
     return;
@@ -394,14 +495,19 @@ window.addEventListener("keydown", (e) => {
 });
 
 /* =========================================================
-   4. LINH THỨC DÒ TÌM (TÌM KIẾM PLAYLIST)
+   5. TÌM KIẾM BÀI HÁT
 ========================================================= */
 searchInput.addEventListener("input", (e) => {
   renderPlaylist(e.target.value);
+  const detailList = document.getElementById("album-detail-list");
+  if (detailList && detailList.style.display !== "none") {
+    const currentArtist = albumDetailTitle.textContent.replace("Album: ", "").split(" (")[0];
+    renderPlaylist(e.target.value, detailList, currentArtist);
+  }
 });
 
 /* =========================================================
-   5. AUDIO VISUALIZER (SÓNG LINH KHÍ QUANH ĐĨA)
+   6. AUDIO VISUALIZER
 ========================================================= */
 const vCanvas = document.getElementById("visualizer-canvas");
 const vCtx = vCanvas.getContext("2d");
@@ -423,7 +529,7 @@ function setupAudioContext() {
     dataArray = new Uint8Array(analyser.frequencyBinCount);
     drawVisualizer();
   } catch (err) {
-    console.log("AudioContext hạn chế CORS:", err);
+    console.log("AudioContext CORS:", err);
   }
 }
 
@@ -443,15 +549,20 @@ function drawVisualizer() {
   const scale = 1 + (bassAvg / 255) * 0.08;
   disc.style.transform = `scale(${scale})`;
 
+  if (ambientGlow) {
+    ambientGlow.style.transform = `scale(${1 + (bassAvg / 255) * 0.25})`;
+    ambientGlow.style.opacity = `${0.4 + (bassAvg / 255) * 0.5}`;
+  }
+
   const centerX = vCanvas.width / 2;
   const centerY = vCanvas.height / 2;
-  const baseRadius = 110;
+  const baseRadius = 115;
   const bars = 48;
   const step = (Math.PI * 2) / bars;
 
   for (let i = 0; i < bars; i++) {
     const val = dataArray[i % dataArray.length] || 0;
-    const barHeight = (val / 255) * 38;
+    const barHeight = (val / 255) * 40;
     const angle = i * step;
 
     const x1 = centerX + Math.cos(angle) * baseRadius;
@@ -475,7 +586,7 @@ function drawVisualizer() {
 }
 
 /* =========================================================
-   6. HIỆU ỨNG CHUỘT: KIẾM KHÍ TRẢM HƯ KHÔNG
+   7. HIỆU ỨNG KIẾM KHÍ CLICK CHUỘT
 ========================================================= */
 const canvas = document.getElementById("ambient-canvas");
 const ctx = canvas.getContext("2d");
@@ -547,7 +658,7 @@ function drawSwordSlashes() {
 }
 
 /* =========================================================
-   7. CẢNH GIỚI ĐỘNG PHỦ & CHUYỂN NỀN CẢNH
+   8. CẢNH GIỚI ĐỘNG PHỦ
 ========================================================= */
 if (moodDropdown) {
   moodDropdown.addEventListener("change", (e) => {
@@ -571,7 +682,57 @@ setInterval(() => {
 }, 4500);
 
 /* =========================================================
-   8. NẠP NHẠC TÙY Ý & MODAL
+   9. HỆ THỐNG TU VI & CẢNH GIỚI THÍNH GIẢ
+========================================================= */
+let totalListenSeconds = parseInt(localStorage.getItem("pntt_listen_seconds")) || 0;
+
+const REALMS = [
+  { name: "Phàm Nhân", minSec: 0, maxSec: 300 },
+  { name: "Luyện Khí Tầng 1", minSec: 300, maxSec: 900 },
+  { name: "Trúc Cơ Sơ Kỳ", minSec: 900, maxSec: 2400 },
+  { name: "Kết Đan Kỳ", minSec: 2400, maxSec: 5400 },
+  { name: "Nguyên Anh Lão Tổ", minSec: 5400, maxSec: 999999 }
+];
+
+function updateCultivationUI() {
+  const currentMinutes = Math.floor(totalListenSeconds / 60);
+  const expTextEl = document.getElementById("exp-text");
+  const realmTitleEl = document.getElementById("realm-title");
+  const expFillEl = document.getElementById("exp-fill");
+
+  if (expTextEl) expTextEl.textContent = `${currentMinutes}m`;
+
+  let currentRealm = REALMS[0];
+  for (let i = 0; i < REALMS.length; i++) {
+    if (totalListenSeconds >= REALMS[i].minSec) {
+      currentRealm = REALMS[i];
+    }
+  }
+
+  if (realmTitleEl) realmTitleEl.textContent = currentRealm.name;
+
+  if (expFillEl) {
+    if (currentRealm.maxSec < 999999) {
+      const range = currentRealm.maxSec - currentRealm.minSec;
+      const currentProg = totalListenSeconds - currentRealm.minSec;
+      const pct = Math.min(100, Math.floor((currentProg / range) * 100));
+      expFillEl.style.width = `${pct}%`;
+    } else {
+      expFillEl.style.width = "100%";
+    }
+  }
+}
+
+setInterval(() => {
+  if (isPlaying) {
+    totalListenSeconds++;
+    localStorage.setItem("pntt_listen_seconds", totalListenSeconds);
+    updateCultivationUI();
+  }
+}, 1000);
+
+/* =========================================================
+   10. NẠP NHẠC TÙY Ý & MODAL
 ========================================================= */
 openModalBtn.addEventListener("click", () => addModal.classList.add("open"));
 closeModalBtn.addEventListener("click", () => addModal.classList.remove("open"));
@@ -597,6 +758,7 @@ urlForm.addEventListener("submit", (e) => {
   playlist.push(newSong);
   savePlaylistToStorage();
   renderPlaylist(searchInput.value);
+  renderAlbumGrid();
   addModal.classList.remove("open");
   urlForm.reset();
 
@@ -625,6 +787,7 @@ fileForm.addEventListener("submit", (e) => {
 
   playlist.push(newSong);
   renderPlaylist(searchInput.value);
+  renderAlbumGrid();
   addModal.classList.remove("open");
   fileForm.reset();
 
@@ -649,6 +812,7 @@ function removeSong(id) {
       currentIndex--;
     }
     renderPlaylist(searchInput.value);
+    renderAlbumGrid();
   }
 }
 
@@ -659,7 +823,7 @@ themeToggle.addEventListener("click", () => {
 });
 
 /* =========================================================
-   9. HẠT LINH KHÍ NỀN (AMBIENT PARTICLES)
+   11. HẠT LINH KHÍ NỀN
 ========================================================= */
 class QiParticle {
   constructor() {
@@ -700,5 +864,5 @@ function animateLoop() {
 }
 animateLoop();
 
-// Khởi chạy
 initPlayer();
+updateCultivationUI();
