@@ -1,5 +1,5 @@
 /* =========================================================
-   PHÀM NHÂN THÍNH ÂM CÁC - CINEMATIC & BASS IMPACT SYSTEM
+   PHÀM NHÂN THÍNH ÂM CÁC - SIÊU PHẨM TU TIÊN ĐIỆN ẢNH
 ========================================================= */
 
 const DEFAULT_PLAYLIST = [
@@ -323,7 +323,7 @@ function formatTime(seconds) {
 }
 
 /* =========================================================
-   2. HỆ THỐNG QUẢN LÝ ALBUM TỪNG CA SĨ
+   2. HỆ THỐNG QUẢN LÝ ALBUM CA SĨ
 ========================================================= */
 viewSongsBtn.addEventListener("click", () => {
   viewSongsBtn.classList.add("active");
@@ -406,12 +406,10 @@ btnBackAlbums.addEventListener("click", () => {
 /* =========================================================
    3. KỸ XẢO ĐIỆN ẢNH: SHOCKWAVE, PARALLAX 3D & ZEN MODE
 ========================================================= */
-// Chế độ Điện Ảnh (Cinematic Zen Mode)
 cinematicToggle.addEventListener("click", () => {
   document.body.classList.toggle("cinematic-mode");
 });
 
-// Hiệu ứng Parallax 3D góc nghiêng theo con trỏ chuột
 window.addEventListener("mousemove", (e) => {
   if (window.innerWidth < 768) return;
   const xAxis = (window.innerWidth / 2 - e.pageX) / 45;
@@ -421,7 +419,6 @@ window.addEventListener("mousemove", (e) => {
   }
 });
 
-// Khi rời chuột khỏi màn hình, trả khung 3D về vị trí thăng bằng
 window.addEventListener("mouseleave", () => {
   if (playerCard) {
     playerCard.style.transform = `rotateY(0deg) rotateX(0deg)`;
@@ -429,7 +426,7 @@ window.addEventListener("mouseleave", () => {
 });
 
 /* =========================================================
-   4. AUDIO VISUALIZER & SÓNG XUNG KÍCH THEO BASS
+   3. "NGỰ KIẾM PHI HÀNH" - 72 THANH TRÚC PHONG VÂN KIẾM VISUALIZER
 ========================================================= */
 const vCanvas = document.getElementById("visualizer-canvas");
 const vCtx = vCanvas.getContext("2d");
@@ -438,6 +435,7 @@ let analyser = null;
 let source = null;
 let dataArray = null;
 let lastShockwaveTime = 0;
+let isHighEnergy = false;
 
 function setupAudioContext() {
   if (audioCtx) return;
@@ -445,7 +443,7 @@ function setupAudioContext() {
     const AudioContext = window.AudioContext || window.webkitAudioContext;
     audioCtx = new AudioContext();
     analyser = audioCtx.createAnalyser();
-    analyser.fftSize = 128;
+    analyser.fftSize = 256;
     source = audioCtx.createMediaElementSource(audio);
     source.connect(analyser);
     analyser.connect(audioCtx.destination);
@@ -458,7 +456,7 @@ function setupAudioContext() {
 
 function triggerCinematicShockwave() {
   const now = Date.now();
-  if (now - lastShockwaveTime > 650) { // Giới hạn kích hoạt tối đa mỗi 650ms để không bị giật mắt
+  if (now - lastShockwaveTime > 650) {
     lastShockwaveTime = now;
     document.body.classList.add("bass-impact");
     shockwaveRing.classList.add("pulse");
@@ -469,6 +467,36 @@ function triggerCinematicShockwave() {
   }
 }
 
+// Hàm vẽ 1 thanh phi kiếm nhỏ
+function drawFlyingSword(ctx, x, y, angle, length, color) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(angle);
+
+  ctx.fillStyle = color;
+  ctx.shadowColor = color;
+  ctx.shadowBlur = 10;
+
+  // Lưỡi kiếm nhọn
+  ctx.beginPath();
+  ctx.moveTo(length, 0);
+  ctx.lineTo(0, -3.5);
+  ctx.lineTo(-length * 0.35, 0);
+  ctx.lineTo(0, 3.5);
+  ctx.closePath();
+  ctx.fill();
+
+  // Chuôi kiếm
+  ctx.strokeStyle = "rgba(255, 255, 255, 0.9)";
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(0, -6);
+  ctx.lineTo(0, 6);
+  ctx.stroke();
+
+  ctx.restore();
+}
+
 function drawVisualizer() {
   requestAnimationFrame(drawVisualizer);
   vCtx.clearRect(0, 0, vCanvas.width, vCanvas.height);
@@ -477,7 +505,7 @@ function drawVisualizer() {
 
   analyser.getByteFrequencyData(dataArray);
 
-  // Tính trung bình cường độ Bass
+  // Tính trung bình Bass
   let bassSum = 0;
   for (let i = 0; i < 8; i++) {
     bassSum += dataArray[i];
@@ -491,44 +519,37 @@ function drawVisualizer() {
     ambientGlow.style.opacity = `${0.4 + (bassAvg / 255) * 0.55}`;
   }
 
-  // Nếu Bass cực mạnh (Kick bass > 215), kích hoạt Sóng Xung Kích Điện Ảnh
+  isHighEnergy = bassAvg > 190;
   if (bassAvg > 215) {
     triggerCinematicShockwave();
   }
 
   const centerX = vCanvas.width / 2;
   const centerY = vCanvas.height / 2;
-  const baseRadius = 115;
-  const bars = 48;
-  const step = (Math.PI * 2) / bars;
+  const numSwords = 72; // Đúng 72 thanh Thanh Trúc Phong Vân Kiếm
+  const baseRadius = 118;
+  const mood = moodDropdown ? moodDropdown.value : "mood-thanhvan";
 
-  for (let i = 0; i < bars; i++) {
+  let swordColor = "#10b981";
+  if (mood === "mood-loantinhhai") swordColor = "#38bdf8";
+  if (mood === "mood-dokiep") swordColor = "#c084fc";
+
+  for (let i = 0; i < numSwords; i++) {
     const val = dataArray[i % dataArray.length] || 0;
-    const barHeight = (val / 255) * 40;
-    const angle = i * step;
+    const progress = val / 255;
+    const angle = (i * (Math.PI * 2)) / numSwords;
 
-    const x1 = centerX + Math.cos(angle) * baseRadius;
-    const y1 = centerY + Math.sin(angle) * baseRadius;
-    const x2 = centerX + Math.cos(angle) * (baseRadius + barHeight);
-    const y2 = centerY + Math.sin(angle) * (baseRadius + barHeight);
+    // Khi bass cao, phi kiếm phóng xa ra mép
+    const distance = baseRadius + progress * (isHighEnergy ? 60 : 35);
+    const swordX = centerX + Math.cos(angle) * distance;
+    const swordY = centerY + Math.sin(angle) * distance;
 
-    const mood = moodDropdown ? moodDropdown.value : "mood-thanhvan";
-    let strokeColor = "rgba(16, 185, 129, 0.85)";
-    if (mood === "mood-loantinhhai") strokeColor = "rgba(56, 189, 248, 0.85)";
-    if (mood === "mood-dokiep") strokeColor = "rgba(168, 85, 247, 0.9)";
-
-    vCtx.strokeStyle = strokeColor;
-    vCtx.lineWidth = 2.5;
-    vCtx.lineCap = "round";
-    vCtx.beginPath();
-    vCtx.moveTo(x1, y1);
-    vCtx.lineTo(x2, y2);
-    vCtx.stroke();
+    drawFlyingSword(vCtx, swordX, swordY, angle + Math.PI / 2, 14 + progress * 8, swordColor);
   }
 }
 
 /* =========================================================
-   5. HIỆU ỨNG KIẾM KHÍ CLICK CHUỘT
+   4. "CHƯỞNG THIÊN BÌNH THÁC THỜI GIAN" - HẠT NGHỊCH CHUYỂN TRỌNG LỰC
 ========================================================= */
 const canvas = document.getElementById("ambient-canvas");
 const ctx = canvas.getContext("2d");
@@ -541,36 +562,59 @@ function resizeCanvas() {
 window.addEventListener("resize", resizeCanvas);
 resizeCanvas();
 
-window.addEventListener("click", (e) => {
-  if (e.target.closest("button") || e.target.closest("input") || e.target.closest("select") || e.target.closest(".modal-box")) {
-    return;
+class QiParticle {
+  constructor() {
+    this.reset();
   }
-  createSwordSlash(e.clientX, e.clientY);
-});
+  reset() {
+    this.x = Math.random() * canvas.width;
+    this.y = canvas.height + Math.random() * 20;
+    this.size = Math.random() * 2.5 + 0.8;
+    this.speedY = Math.random() * 0.7 + 0.2;
+    this.speedX = (Math.random() - 0.5) * 0.5;
+    this.opacity = Math.random() * 0.5 + 0.2;
+  }
+  update() {
+    if (isHighEnergy && isPlaying) {
+      // Nghịch chuyển trọng lực: Hạt bị hút xoáy vào tâm đĩa ngọc
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
+      const dx = centerX - this.x;
+      const dy = centerY - this.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
 
-function createSwordSlash(x, y) {
-  const angle = Math.random() * Math.PI * 2;
-  const length = Math.random() * 80 + 70;
-  swordSlashes.push({
-    x,
-    y,
-    angle,
-    length,
-    life: 1.0,
-    speed: 0.04
-  });
+      if (dist < 40) {
+        this.reset();
+      } else {
+        this.x += (dx / dist) * 3.5;
+        this.y += (dy / dist) * 3.5;
+      }
+    } else {
+      // Trọng lực bình thường: Bay là là lên trên
+      this.y -= this.speedY;
+      this.x += this.speedX;
+      if (this.y < -10) this.reset();
+    }
+  }
+  draw() {
+    const style = getComputedStyle(document.body);
+    ctx.fillStyle = style.getPropertyValue("--particle-color").trim() || "rgba(16, 185, 129, 0.7)";
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fill();
+  }
 }
+
+const particles = Array.from({ length: 65 }, () => new QiParticle());
 
 function drawSwordSlashes() {
   for (let i = swordSlashes.length - 1; i >= 0; i--) {
     const s = swordSlashes[i];
     s.life -= s.speed;
-
     if (s.life <= 0) {
       swordSlashes.splice(i, 1);
       continue;
     }
-
     const currentLen = s.length * (1 - s.life * 0.2);
     const dx = Math.cos(s.angle) * (currentLen / 2);
     const dy = Math.sin(s.angle) * (currentLen / 2);
@@ -599,9 +643,326 @@ function drawSwordSlashes() {
   }
 }
 
+function animateLoop() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  particles.forEach(p => {
+    p.update();
+    p.draw();
+  });
+  drawSwordSlashes();
+  requestAnimationFrame(animateLoop);
+}
+animateLoop();
+
+window.addEventListener("click", (e) => {
+  if (e.target.closest("button") || e.target.closest("input") || e.target.closest("select") || e.target.closest(".modal-box")) {
+    return;
+  }
+  const angle = Math.random() * Math.PI * 2;
+  const length = Math.random() * 80 + 70;
+  swordSlashes.push({ x: e.clientX, y: e.clientY, angle, length, life: 1.0, speed: 0.04 });
+});
+
 /* =========================================================
-   6. HẸN GIỜ TẮT NHẠC
+   2. "LINH HẠP CHI ÂM" - BỘ HÒA ÂM THIÊN NHIÊN (WEB AUDIO SYNTHESIZER)
 ========================================================= */
+const ambientDrawer = document.getElementById("ambient-drawer");
+const ambientDrawerToggle = document.getElementById("ambient-drawer-toggle");
+const closeAmbientDrawer = document.getElementById("close-ambient-drawer");
+
+ambientDrawerToggle.addEventListener("click", () => ambientDrawer.classList.toggle("open"));
+closeAmbientDrawer.addEventListener("click", () => ambientDrawer.classList.remove("open"));
+
+let ambientCtx = null;
+let soundNodes = {};
+
+function initAmbientSounds() {
+  if (ambientCtx) return;
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  ambientCtx = new AudioCtx();
+
+  // Tạo tiếng mưa rào trắng (Pink/Brown noise)
+  const bufferSize = ambientCtx.sampleRate * 2;
+  const noiseBuffer = ambientCtx.createBuffer(1, bufferSize, ambientCtx.sampleRate);
+  const output = noiseBuffer.getChannelData(0);
+  let b0 = 0, b1 = 0, b2 = 0;
+  for (let i = 0; i < bufferSize; i++) {
+    const white = Math.random() * 2 - 1;
+    b0 = 0.99886 * b0 + white * 0.0555179;
+    b1 = 0.99332 * b1 + white * 0.0750759;
+    b2 = 0.96900 * b2 + white * 0.1538520;
+    output[i] = (b0 + b1 + b2) * 0.11;
+  }
+
+  function createNoiseSource(filterFreq) {
+    const whiteNoise = ambientCtx.createBufferSource();
+    whiteNoise.buffer = noiseBuffer;
+    whiteNoise.loop = true;
+    const filter = ambientCtx.createBiquadFilter();
+    filter.type = "lowpass";
+    filter.frequency.value = filterFreq;
+    const gain = ambientCtx.createGain();
+    gain.gain.value = 0;
+    whiteNoise.connect(filter);
+    filter.connect(gain);
+    gain.connect(ambientCtx.destination);
+    whiteNoise.start();
+    return gain;
+  }
+
+  soundNodes.rain = createNoiseSource(900);
+  soundNodes.fire = createNoiseSource(350);
+  soundNodes.waves = createNoiseSource(500);
+
+  // Chuông gió: Oscillator êm dịu
+  const osc = ambientCtx.createOscillator();
+  osc.type = "sine";
+  osc.frequency.value = 528; // Tần số 528Hz thiền định
+  const oscGain = ambientCtx.createGain();
+  oscGain.gain.value = 0;
+  osc.connect(oscGain);
+  oscGain.connect(ambientCtx.destination);
+  osc.start();
+  soundNodes.wind = oscGain;
+}
+
+document.querySelectorAll(".ambient-slider").forEach(slider => {
+  slider.addEventListener("input", (e) => {
+    initAmbientSounds();
+    if (ambientCtx.state === "suspended") ambientCtx.resume();
+    const type = e.target.id.replace("amb-", "");
+    if (soundNodes[type]) {
+      soundNodes[type].gain.setTargetAtTime(parseFloat(e.target.value) * 0.5, ambientCtx.currentTime, 0.05);
+    }
+  });
+});
+
+/* =========================================================
+   1. "THIÊN KIẾP LÔI ĐÌNH" - QUICK-TIME EVENT ĐỘ KIẾP MINI-BOSS
+========================================================= */
+const tribulationOverlay = document.getElementById("tribulation-overlay");
+const qteStrikeBtn = document.getElementById("qte-strike-btn");
+const qteProgressFill = document.getElementById("qte-progress-fill");
+const qteTimerEl = document.getElementById("qte-timer");
+const cultivationBadge = document.getElementById("cultivation-badge");
+
+let qteProgress = 0;
+let qteTimeLeft = 10;
+let qteTimerInterval = null;
+let isTribulationActive = false;
+
+function startTribulationEvent() {
+  if (isTribulationActive) return;
+  isTribulationActive = true;
+  qteProgress = 0;
+  qteTimeLeft = 10;
+  qteProgressFill.style.width = "0%";
+  qteTimerEl.textContent = "10s";
+
+  // Giảm âm lượng nhạc để tăng tính kịch tính
+  if (audio) audio.volume = 0.2;
+  tribulationOverlay.classList.add("active");
+
+  qteTimerInterval = setInterval(() => {
+    qteTimeLeft--;
+    qteTimerEl.textContent = `${qteTimeLeft}s`;
+    if (qteTimeLeft <= 0) {
+      failTribulation();
+    }
+  }, 1000);
+}
+
+function strikeTribulation() {
+  if (!isTribulationActive) return;
+  qteProgress += 8.5; // Cần khoảng 12 lần bấm trong 10 giây
+  qteProgressFill.style.width = `${Math.min(100, qteProgress)}%`;
+
+  // Chớp sét khi gõ trúng
+  if (lightningOverlay) {
+    lightningOverlay.classList.add("flash");
+    setTimeout(() => lightningOverlay.classList.remove("flash"), 90);
+  }
+
+  if (qteProgress >= 100) {
+    succeedTribulation();
+  }
+}
+
+function succeedTribulation() {
+  clearInterval(qteTimerInterval);
+  isTribulationActive = false;
+  tribulationOverlay.classList.remove("active");
+  if (audio) audio.volume = volumeSlider.value;
+
+  alert("⚡ ĐỘ KIẾP THÀNH CÔNG! Đạo hữu đã đột phá cảnh giới, linh khí ngút trời!");
+  // Thưởng tăng tu vi
+  totalListenSeconds += 600;
+  localStorage.setItem("pntt_listen_seconds", totalListenSeconds);
+  updateCultivationUI();
+}
+
+function failTribulation() {
+  clearInterval(qteTimerInterval);
+  isTribulationActive = false;
+  tribulationOverlay.classList.remove("active");
+  if (audio) audio.volume = volumeSlider.value;
+
+  alert("☠️ ĐỘ KIẾP THẤT BẠI! Tâm ma quấy nhiễu, đạo hữu hãy tiếp tục tĩnh tâm thính âm...");
+}
+
+qteStrikeBtn.addEventListener("click", strikeTribulation);
+cultivationBadge.addEventListener("click", startTribulationEvent);
+
+/* =========================================================
+   5. "VẤN ĐẠO BỐC QUẺ" - THẺ BÀI TIÊN TRI TÂM TRẠNG
+========================================================= */
+const divineOracleBtn = document.getElementById("divine-oracle-btn");
+const oracleModal = document.getElementById("oracle-modal");
+const closeOracleBtn = document.getElementById("close-oracle-btn");
+const oracleCylinder = document.getElementById("oracle-cylinder");
+const oracleResult = document.getElementById("oracle-result");
+const oracleGrade = document.getElementById("oracle-grade");
+const oracleVerse = document.getElementById("oracle-verse");
+const oracleAdvice = document.getElementById("oracle-advice");
+const oraclePlayBtn = document.getElementById("oracle-play-btn");
+
+let recommendedTrackIndex = 0;
+
+const ORACLES = [
+  { grade: "Thượng Thượng Quẻ", verse: "Đạo tâm kiên định, vạn kiếp bất diệt.", advice: "Khí vận dồi dào, hãy lắng nghe giai điệu hào hùng để ngộ đạo." },
+  { grade: "Thượng Cát Quẻ", verse: "Gió lặng mây trong, thủy triều quy hải.", advice: "Thích hợp tịnh dưỡng tâm hồn cùng khúc nhạc Dangrangto êm dịu." },
+  { grade: "Trung Bình Quẻ", verse: "Tâm ma dập dờn, sương mây che lối.", advice: "Hãy để âm luật cổ phong gột rửa mọi muộn phiền nơi phàm trần." }
+];
+
+divineOracleBtn.addEventListener("click", () => {
+  oracleResult.style.display = "none";
+  oracleModal.classList.add("open");
+});
+
+closeOracleBtn.addEventListener("click", () => oracleModal.classList.remove("open"));
+
+oracleCylinder.addEventListener("click", () => {
+  const chosen = ORACLES[Math.floor(Math.random() * ORACLES.length)];
+  oracleGrade.textContent = chosen.grade;
+  oracleVerse.textContent = `"${chosen.verse}"`;
+  oracleAdvice.textContent = chosen.advice;
+  recommendedTrackIndex = Math.floor(Math.random() * playlist.length);
+  oracleResult.style.display = "block";
+});
+
+oraclePlayBtn.addEventListener("click", () => {
+  oracleModal.classList.remove("open");
+  loadTrack(recommendedTrackIndex);
+  playTrack();
+});
+
+/* =========================================================
+   6. HỆ THỐNG TU VI & CẢNH GIỚI THÍNH GIẢ
+========================================================= */
+let totalListenSeconds = parseInt(localStorage.getItem("pntt_listen_seconds")) || 0;
+
+const REALMS = [
+  { name: "Phàm Nhân", minSec: 0, maxSec: 300 },
+  { name: "Luyện Khí Tầng 1", minSec: 300, maxSec: 900 },
+  { name: "Trúc Cơ Sơ Kỳ", minSec: 900, maxSec: 2400 },
+  { name: "Kết Đan Kỳ", minSec: 2400, maxSec: 5400 },
+  { name: "Nguyên Anh Lão Tổ", minSec: 5400, maxSec: 999999 }
+];
+
+function updateCultivationUI() {
+  const currentMinutes = Math.floor(totalListenSeconds / 60);
+  const expTextEl = document.getElementById("exp-text");
+  const realmTitleEl = document.getElementById("realm-title");
+  const expFillEl = document.getElementById("exp-fill");
+
+  if (expTextEl) expTextEl.textContent = `${currentMinutes}m`;
+
+  let currentRealm = REALMS[0];
+  for (let i = 0; i < REALMS.length; i++) {
+    if (totalListenSeconds >= REALMS[i].minSec) {
+      currentRealm = REALMS[i];
+    }
+  }
+
+  if (realmTitleEl) realmTitleEl.textContent = currentRealm.name;
+
+  if (expFillEl) {
+    if (currentRealm.maxSec < 999999) {
+      const range = currentRealm.maxSec - currentRealm.minSec;
+      const currentProg = totalListenSeconds - currentRealm.minSec;
+      const pct = Math.min(100, Math.floor((currentProg / range) * 100));
+      expFillEl.style.width = `${pct}%`;
+
+      // Khi chạm mốc 100% EXP -> Tự động kích hoạt Thiên Kiếp
+      if (pct >= 100 && !isTribulationActive) {
+        startTribulationEvent();
+      }
+    } else {
+      expFillEl.style.width = "100%";
+    }
+  }
+}
+
+setInterval(() => {
+  if (isPlaying) {
+    totalListenSeconds++;
+    localStorage.setItem("pntt_listen_seconds", totalListenSeconds);
+    updateCultivationUI();
+  }
+}, 1000);
+
+/* =========================================================
+   7. PHÍM TẮT ĐIỀU KHIỂN & HẸN GIỜ TẮT
+========================================================= */
+window.addEventListener("keydown", (e) => {
+  const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : "";
+  if (activeTag === "input" || activeTag === "textarea" || activeTag === "select") {
+    return;
+  }
+
+  if (isTribulationActive && e.code === "Space") {
+    e.preventDefault();
+    strikeTribulation();
+    return;
+  }
+
+  switch (e.code) {
+    case "Space":
+      e.preventDefault();
+      isPlaying ? pauseTrack() : playTrack();
+      break;
+    case "KeyF":
+      e.preventDefault();
+      document.body.classList.toggle("cinematic-mode");
+      break;
+    case "ArrowRight":
+      e.preventDefault();
+      audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + 5);
+      break;
+    case "ArrowLeft":
+      e.preventDefault();
+      audio.currentTime = Math.max(0, audio.currentTime - 5);
+      break;
+    case "ArrowUp":
+      e.preventDefault();
+      setVolume(audio.volume + 0.05);
+      break;
+    case "ArrowDown":
+      e.preventDefault();
+      setVolume(audio.volume - 0.05);
+      break;
+    case "KeyM":
+      e.preventDefault();
+      if (audio.volume > 0) {
+        lastVolume = audio.volume;
+        setVolume(0);
+      } else {
+        setVolume(lastVolume || 0.7);
+      }
+      break;
+  }
+});
+
 let sleepTimerInterval = null;
 let remainingSeconds = 0;
 
@@ -648,55 +1009,6 @@ function updateTimerDisplay() {
   timerDisplay.textContent = `⏳ ${m}:${s < 10 ? "0" : ""}${s}`;
 }
 
-/* =========================================================
-   7. PHÍM TẮT ĐIỀU KHIỂN & PHÍM F ĐIỆN ẢNH
-========================================================= */
-window.addEventListener("keydown", (e) => {
-  const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : "";
-  if (activeTag === "input" || activeTag === "textarea" || activeTag === "select") {
-    return;
-  }
-
-  switch (e.code) {
-    case "Space":
-      e.preventDefault();
-      isPlaying ? pauseTrack() : playTrack();
-      break;
-    case "KeyF":
-      e.preventDefault();
-      document.body.classList.toggle("cinematic-mode");
-      break;
-    case "ArrowRight":
-      e.preventDefault();
-      audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + 5);
-      break;
-    case "ArrowLeft":
-      e.preventDefault();
-      audio.currentTime = Math.max(0, audio.currentTime - 5);
-      break;
-    case "ArrowUp":
-      e.preventDefault();
-      setVolume(audio.volume + 0.05);
-      break;
-    case "ArrowDown":
-      e.preventDefault();
-      setVolume(audio.volume - 0.05);
-      break;
-    case "KeyM":
-      e.preventDefault();
-      if (audio.volume > 0) {
-        lastVolume = audio.volume;
-        setVolume(0);
-      } else {
-        setVolume(lastVolume || 0.7);
-      }
-      break;
-  }
-});
-
-/* =========================================================
-   8. TÌM KIẾM BÀI HÁT
-========================================================= */
 searchInput.addEventListener("input", (e) => {
   renderPlaylist(e.target.value);
   const detailList = document.getElementById("album-detail-list");
@@ -706,82 +1018,17 @@ searchInput.addEventListener("input", (e) => {
   }
 });
 
-/* =========================================================
-   9. CẢNH GIỚI ĐỘNG PHỦ
-========================================================= */
 if (moodDropdown) {
   moodDropdown.addEventListener("change", (e) => {
     const selectedMood = e.target.value;
     document.body.classList.remove("mood-thanhvan", "mood-loantinhhai", "mood-dokiep");
     document.body.classList.add(selectedMood);
-
-    if (vCtx) {
-      vCtx.clearRect(0, 0, vCanvas.width, vCanvas.height);
-    }
+    if (vCtx) vCtx.clearRect(0, 0, vCanvas.width, vCanvas.height);
   });
 }
 
-setInterval(() => {
-  if (moodDropdown && moodDropdown.value === "mood-dokiep" && lightningOverlay && Math.random() > 0.65) {
-    lightningOverlay.classList.add("flash");
-    setTimeout(() => {
-      lightningOverlay.classList.remove("flash");
-    }, 120);
-  }
-}, 4500);
-
 /* =========================================================
-   10. HỆ THỐNG TU VI & CẢNH GIỚI THÍNH GIẢ
-========================================================= */
-let totalListenSeconds = parseInt(localStorage.getItem("pntt_listen_seconds")) || 0;
-
-const REALMS = [
-  { name: "Phàm Nhân", minSec: 0, maxSec: 300 },
-  { name: "Luyện Khí Tầng 1", minSec: 300, maxSec: 900 },
-  { name: "Trúc Cơ Sơ Kỳ", minSec: 900, maxSec: 2400 },
-  { name: "Kết Đan Kỳ", minSec: 2400, maxSec: 5400 },
-  { name: "Nguyên Anh Lão Tổ", minSec: 5400, maxSec: 999999 }
-];
-
-function updateCultivationUI() {
-  const currentMinutes = Math.floor(totalListenSeconds / 60);
-  const expTextEl = document.getElementById("exp-text");
-  const realmTitleEl = document.getElementById("realm-title");
-  const expFillEl = document.getElementById("exp-fill");
-
-  if (expTextEl) expTextEl.textContent = `${currentMinutes}m`;
-
-  let currentRealm = REALMS[0];
-  for (let i = 0; i < REALMS.length; i++) {
-    if (totalListenSeconds >= REALMS[i].minSec) {
-      currentRealm = REALMS[i];
-    }
-  }
-
-  if (realmTitleEl) realmTitleEl.textContent = currentRealm.name;
-
-  if (expFillEl) {
-    if (currentRealm.maxSec < 999999) {
-      const range = currentRealm.maxSec - currentRealm.minSec;
-      const currentProg = totalListenSeconds - currentRealm.minSec;
-      const pct = Math.min(100, Math.floor((currentProg / range) * 100));
-      expFillEl.style.width = `${pct}%`;
-    } else {
-      expFillEl.style.width = "100%";
-    }
-  }
-}
-
-setInterval(() => {
-  if (isPlaying) {
-    totalListenSeconds++;
-    localStorage.setItem("pntt_listen_seconds", totalListenSeconds);
-    updateCultivationUI();
-  }
-}, 1000);
-
-/* =========================================================
-   11. NẠP NHẠC TÙY Ý & MODAL
+   8. MODAL THÊM BÀI HÁT
 ========================================================= */
 openModalBtn.addEventListener("click", () => addModal.classList.add("open"));
 closeModalBtn.addEventListener("click", () => addModal.classList.remove("open"));
@@ -871,47 +1118,6 @@ themeToggle.addEventListener("click", () => {
   themeToggle.innerHTML = isLight ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
 });
 
-/* =========================================================
-   12. HẠT LINH KHÍ NỀN
-========================================================= */
-class QiParticle {
-  constructor() {
-    this.reset();
-  }
-  reset() {
-    this.x = Math.random() * canvas.width;
-    this.y = canvas.height + Math.random() * 20;
-    this.size = Math.random() * 2.5 + 0.8;
-    this.speedY = Math.random() * 0.7 + 0.2;
-    this.speedX = (Math.random() - 0.5) * 0.5;
-    this.opacity = Math.random() * 0.5 + 0.2;
-  }
-  update() {
-    this.y -= this.speedY;
-    this.x += this.speedX;
-    if (this.y < -10) this.reset();
-  }
-  draw() {
-    const style = getComputedStyle(document.body);
-    ctx.fillStyle = style.getPropertyValue("--particle-color").trim() || "rgba(16, 185, 129, 0.7)";
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-    ctx.fill();
-  }
-}
-
-const particles = Array.from({ length: 45 }, () => new QiParticle());
-
-function animateLoop() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  particles.forEach(p => {
-    p.update();
-    p.draw();
-  });
-  drawSwordSlashes();
-  requestAnimationFrame(animateLoop);
-}
-animateLoop();
-
+// Khởi chạy hệ thống
 initPlayer();
 updateCultivationUI();
