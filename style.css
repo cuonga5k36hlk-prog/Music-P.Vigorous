@@ -1,5 +1,5 @@
 /* =========================================================
-   GIAO DIỆN THEME PHÀM NHÂN TU TIÊN (CINEMATIC EDITION)
+   GIAO DIỆN THEME PHÀM NHÂN TU TIÊN (ULTIMATE CINEMATIC & QTE)
 ========================================================= */
 
 body, body.mood-thanhvan {
@@ -77,9 +77,6 @@ body {
   transition: background-image 0.8s ease, color 0.3s ease;
 }
 
-/* =========================================================
-   KỸ XẢO ĐIỆN ẢNH: SHOCKWAVE, MIST & CINEMATIC BARS
-========================================================= */
 /* Dải đen điện ảnh 21:9 */
 .cinematic-bar {
   position: fixed;
@@ -112,7 +109,7 @@ body.cinematic-mode .main-content {
   margin: 50px auto 0 auto;
 }
 
-/* Sóng xung kích Bass Shockwave Ring */
+/* Sóng xung kích Bass Shockwave */
 .shockwave-ring {
   position: fixed;
   top: 50%;
@@ -134,7 +131,6 @@ body.cinematic-mode .main-content {
   opacity: 0.85;
 }
 
-/* Rung chấn Camera Bass Shake */
 body.bass-impact {
   animation: cameraShake 0.18s ease-in-out;
 }
@@ -147,7 +143,6 @@ body.bass-impact {
   100% { transform: translate(0, 0); }
 }
 
-/* Sương khói linh khí bồng bềnh cuộn chảy */
 .mist-layer {
   position: fixed;
   bottom: 0;
@@ -240,7 +235,6 @@ body.bass-impact {
   letter-spacing: 1.5px;
 }
 
-/* Huy hiệu Tu Vi */
 .cultivation-badge {
   display: flex;
   align-items: center;
@@ -252,6 +246,11 @@ body.bass-impact {
   border-radius: 20px;
   cursor: pointer;
   transition: var(--transition);
+}
+
+.cultivation-badge:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px var(--accent-gold);
 }
 
 .cultivation-badge i {
@@ -297,6 +296,13 @@ body.bass-impact {
   align-items: center;
   gap: 12px;
   flex-wrap: wrap;
+}
+
+.gold-glow {
+  color: var(--accent-gold) !important;
+}
+.gold-glow:hover {
+  text-shadow: 0 0 12px var(--accent-gold-glow);
 }
 
 .mood-selector, .sleep-timer-wrapper {
@@ -352,7 +358,7 @@ body.bass-impact {
 }
 
 /* =========================================================
-   TRÌNH PHÁT TRUNG TÂM (3D PARALLAX PERSPECTIVE)
+   TRÌNH PHÁT TRUNG TÂM (3D PARALLAX & KIẾM TRẬN)
 ========================================================= */
 .player-section {
   display: flex;
@@ -365,8 +371,8 @@ body.bass-impact {
 
 .disc-wrapper {
   position: relative;
-  width: 290px;
-  height: 290px;
+  width: 320px;
+  height: 320px;
   margin: 10px 0 25px 0;
   display: flex;
   justify-content: center;
@@ -392,16 +398,16 @@ body.bass-impact {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 350px;
-  height: 350px;
+  width: 400px;
+  height: 400px;
   pointer-events: none;
   z-index: 1;
 }
 
 .magic-circle.outer-circle {
   position: absolute;
-  width: 260px;
-  height: 260px;
+  width: 275px;
+  height: 275px;
   border-radius: 50%;
   border: 2px dashed var(--primary-color);
   box-shadow: 0 0 25px var(--primary-glow), inset 0 0 15px var(--primary-glow);
@@ -412,8 +418,8 @@ body.bass-impact {
 
 .magic-circle.inner-circle {
   position: absolute;
-  width: 220px;
-  height: 220px;
+  width: 230px;
+  height: 230px;
   border-radius: 50%;
   border: 1px dotted var(--accent-gold);
   box-shadow: 0 0 15px var(--accent-gold-glow);
@@ -582,7 +588,7 @@ body.bass-impact {
 }
 
 /* =========================================================
-   HỆ THỐNG ALBUM CA SĨ & SWITCHER
+   HỆ THỐNG ALBUM CA SĨ & PLAYLIST
 ========================================================= */
 .playlist-section {
   display: flex;
@@ -883,7 +889,254 @@ body.bass-impact {
   color: #ef4444;
 }
 
-/* Modal */
+/* =========================================================
+   2. NGĂN KÉO LINH HẠP CHI ÂM (AMBIENT MIXER)
+========================================================= */
+.ambient-drawer {
+  position: fixed;
+  bottom: 25px;
+  left: 25px;
+  width: 280px;
+  padding: 18px;
+  z-index: 80;
+  transform: translateX(-350px);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ambient-drawer.open {
+  transform: translateX(0);
+}
+
+.ambient-drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.ambient-drawer-header h4 {
+  font-size: 0.95rem;
+  color: var(--primary-color);
+}
+
+.btn-close-sm {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.ambient-track {
+  margin-bottom: 12px;
+}
+
+.ambient-info {
+  font-size: 0.78rem;
+  color: var(--text-main);
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ambient-slider {
+  width: 100%;
+  accent-color: var(--primary-color);
+  height: 4px;
+  cursor: pointer;
+}
+
+/* =========================================================
+   1. GIAO DIỆN THIÊN KIẾP LÔI ĐÌNH (QTE EVENT)
+========================================================= */
+.tribulation-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 2, 10, 0.92);
+  backdrop-filter: blur(12px);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.5s ease;
+}
+
+.tribulation-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.tribulation-core {
+  position: relative;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 480px;
+  padding: 30px;
+}
+
+.thunder-vortex {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 380px;
+  height: 380px;
+  border-radius: 50%;
+  border: 4px dashed #c084fc;
+  box-shadow: 0 0 60px #a855f7, inset 0 0 40px #a855f7;
+  animation: slowSpin 8s linear infinite;
+  pointer-events: none;
+  opacity: 0.65;
+}
+
+.tribulation-title {
+  font-family: var(--font-title);
+  font-size: 1.8rem;
+  color: #f43f5e;
+  text-shadow: 0 0 25px rgba(244, 63, 94, 0.8);
+  margin-bottom: 8px;
+  letter-spacing: 2px;
+}
+
+.tribulation-subtitle {
+  font-size: 0.85rem;
+  color: #e2e8f0;
+  margin-bottom: 25px;
+}
+
+.qte-circle-btn {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #9333ea 0%, #4c1d95 100%);
+  border: 3px solid #e9d5ff;
+  box-shadow: 0 0 30px #c084fc;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+  margin-bottom: 25px;
+}
+
+.qte-circle-btn:active {
+  transform: scale(0.92);
+  box-shadow: 0 0 50px #f43f5e;
+}
+
+.qte-circle-btn i {
+  font-size: 2.2rem;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.qte-circle-btn span {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #fef08a;
+  letter-spacing: 1px;
+}
+
+.qte-progress-bar {
+  width: 260px;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.qte-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #c084fc, #f43f5e);
+  box-shadow: 0 0 15px #f43f5e;
+  transition: width 0.1s linear;
+}
+
+.qte-timer {
+  font-size: 1.3rem;
+  font-weight: 900;
+  color: #fbbf24;
+}
+
+/* =========================================================
+   5. GIAO DIỆN VẤN ĐẠO BỐC QUẺ
+========================================================= */
+.oracle-box {
+  text-align: center;
+}
+
+.oracle-cylinder {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: rgba(245, 158, 11, 0.1);
+  border: 2px solid var(--accent-gold);
+  box-shadow: 0 0 25px var(--accent-gold-glow);
+  margin: 15px auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.oracle-cylinder:hover {
+  transform: scale(1.08) rotate(5deg);
+  background: rgba(245, 158, 11, 0.2);
+}
+
+.oracle-cylinder i {
+  font-size: 2.4rem;
+  color: var(--accent-gold);
+  margin-bottom: 6px;
+}
+
+.oracle-cylinder span {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.oracle-result {
+  margin-top: 20px;
+  animation: fadeIn 0.4s ease;
+}
+
+.oracle-tag {
+  display: inline-block;
+  padding: 4px 14px;
+  background: var(--accent-gold);
+  color: #000;
+  font-weight: 700;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  margin-bottom: 10px;
+}
+
+.oracle-verse {
+  font-family: var(--font-title);
+  font-size: 1.1rem;
+  color: var(--text-main);
+  margin-bottom: 8px;
+  font-style: italic;
+}
+
+.oracle-advice {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-bottom: 15px;
+}
+
+/* Modal Popup Chung */
 .modal {
   position: fixed;
   inset: 0;
@@ -895,7 +1148,7 @@ body.bass-impact {
   opacity: 0;
   visibility: hidden;
   transition: var(--transition);
-  z-index: 100;
+  z-index: 150;
   padding: 20px;
 }
 
@@ -1008,6 +1261,11 @@ body.bass-impact {
   to { transform: rotate(360deg); }
 }
 
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 @media (max-width: 768px) {
   .app-header {
     flex-direction: column;
@@ -1022,20 +1280,20 @@ body.bass-impact {
     gap: 20px;
   }
   .disc-wrapper {
-    width: 250px;
-    height: 250px;
+    width: 260px;
+    height: 260px;
   }
   #visualizer-canvas {
-    width: 290px;
-    height: 290px;
+    width: 320px;
+    height: 320px;
   }
   .magic-circle.outer-circle {
-    width: 220px;
-    height: 220px;
+    width: 230px;
+    height: 230px;
   }
   .magic-circle.inner-circle {
-    width: 185px;
-    height: 185px;
+    width: 190px;
+    height: 190px;
   }
   .disc {
     width: 155px;
