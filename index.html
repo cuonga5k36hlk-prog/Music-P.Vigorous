@@ -25,7 +25,6 @@
   <!-- Các lớp hiệu ứng điện ảnh -->
   <div id="cinematic-bar-top" class="cinematic-bar"></div>
   <div id="cinematic-bar-bottom" class="cinematic-bar"></div>
-  <div id="shockwave-ring" class="shockwave-ring"></div>
   <div id="mist-layer" class="mist-layer"></div>
   <div id="lightning-overlay"></div>
 
@@ -42,7 +41,7 @@
         </div>
       </div>
 
-      <!-- Huy Hiệu Tu Vi Cảnh Giới (Click để xem chi tiết / cưỡng ép độ kiếp) -->
+      <!-- Huy Hiệu Tu Vi Cảnh Giới -->
       <div class="cultivation-badge" id="cultivation-badge" title="Tích lũy linh khí theo thời gian thính âm (Click để thử Lôi Kiếp)">
         <i class="fa-solid fa-gem"></i>
         <div class="badge-info">
@@ -102,15 +101,14 @@
     </header>
 
     <main class="main-content" id="main-content">
-      <!-- Cột Trái: Trình phát trung tâm với Parallax 3D Card & Kiếm Trận Visualizer -->
+      <!-- Cột Trái: Trình phát trung tâm CHỈ CÓ ĐĨA NGỌC & ĐẠI CANH KIẾM TRẬN -->
       <section class="player-section glass-panel" id="player-card">
         <div class="disc-wrapper">
           <div class="ambient-glow" id="ambient-glow"></div>
-          <!-- Canvas 72 Thanh Trúc Phong Vân Kiếm Visualizer -->
-          <canvas id="visualizer-canvas" width="400" height="400"></canvas>
-          <div class="magic-circle outer-circle" id="magic-circle-outer"></div>
-          <div class="magic-circle inner-circle" id="magic-circle-inner"></div>
+          <!-- Canvas 28 Thanh Trúc Phong Vân Kiếm Visualizer -->
+          <canvas id="visualizer-canvas" width="420" height="420"></canvas>
 
+          <!-- Đĩa Ngọc Bích (Đã gỡ bỏ toàn bộ các vòng tròn nét đứt thừa) -->
           <div class="disc" id="disc">
             <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=600&auto=format&fit=crop" id="track-cover" alt="Bìa nhạc">
             <div class="disc-core"></div>
@@ -193,9 +191,20 @@
     </main>
   </div>
 
+  <!-- HỘ ĐẠO LINH THÚ (INTERACTIVE SPIRITUAL PET) -->
+  <div class="spiritual-pet-wrapper" id="spiritual-pet" title="Hộ Đạo Linh Thú (Click để vuốt ve tương tác)">
+    <div class="pet-speech" id="pet-speech">Zzz...</div>
+    <div class="pet-body" id="pet-body">
+      <!-- Icon Linh Thú: Phệ Kim Hồ Điệp / Linh Thú Tu Tiên -->
+      <div class="pet-glow"></div>
+      <i class="fa-solid fa-dragon pet-icon" id="pet-icon"></i>
+    </div>
+    <div class="pet-name">Phệ Kim Linh Thú</div>
+  </div>
+
   <audio id="audio-engine" crossorigin="anonymous" preload="metadata"></audio>
 
-  <!-- 2. NGĂN KÉO LINH HẠP CHI ÂM (AMBIENT SOUND MIXER) -->
+  <!-- NGĂN KÉO LINH HẠP CHI ÂM (AMBIENT SOUND MIXER) -->
   <div class="ambient-drawer glass-panel" id="ambient-drawer">
     <div class="ambient-drawer-header">
       <h4><i class="fa-solid fa-wind"></i> Linh Hạp Chi Âm</h4>
@@ -219,7 +228,7 @@
     </div>
   </div>
 
-  <!-- 1. GIAO DIỆN THIÊN KIẾP LÔI ĐÌNH (QUICK-TIME EVENT MINI-BOSS) -->
+  <!-- GIAO DIỆN THIÊN KIẾP LÔI ĐÌNH (QTE) -->
   <div class="tribulation-overlay" id="tribulation-overlay">
     <div class="tribulation-core">
       <div class="thunder-vortex"></div>
@@ -236,7 +245,7 @@
     </div>
   </div>
 
-  <!-- 5. GIAO DIỆN VẤN ĐẠO BỐC QUẺ -->
+  <!-- GIAO DIỆN VẤN ĐẠO BỐC QUẺ -->
   <div class="modal" id="oracle-modal">
     <div class="modal-box glass-panel oracle-box">
       <div class="modal-header">
