@@ -1,5 +1,5 @@
 /* =========================================================
-   PHÀM NHÂN THÍNH ÂM CÁC - SCRIPT HOÀN CHỈNH ĐÃ FIX ÂM THANH
+   PHÀM NHÂN THÍNH ÂM CÁC - VIP PRO MAX EDITION (TẤT CẢ TÍNH NĂNG)
 ========================================================= */
 
 const DEFAULT_PLAYLIST = [
@@ -8,21 +8,24 @@ const DEFAULT_PLAYLIST = [
     title: "Món quà",
     artist: "Dangrangto",
     src: "https://files.catbox.moe/9fvwip.mp3",
-    cover: "https://img.youtube.com/vi/a6pUdErpOgw/maxresdefault.jpg"
+    cover: "https://img.youtube.com/vi/a6pUdErpOgw/maxresdefault.jpg",
+    verse: "Khúc tình thâm trầm, như linh căn ấm áp giữa trời đông."
   },
   {
     id: 2,
     title: "Đánh rơi (feat. MICKEY)",
     artist: "Dangrangto",
     src: "https://files.catbox.moe/wdyj9j.mp3",
-    cover: "https://img.youtube.com/vi/Tv0w9-bpPpk/maxresdefault.jpg"
+    cover: "https://img.youtube.com/vi/Tv0w9-bpPpk/maxresdefault.jpg",
+    verse: "Phù du thế sự, đánh rơi tơ vương bước vào tiên đạo."
   },
   {
     id: 3,
     title: "Tinh Hải Phiêu Lưu Bi Ký",
     artist: "Loạn Tinh Hải Cổ Tu",
     src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
-    cover: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=600&auto=format&fit=crop"
+    cover: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=600&auto=format&fit=crop",
+    verse: "Sóng cuộn Tinh Hải, vạn dặm ngự kiếm tìm kiếm trường sinh."
   }
 ];
 
@@ -54,8 +57,6 @@ const trackTitle = document.getElementById("track-title");
 const trackArtist = document.getElementById("track-artist");
 const disc = document.getElementById("disc");
 const ambientGlow = document.getElementById("ambient-glow");
-const progressBar = document.getElementById("progress-bar");
-const progressFill = document.getElementById("progress-fill");
 const currentTimeEl = document.getElementById("current-time");
 const durationEl = document.getElementById("duration");
 const volumeSlider = document.getElementById("volume-slider");
@@ -68,17 +69,24 @@ const sleepTimerSelect = document.getElementById("sleep-timer-select");
 const timerDisplay = document.getElementById("timer-display");
 const lightningOverlay = document.getElementById("lightning-overlay");
 const cinematicToggle = document.getElementById("cinematic-toggle");
-const playerCard = document.getElementById("player-card");
+const calligraphyText = document.getElementById("calligraphy-text");
+const speedToggleBtn = document.getElementById("speed-toggle-btn");
+const speedText = document.getElementById("speed-text");
+const parallaxWrapper = document.getElementById("parallax-wrapper");
 
-// Hộ Đạo Linh Thú
+// Waveform Box & Canvas
+const waveformBox = document.getElementById("waveform-box");
+const waveformCanvas = document.getElementById("waveform-canvas");
+const waveformCtx = waveformCanvas.getContext("2d");
+const waveformProgress = document.getElementById("waveform-progress");
+
+// Hộ Đạo Linh Thú Elements
 const spiritualPet = document.getElementById("spiritual-pet");
 const petSpeech = document.getElementById("pet-speech");
-
-// Equalizer DOM
-const eqModal = document.getElementById("eq-modal");
-const eqToggleBtn = document.getElementById("eq-toggle-btn");
-const closeEqBtn = document.getElementById("close-eq-btn");
-const presetBtns = document.querySelectorAll(".preset-btn");
+const petIcon = document.getElementById("pet-icon");
+const petName = document.getElementById("pet-name");
+const petFeedBtn = document.getElementById("pet-feed-btn");
+const pillCountEl = document.getElementById("pill-count");
 
 // View Switcher Elements
 const viewSongsBtn = document.getElementById("view-songs-btn");
@@ -115,6 +123,7 @@ function initPlayer() {
   renderPlaylist();
   renderAlbumGrid();
   loadTrack(currentIndex);
+  drawStaticWaveform();
 }
 
 function loadTrack(index) {
@@ -127,6 +136,10 @@ function loadTrack(index) {
   trackTitle.textContent = track.title;
   trackArtist.textContent = track.artist;
   trackCover.src = track.cover || "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=600&auto=format&fit=crop";
+
+  if (calligraphyText) {
+    calligraphyText.textContent = `"${track.verse || 'Đạo tâm an tịnh, vạn ma bất xâm.'}"`;
+  }
 
   savePlaylistToStorage();
   updatePlaylistHighlight();
@@ -193,7 +206,6 @@ function playTrack() {
   if (playlist.length === 0) return;
   setupAudioContext();
 
-  // Đảm bảo âm lượng loa của audio được đặt đúng
   audio.volume = parseFloat(volumeSlider.value) || 0.7;
 
   const playPromise = audio.play();
@@ -257,6 +269,10 @@ repeatBtn.addEventListener("click", () => {
 });
 
 audio.addEventListener("ended", () => {
+  // Hoàn thành bài hát được tặng 1 viên Tụ Khí Đan
+  petPills++;
+  updatePetPillDisplay();
+
   if (sleepTimerSelect.value === "end_of_track") {
     pauseTrack();
     resetSleepTimer();
@@ -274,17 +290,17 @@ audio.addEventListener("timeupdate", () => {
     const current = audio.currentTime;
     const duration = audio.duration;
     const percent = (current / duration) * 100;
-    progressFill.style.width = `${percent}%`;
+    waveformProgress.style.width = `${percent}%`;
 
     currentTimeEl.textContent = formatTime(current);
     durationEl.textContent = formatTime(duration);
   }
 });
 
-progressBar.addEventListener("click", (e) => {
-  const width = progressBar.clientWidth;
-  const clickX = e.offsetX;
-  audio.currentTime = (clickX / width) * audio.duration;
+waveformBox.addEventListener("click", (e) => {
+  const rect = waveformBox.getBoundingClientRect();
+  const clickX = e.clientX - rect.left;
+  audio.currentTime = (clickX / rect.width) * audio.duration;
 });
 
 volumeSlider.addEventListener("input", (e) => {
@@ -314,7 +330,7 @@ volIcon.addEventListener("click", () => {
 });
 
 function resetProgress() {
-  progressFill.style.width = "0%";
+  waveformProgress.style.width = "0%";
   currentTimeEl.textContent = "00:00";
   durationEl.textContent = "00:00";
 }
@@ -327,101 +343,189 @@ function formatTime(seconds) {
 }
 
 /* =========================================================
-   2. HỆ THỐNG ALBUM CA SĨ
+   2. SIÊU TÍNH NĂNG 1: CHƯỞNG THIÊN BÌNH - TỐC ĐỘ PHÁT (SPEED)
 ========================================================= */
-viewSongsBtn.addEventListener("click", () => {
-  viewSongsBtn.classList.add("active");
-  viewAlbumsBtn.classList.remove("active");
-  songsView.classList.add("active");
-  albumsView.classList.remove("active");
+const SPEEDS = [1.0, 1.25, 1.5, 0.75];
+let currentSpeedIndex = 0;
+
+speedToggleBtn.addEventListener("click", () => {
+  currentSpeedIndex = (currentSpeedIndex + 1) % SPEEDS.length;
+  const speed = SPEEDS[currentSpeedIndex];
+  audio.playbackRate = speed;
+  speedText.textContent = `${speed}x`;
 });
 
-viewAlbumsBtn.addEventListener("click", () => {
-  viewAlbumsBtn.classList.add("active");
-  viewSongsBtn.classList.remove("active");
-  albumsView.classList.add("active");
-  songsView.classList.remove("active");
-  renderAlbumGrid();
-});
+/* =========================================================
+   3. SIÊU TÍNH NĂNG 2: TIÊN CẢNH 3D PARALLAX (RÊ CHUỘT)
+========================================================= */
+window.addEventListener("mousemove", (e) => {
+  if (document.body.classList.contains("cinematic-mode")) return;
+  const { innerWidth, innerHeight } = window;
+  const x = (e.clientX - innerWidth / 2) / 25;
+  const y = (e.clientY - innerHeight / 2) / 25;
 
-function getAlbumsData() {
-  const albumsMap = {};
-  playlist.forEach(track => {
-    const artistName = track.artist ? track.artist.trim() : "Vô Danh";
-    if (!albumsMap[artistName]) {
-      albumsMap[artistName] = {
-        artist: artistName,
-        cover: track.cover,
-        tracks: []
-      };
-    }
-    albumsMap[artistName].tracks.push(track);
-  });
-  return Object.values(albumsMap);
-}
-
-function renderAlbumGrid() {
-  albumGrid.innerHTML = "";
-  albumDetailHeader.style.display = "none";
-  albumGrid.style.display = "grid";
-
-  const albums = getAlbumsData();
-  albums.forEach(album => {
-    const card = document.createElement("div");
-    card.className = "album-card";
-    card.innerHTML = `
-      <div class="album-cover-wrap">
-        <img src="${album.cover || 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=600&auto=format&fit=crop'}" alt="cover">
-      </div>
-      <div class="album-artist-name">${album.artist}</div>
-      <div class="album-track-count">${album.tracks.length} Khúc Phổ</div>
-    `;
-
-    card.addEventListener("click", () => {
-      openAlbumDetail(album);
-    });
-
-    albumGrid.appendChild(card);
-  });
-}
-
-function openAlbumDetail(album) {
-  albumGrid.style.display = "none";
-  albumDetailHeader.style.display = "flex";
-  albumDetailTitle.textContent = `Album: ${album.artist} (${album.tracks.length} bài)`;
-
-  let detailList = document.getElementById("album-detail-list");
-  if (!detailList) {
-    detailList = document.createElement("div");
-    detailList.id = "album-detail-list";
-    detailList.className = "playlist-items";
-    albumsView.appendChild(detailList);
+  if (parallaxWrapper) {
+    parallaxWrapper.style.transform = `rotateY(${x}deg) rotateX(${-y}deg)`;
   }
-  detailList.style.display = "flex";
-  renderPlaylist(searchInput.value, detailList, album.artist);
+});
+
+/* =========================================================
+   4. SIÊU TÍNH NĂNG 3: DẢI SÓNG ÂM WAVEFORM CANVAS
+========================================================= */
+function drawStaticWaveform() {
+  const w = waveformCanvas.width;
+  const h = waveformCanvas.height;
+  waveformCtx.clearRect(0, 0, w, h);
+
+  const bars = 45;
+  const barWidth = w / bars - 2;
+
+  for (let i = 0; i < bars; i++) {
+    const barHeight = Math.sin(i * 0.2) * 8 + Math.cos(i * 0.4) * 5 + 12;
+    const x = i * (barWidth + 2);
+    const y = (h - barHeight) / 2;
+
+    const grad = waveformCtx.createLinearGradient(0, y, 0, y + barHeight);
+    grad.addColorStop(0, "#10b981");
+    grad.addColorStop(1, "#f59e0b");
+
+    waveformCtx.fillStyle = grad;
+    waveformCtx.fillRect(x, y, barWidth, barHeight);
+  }
 }
 
-btnBackAlbums.addEventListener("click", () => {
-  const detailList = document.getElementById("album-detail-list");
-  if (detailList) detailList.style.display = "none";
-  renderAlbumGrid();
-});
-
 /* =========================================================
-   3. BỘ CÂN BẰNG ÂM THANH NGŨ HÀNH (5-BAND EQUALIZER)
+   5. SIÊU TÍNH NĂNG 4: LINH THÚ TIẾN HÓA & CHO ĂN ĐAN DƯỢC
 ========================================================= */
-eqToggleBtn.addEventListener("click", () => eqModal.classList.toggle("open"));
-closeEqBtn.addEventListener("click", () => eqModal.classList.remove("open"));
+let petPills = parseInt(localStorage.getItem("pntt_pet_pills")) || 5;
+let petEvolutionStage = parseInt(localStorage.getItem("pntt_pet_stage")) || 1;
 
-presetBtns.forEach(btn => {
-  btn.addEventListener("click", () => {
-    presetBtns.forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
+const PET_STAGES = [
+  { name: "Ấu Trùng Phệ Kim", icon: "fa-dragon", expReq: 3 },
+  { name: "Kim Giáp Phệ Kim Trùng", icon: "fa-shield-halved", expReq: 8 },
+  { name: "Cửu Chuyển Kim Sí Bằng", icon: "fa-feather-pointed", expReq: 999 }
+];
+
+function updatePetPillDisplay() {
+  if (pillCountEl) pillCountEl.textContent = petPills;
+  if (petName) petName.textContent = PET_STAGES[petEvolutionStage - 1].name;
+  if (petIcon) {
+    petIcon.className = `fa-solid ${PET_STAGES[petEvolutionStage - 1].icon} pet-icon`;
+  }
+  localStorage.setItem("pntt_pet_pills", petPills);
+  localStorage.setItem("pntt_pet_stage", petEvolutionStage);
+}
+
+petFeedBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+  if (petPills <= 0) {
+    petSpeech.textContent = "Hết Tụ Khí Đan rồi!";
+    return;
+  }
+
+  petPills--;
+  playPetChimeSound();
+  spiritualPet.classList.add("pet-petted");
+
+  const currentInfo = PET_STAGES[petEvolutionStage - 1];
+  petSpeech.textContent = "Ngoạm! Linh lực tăng tiến~ (｡♥‿♥｡)";
+
+  if (petEvolutionStage < PET_STAGES.length && Math.random() > 0.4) {
+    petEvolutionStage++;
+    setTimeout(() => {
+      alert(`🎉 HỘ ĐẠO LINH THÚ TIẾN HÓA THÀNH: 【${PET_STAGES[petEvolutionStage - 1].name}】! Hào quang rực rỡ!`);
+      updatePetPillDisplay();
+    }, 400);
+  } else {
+    updatePetPillDisplay();
+  }
+
+  setTimeout(() => spiritualPet.classList.remove("pet-petted"), 450);
+});
+
+let currentPetState = "sleeping";
+
+function setPetState(state) {
+  if (currentPetState === state) return;
+  currentPetState = state;
+  spiritualPet.classList.remove("sleeping", "awake", "excited");
+  spiritualPet.classList.add(state);
+
+  if (state === "sleeping") {
+    petSpeech.textContent = "Zzz...";
+  } else if (state === "awake") {
+    petSpeech.textContent = "Thính âm tịnh tâm...";
+  } else if (state === "excited") {
+    petSpeech.textContent = "Linh khí bạo phát!";
+  }
+}
+
+function triggerPetSparks() {
+  if (Math.random() > 0.4) return;
+  const petRect = spiritualPet.getBoundingClientRect();
+  const discRect = disc.getBoundingClientRect();
+  const startX = petRect.left + petRect.width / 2;
+  const startY = petRect.top + petRect.height / 2;
+  const targetX = discRect.left + discRect.width / 2;
+  const targetY = discRect.top + discRect.height / 2;
+
+  swordSlashes.push({
+    x: startX,
+    y: startY,
+    angle: Math.atan2(targetY - startY, targetX - startX),
+    length: 60,
+    life: 1.0,
+    speed: 0.06
   });
+}
+
+function playPetChimeSound() {
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    const pCtx = new AudioCtx();
+    const osc = pCtx.createOscillator();
+    const gain = pCtx.createGain();
+
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(880, pCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(1760, pCtx.currentTime + 0.25);
+
+    gain.gain.setValueAtTime(0.2, pCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, pCtx.currentTime + 0.35);
+
+    osc.connect(gain);
+    gain.connect(pCtx.destination);
+    osc.start();
+    osc.stop(pCtx.currentTime + 0.36);
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+spiritualPet.addEventListener("click", () => {
+  spiritualPet.classList.add("pet-petted");
+  playPetChimeSound();
+
+  const dialogue = ["Ngao ngao! (Vui vẻ)", "Linh lực +10!", "Hộ chủ đột phá!", "Khúc nhạc tuyệt diệu!"];
+  petSpeech.textContent = dialogue[Math.floor(Math.random() * dialogue.length)];
+
+  const petRect = spiritualPet.getBoundingClientRect();
+  for (let i = 0; i < 3; i++) {
+    swordSlashes.push({
+      x: petRect.left + petRect.width / 2,
+      y: petRect.top + petRect.height / 2,
+      angle: Math.random() * Math.PI * 2,
+      length: 50,
+      life: 1.0,
+      speed: 0.05
+    });
+  }
+
+  setTimeout(() => spiritualPet.classList.remove("pet-petted"), 450);
 });
 
 /* =========================================================
-   4. ĐẠI CANH KIẾM TRẬN (PHÁT TỰ NHIÊN - BẢO TOÀN ÂM THANH)
+   6. ĐẠI CANH KIẾM TRẬN (28 PHI KIẾM SẮC BÉN)
 ========================================================= */
 const vCanvas = document.getElementById("visualizer-canvas");
 const vCtx = vCanvas.getContext("2d");
@@ -539,93 +643,7 @@ function drawVisualizer() {
 }
 
 /* =========================================================
-   5. HỘ ĐẠO LINH THÚ (TƯƠNG TÁC THẦN THÚ)
-========================================================= */
-let currentPetState = "sleeping";
-
-function setPetState(state) {
-  if (currentPetState === state) return;
-  currentPetState = state;
-  spiritualPet.classList.remove("sleeping", "awake", "excited");
-  spiritualPet.classList.add(state);
-
-  if (state === "sleeping") {
-    petSpeech.textContent = "Zzz...";
-  } else if (state === "awake") {
-    petSpeech.textContent = "Thính âm tịnh tâm...";
-  } else if (state === "excited") {
-    petSpeech.textContent = "Linh khí bạo phát!";
-  }
-}
-
-function triggerPetSparks() {
-  if (Math.random() > 0.4) return;
-  const petRect = spiritualPet.getBoundingClientRect();
-  const discRect = disc.getBoundingClientRect();
-  const startX = petRect.left + petRect.width / 2;
-  const startY = petRect.top + petRect.height / 2;
-  const targetX = discRect.left + discRect.width / 2;
-  const targetY = discRect.top + discRect.height / 2;
-
-  swordSlashes.push({
-    x: startX,
-    y: startY,
-    angle: Math.atan2(targetY - startY, targetX - startX),
-    length: 60,
-    life: 1.0,
-    speed: 0.06
-  });
-}
-
-function playPetChimeSound() {
-  try {
-    const AudioCtx = window.AudioContext || window.webkitAudioContext;
-    const pCtx = new AudioCtx();
-    const osc = pCtx.createOscillator();
-    const gain = pCtx.createGain();
-
-    osc.type = "sine";
-    osc.frequency.setValueAtTime(880, pCtx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(1760, pCtx.currentTime + 0.25);
-
-    gain.gain.setValueAtTime(0.2, pCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, pCtx.currentTime + 0.35);
-
-    osc.connect(gain);
-    gain.connect(pCtx.destination);
-    osc.start();
-    osc.stop(pCtx.currentTime + 0.36);
-  } catch (e) {
-    console.log(e);
-  }
-}
-
-spiritualPet.addEventListener("click", () => {
-  spiritualPet.classList.add("pet-petted");
-  playPetChimeSound();
-
-  const dialogue = ["Ngao ngao! (Vui vẻ)", "Linh lực +10!", "Hộ chủ đột phá!", "Khúc nhạc tuyệt diệu!"];
-  petSpeech.textContent = dialogue[Math.floor(Math.random() * dialogue.length)];
-
-  const petRect = spiritualPet.getBoundingClientRect();
-  for (let i = 0; i < 3; i++) {
-    swordSlashes.push({
-      x: petRect.left + petRect.width / 2,
-      y: petRect.top + petRect.height / 2,
-      angle: Math.random() * Math.PI * 2,
-      length: 50,
-      life: 1.0,
-      speed: 0.05
-    });
-  }
-
-  setTimeout(() => {
-    spiritualPet.classList.remove("pet-petted");
-  }, 450);
-});
-
-/* =========================================================
-   6. HẠT TRỌNG LỰC NGHỊCH CHUYỂN
+   7. HẠT TRỌNG LỰC NGHỊCH CHUYỂN
 ========================================================= */
 const canvas = document.getElementById("ambient-canvas");
 const ctx = canvas.getContext("2d");
@@ -738,7 +756,67 @@ window.addEventListener("click", (e) => {
 });
 
 /* =========================================================
-   7. LINH HẠP CHI ÂM
+   8. NÚT ĐIỆN ẢNH & PHÍM TẮT
+========================================================= */
+if (cinematicToggle) {
+  cinematicToggle.addEventListener("click", () => {
+    document.body.classList.toggle("cinematic-mode");
+    cinematicToggle.classList.toggle("active");
+  });
+}
+
+window.addEventListener("keydown", (e) => {
+  const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : "";
+  if (activeTag === "input" || activeTag === "textarea" || activeTag === "select") {
+    return;
+  }
+
+  if (isTribulationActive && e.code === "Space") {
+    e.preventDefault();
+    strikeTribulation();
+    return;
+  }
+
+  switch (e.code) {
+    case "Space":
+      e.preventDefault();
+      isPlaying ? pauseTrack() : playTrack();
+      break;
+    case "KeyF":
+      e.preventDefault();
+      document.body.classList.toggle("cinematic-mode");
+      if (cinematicToggle) cinematicToggle.classList.toggle("active");
+      break;
+    case "ArrowRight":
+      e.preventDefault();
+      audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + 5);
+      break;
+    case "ArrowLeft":
+      e.preventDefault();
+      audio.currentTime = Math.max(0, audio.currentTime - 5);
+      break;
+    case "ArrowUp":
+      e.preventDefault();
+      setVolume(audio.volume + 0.05);
+      break;
+    case "ArrowDown":
+      e.preventDefault();
+      setVolume(audio.volume - 0.05);
+      break;
+    case "KeyM":
+      e.preventDefault();
+      if (audio.volume > 0) {
+        lastVolume = audio.volume;
+        setVolume(0);
+      } else {
+        setVolume(lastVolume || 0.7);
+      }
+      break;
+  }
+});
+
+/* =========================================================
+   9. LINH HẠP CHI ÂM
 ========================================================= */
 const ambientDrawer = document.getElementById("ambient-drawer");
 const ambientDrawerToggle = document.getElementById("ambient-drawer-toggle");
@@ -810,7 +888,7 @@ document.querySelectorAll(".ambient-slider").forEach(slider => {
 });
 
 /* =========================================================
-   8. THIÊN KIẾP LÔI ĐÌNH (QTE)
+   10. THIÊN KIẾP LÔI ĐÌNH (QTE)
 ========================================================= */
 const tribulationOverlay = document.getElementById("tribulation-overlay");
 const qteStrikeBtn = document.getElementById("qte-strike-btn");
@@ -866,6 +944,8 @@ function succeedTribulation() {
 
   alert("⚡ ĐỘ KIẾP THÀNH CÔNG! Đạo hữu đã đột phá cảnh giới, linh khí ngút trời!");
   totalListenSeconds += 600;
+  petPills += 2;
+  updatePetPillDisplay();
   localStorage.setItem("pntt_listen_seconds", totalListenSeconds);
   updateCultivationUI();
 }
@@ -883,7 +963,7 @@ qteStrikeBtn.addEventListener("click", strikeTribulation);
 cultivationBadge.addEventListener("click", startTribulationEvent);
 
 /* =========================================================
-   9. VẤN ĐẠO BỐC QUẺ
+   11. VẤN ĐẠO BỐC QUẺ
 ========================================================= */
 const divineOracleBtn = document.getElementById("divine-oracle-btn");
 const oracleModal = document.getElementById("oracle-modal");
@@ -926,7 +1006,7 @@ oraclePlayBtn.addEventListener("click", () => {
 });
 
 /* =========================================================
-   10. HỆ THỐNG TU VI & CẢNH GIỚI THÍNH GIẢ
+   12. HỆ THỐNG TU VI & CẢNH GIỚI THÍNH GIẢ
 ========================================================= */
 let totalListenSeconds = parseInt(localStorage.getItem("pntt_listen_seconds")) || 0;
 
@@ -980,57 +1060,8 @@ setInterval(() => {
 }, 1000);
 
 /* =========================================================
-   11. PHÍM TẮT & HẸN GIỜ TẮT
+   13. HẸN GIỜ TẮT & MODAL NẠP NHẠC
 ========================================================= */
-window.addEventListener("keydown", (e) => {
-  const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : "";
-  if (activeTag === "input" || activeTag === "textarea" || activeTag === "select") {
-    return;
-  }
-
-  if (isTribulationActive && e.code === "Space") {
-    e.preventDefault();
-    strikeTribulation();
-    return;
-  }
-
-  switch (e.code) {
-    case "Space":
-      e.preventDefault();
-      isPlaying ? pauseTrack() : playTrack();
-      break;
-    case "KeyF":
-      e.preventDefault();
-      document.body.classList.toggle("cinematic-mode");
-      break;
-    case "ArrowRight":
-      e.preventDefault();
-      audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + 5);
-      break;
-    case "ArrowLeft":
-      e.preventDefault();
-      audio.currentTime = Math.max(0, audio.currentTime - 5);
-      break;
-    case "ArrowUp":
-      e.preventDefault();
-      setVolume(audio.volume + 0.05);
-      break;
-    case "ArrowDown":
-      e.preventDefault();
-      setVolume(audio.volume - 0.05);
-      break;
-    case "KeyM":
-      e.preventDefault();
-      if (audio.volume > 0) {
-        lastVolume = audio.volume;
-        setVolume(0);
-      } else {
-        setVolume(lastVolume || 0.7);
-      }
-      break;
-  }
-});
-
 let sleepTimerInterval = null;
 let remainingSeconds = 0;
 
@@ -1095,7 +1126,6 @@ if (moodDropdown) {
   });
 }
 
-// Modal Thêm Bài Hát
 openModalBtn.addEventListener("click", () => addModal.classList.add("open"));
 closeModalBtn.addEventListener("click", () => addModal.classList.remove("open"));
 
@@ -1187,4 +1217,5 @@ themeToggle.addEventListener("click", () => {
 // Khởi chạy hệ thống
 initPlayer();
 updateCultivationUI();
+updatePetPillDisplay();
 setPetState("sleeping");
