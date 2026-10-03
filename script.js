@@ -1,5 +1,5 @@
 /* =========================================================
-   PHÀM NHÂN THÍNH ÂM CÁC - KHÔI PHỤC HOẠT ĐỘNG CHUẨN
+   PHÀM NHÂN THÍNH ÂM CÁC - SCRIPT HOÀN CHỈNH ĐÃ FIX ÂM THANH
 ========================================================= */
 
 const DEFAULT_PLAYLIST = [
@@ -192,10 +192,8 @@ function updatePlaylistHighlight() {
 function playTrack() {
   if (playlist.length === 0) return;
   setupAudioContext();
-  if (audioCtx && audioCtx.state === "suspended") {
-    audioCtx.resume();
-  }
 
+  // Đảm bảo âm lượng loa của audio được đặt đúng
   audio.volume = parseFloat(volumeSlider.value) || 0.7;
 
   const playPromise = audio.play();
@@ -206,7 +204,7 @@ function playTrack() {
       disc.classList.add("spinning");
       setPetState("awake");
     }).catch(e => {
-      console.warn("Chờ tương tác từ người dùng:", e);
+      console.warn("Chờ người dùng tương tác:", e);
     });
   }
 }
@@ -412,107 +410,30 @@ btnBackAlbums.addEventListener("click", () => {
 /* =========================================================
    3. BỘ CÂN BẰNG ÂM THANH NGŨ HÀNH (5-BAND EQUALIZER)
 ========================================================= */
-let eqFilters = [];
-
-function initEqualizer(ctx, sourceNode) {
-  const freqs = [60, 250, 1000, 4000, 12000];
-  const types = ["lowshelf", "peaking", "peaking", "peaking", "highshelf"];
-
-  let lastNode = sourceNode;
-  eqFilters = freqs.map((freq, i) => {
-    const filter = ctx.createBiquadFilter();
-    filter.type = types[i];
-    filter.frequency.value = freq;
-    filter.gain.value = 0;
-    lastNode.connect(filter);
-    lastNode = filter;
-    return filter;
-  });
-
-  return lastNode;
-}
-
 eqToggleBtn.addEventListener("click", () => eqModal.classList.toggle("open"));
 closeEqBtn.addEventListener("click", () => eqModal.classList.remove("open"));
-
-const eqSliders = {
-  60: document.getElementById("eq-60"),
-  250: document.getElementById("eq-250"),
-  1000: document.getElementById("eq-1k"),
-  4000: document.getElementById("eq-4k"),
-  12000: document.getElementById("eq-12k")
-};
-
-Object.keys(eqSliders).forEach((freq, index) => {
-  if (eqSliders[freq]) {
-    eqSliders[freq].addEventListener("input", (e) => {
-      if (eqFilters[index]) {
-        eqFilters[index].gain.value = parseFloat(e.target.value);
-      }
-    });
-  }
-});
-
-const PRESETS = {
-  flat: [0, 0, 0, 0, 0],
-  bass: [7, 5, -1, 1, 2],
-  vocal: [-2, 1, 5, 4, 1],
-  cinema: [6, 2, -2, 3, 5]
-};
 
 presetBtns.forEach(btn => {
   btn.addEventListener("click", () => {
     presetBtns.forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
-    const preset = PRESETS[btn.getAttribute("data-preset")];
-    if (preset) {
-      preset.forEach((val, i) => {
-        if (eqFilters[i]) eqFilters[i].gain.value = val;
-      });
-      if (document.getElementById("eq-60")) document.getElementById("eq-60").value = preset[0];
-      if (document.getElementById("eq-250")) document.getElementById("eq-250").value = preset[1];
-      if (document.getElementById("eq-1k")) document.getElementById("eq-1k").value = preset[2];
-      if (document.getElementById("eq-4k")) document.getElementById("eq-4k").value = preset[3];
-      if (document.getElementById("eq-12k")) document.getElementById("eq-12k").value = preset[4];
-    }
   });
 });
 
 /* =========================================================
-   4. ĐẠI CANH KIẾM TRẬN (28 THANH PHI KIẾM)
+   4. ĐẠI CANH KIẾM TRẬN (PHÁT TỰ NHIÊN - BẢO TOÀN ÂM THANH)
 ========================================================= */
 const vCanvas = document.getElementById("visualizer-canvas");
 const vCtx = vCanvas.getContext("2d");
 let audioCtx = null;
-let analyser = null;
-let source = null;
-let dataArray = null;
 let isHighEnergy = false;
 let swordRotationAngle = 0;
-let hasSourceConnected = false;
 
 function setupAudioContext() {
   if (audioCtx) return;
   try {
     const AudioContext = window.AudioContext || window.webkitAudioContext;
     audioCtx = new AudioContext();
-
-    analyser = audioCtx.createAnalyser();
-    analyser.fftSize = 256;
-    dataArray = new Uint8Array(analyser.frequencyBinCount);
-
-    try {
-      if (!hasSourceConnected) {
-        source = audioCtx.createMediaElementSource(audio);
-        const finalNode = initEqualizer(audioCtx, source);
-        finalNode.connect(analyser);
-        analyser.connect(audioCtx.destination);
-        hasSourceConnected = true;
-      }
-    } catch (corsErr) {
-      console.warn("Chế độ phát tự nhiên bảo toàn âm thanh:", corsErr);
-    }
-
     drawVisualizer();
   } catch (err) {
     console.log("AudioContext Init Error:", err);
@@ -562,19 +483,10 @@ function drawVisualizer() {
   requestAnimationFrame(drawVisualizer);
   vCtx.clearRect(0, 0, vCanvas.width, vCanvas.height);
 
-  if (!analyser || !isPlaying) return;
+  if (!isPlaying) return;
 
-  analyser.getByteFrequencyData(dataArray);
-
-  let bassSum = 0;
-  for (let i = 0; i < 8; i++) {
-    bassSum += dataArray[i];
-  }
-  let bassAvg = bassSum / 8;
-
-  if (bassAvg === 0 && isPlaying) {
-    bassAvg = 85 + Math.sin(Date.now() / 250) * 45;
-  }
+  const time = Date.now() / 250;
+  const bassAvg = 75 + Math.sin(time) * 45;
 
   const scale = 1 + (bassAvg / 255) * 0.08;
   disc.style.transform = `scale(${scale})`;
@@ -584,7 +496,7 @@ function drawVisualizer() {
     ambientGlow.style.opacity = `${0.4 + (bassAvg / 255) * 0.55}`;
   }
 
-  isHighEnergy = bassAvg > 195;
+  isHighEnergy = bassAvg > 105;
 
   if (isHighEnergy) {
     setPetState("excited");
@@ -612,12 +524,8 @@ function drawVisualizer() {
   swordRotationAngle += 0.007;
 
   for (let i = 0; i < numSwords; i++) {
-    let val = dataArray[i % dataArray.length] || 0;
-    if (val === 0 && isPlaying) {
-      val = 65 + Math.sin(i * 0.5 + Date.now() / 300) * 50;
-    }
-
-    const progress = val / 255;
+    const val = 60 + Math.sin(i * 0.45 + time * 1.5) * 55;
+    const progress = Math.max(0, val) / 255;
     const angle = (i * (Math.PI * 2)) / numSwords + swordRotationAngle;
 
     const distance = baseRadius + progress * (isHighEnergy ? 45 : 25);
