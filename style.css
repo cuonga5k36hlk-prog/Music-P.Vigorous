@@ -1,5 +1,5 @@
 /* =========================================================
-   GIAO DIỆN THEME PHÀM NHÂN TU TIÊN (ULTIMATE CINEMATIC & QTE)
+   GIAO DIỆN THEME PHÀM NHÂN TU TIÊN (TINH GỌN & LINH THÚ)
 ========================================================= */
 
 body, body.mood-thanhvan {
@@ -109,37 +109,15 @@ body.cinematic-mode .main-content {
   margin: 50px auto 0 auto;
 }
 
-/* Sóng xung kích Bass Shockwave */
-.shockwave-ring {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(0);
-  width: 200px;
-  height: 200px;
-  border-radius: 50%;
-  border: 3px solid var(--primary-color);
-  box-shadow: 0 0 35px var(--primary-glow), inset 0 0 25px var(--primary-glow);
-  pointer-events: none;
-  z-index: 10;
-  opacity: 0;
-  transition: transform 0.45s ease-out, opacity 0.45s ease-out;
-}
-
-.shockwave-ring.pulse {
-  transform: translate(-50%, -50%) scale(5.5);
-  opacity: 0.85;
-}
-
 body.bass-impact {
-  animation: cameraShake 0.18s ease-in-out;
+  animation: cameraShake 0.16s ease-in-out;
 }
 
 @keyframes cameraShake {
   0% { transform: translate(0, 0); }
-  25% { transform: translate(-2px, 3px); }
-  50% { transform: translate(3px, -2px); }
-  75% { transform: translate(-1px, 2px); }
+  25% { transform: translate(-2px, 2px); }
+  50% { transform: translate(2px, -2px); }
+  75% { transform: translate(-1px, 1px); }
   100% { transform: translate(0, 0); }
 }
 
@@ -358,7 +336,7 @@ body.bass-impact {
 }
 
 /* =========================================================
-   TRÌNH PHÁT TRUNG TÂM (3D PARALLAX & KIẾM TRẬN)
+   TRÌNH PHÁT TRUNG TÂM (ĐÃ BỎ SẠCH VÒNG TRÒN NÉT ĐỨT/LỆCH)
 ========================================================= */
 .player-section {
   display: flex;
@@ -371,8 +349,8 @@ body.bass-impact {
 
 .disc-wrapper {
   position: relative;
-  width: 320px;
-  height: 320px;
+  width: 330px;
+  height: 330px;
   margin: 10px 0 25px 0;
   display: flex;
   justify-content: center;
@@ -393,51 +371,19 @@ body.bass-impact {
   transition: background 0.6s ease;
 }
 
+/* Canvas bao phủ đĩa nhạc để vẽ phi kiếm */
 #visualizer-canvas {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 400px;
-  height: 400px;
+  width: 420px;
+  height: 420px;
   pointer-events: none;
   z-index: 1;
 }
 
-.magic-circle.outer-circle {
-  position: absolute;
-  width: 275px;
-  height: 275px;
-  border-radius: 50%;
-  border: 2px dashed var(--primary-color);
-  box-shadow: 0 0 25px var(--primary-glow), inset 0 0 15px var(--primary-glow);
-  opacity: 0.45;
-  z-index: 2;
-  transition: var(--transition);
-}
-
-.magic-circle.inner-circle {
-  position: absolute;
-  width: 230px;
-  height: 230px;
-  border-radius: 50%;
-  border: 1px dotted var(--accent-gold);
-  box-shadow: 0 0 15px var(--accent-gold-glow);
-  opacity: 0.35;
-  z-index: 2;
-  transition: var(--transition);
-}
-
-.magic-circle.active.outer-circle {
-  opacity: 0.85;
-  animation: slowSpin 24s linear infinite reverse;
-}
-
-.magic-circle.active.inner-circle {
-  opacity: 0.8;
-  animation: slowSpin 14s linear infinite normal;
-}
-
+/* Đĩa phát nhạc trung tâm */
 .disc {
   width: 190px;
   height: 190px;
@@ -585,6 +531,110 @@ body.bass-impact {
   accent-color: var(--primary-color);
   height: 4px;
   cursor: pointer;
+}
+
+/* =========================================================
+   HỘ ĐẠO LINH THÚ (INTERACTIVE SPIRITUAL PET)
+========================================================= */
+.spiritual-pet-wrapper {
+  position: fixed;
+  bottom: 22px;
+  right: 25px;
+  z-index: 85;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.25s ease;
+}
+
+.spiritual-pet-wrapper:hover {
+  transform: scale(1.08);
+}
+
+/* Hộp thoại bong bóng của Linh Thú */
+.pet-speech {
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid var(--accent-gold);
+  color: #fef08a;
+  font-size: 0.72rem;
+  padding: 4px 10px;
+  border-radius: 12px;
+  margin-bottom: 6px;
+  box-shadow: 0 0 10px var(--accent-gold-glow);
+  white-space: nowrap;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.pet-body {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.25) 0%, rgba(16, 185, 129, 0.2) 100%);
+  border: 2px solid var(--accent-gold);
+  box-shadow: 0 0 20px var(--accent-gold-glow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.pet-icon {
+  font-size: 1.7rem;
+  color: var(--accent-gold);
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.pet-name {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+/* Trạng thái 1: Đang Ngủ (Êm đềm) */
+.spiritual-pet-wrapper.sleeping .pet-body {
+  animation: petBreathe 3.5s ease-in-out infinite;
+  opacity: 0.82;
+}
+.spiritual-pet-wrapper.sleeping .pet-icon {
+  transform: rotate(-15deg);
+}
+
+/* Trạng thái 2: Thức tỉnh nhảy múa theo Bass mạnh */
+.spiritual-pet-wrapper.excited .pet-body {
+  animation: petExcitedDance 0.35s ease-in-out infinite alternate;
+  border-color: #f43f5e;
+  box-shadow: 0 0 35px #f43f5e;
+}
+.spiritual-pet-wrapper.excited .pet-icon {
+  color: #fbbf24;
+  transform: scale(1.22) rotate(10deg);
+}
+
+/* Trạng thái 3: Vừa được click vuốt ve */
+.spiritual-pet-wrapper.pet-petted {
+  animation: petBounce 0.45s ease;
+}
+
+@keyframes petBreathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.06); }
+}
+
+@keyframes petExcitedDance {
+  0% { transform: translateY(0) rotate(-6deg); }
+  100% { transform: translateY(-10px) rotate(6deg); }
+}
+
+@keyframes petBounce {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.25) translateY(-14px); }
+  70% { transform: scale(0.95); }
+  100% { transform: scale(1); }
 }
 
 /* =========================================================
@@ -890,7 +940,7 @@ body.bass-impact {
 }
 
 /* =========================================================
-   2. NGĂN KÉO LINH HẠP CHI ÂM (AMBIENT MIXER)
+   NGĂN KÉO LINH HẠP CHI ÂM & MODAL
 ========================================================= */
 .ambient-drawer {
   position: fixed;
@@ -947,9 +997,7 @@ body.bass-impact {
   cursor: pointer;
 }
 
-/* =========================================================
-   1. GIAO DIỆN THIÊN KIẾP LÔI ĐÌNH (QTE EVENT)
-========================================================= */
+/* GIAO DIỆN THIÊN KIẾP (QTE) */
 .tribulation-overlay {
   position: fixed;
   inset: 0;
@@ -1066,9 +1114,7 @@ body.bass-impact {
   color: #fbbf24;
 }
 
-/* =========================================================
-   5. GIAO DIỆN VẤN ĐẠO BỐC QUẺ
-========================================================= */
+/* VẤN ĐẠO BỐC QUẺ */
 .oracle-box {
   text-align: center;
 }
@@ -1136,7 +1182,7 @@ body.bass-impact {
   margin-bottom: 15px;
 }
 
-/* Modal Popup Chung */
+/* Modal Popup */
 .modal {
   position: fixed;
   inset: 0;
@@ -1280,20 +1326,12 @@ body.bass-impact {
     gap: 20px;
   }
   .disc-wrapper {
-    width: 260px;
-    height: 260px;
+    width: 270px;
+    height: 270px;
   }
   #visualizer-canvas {
-    width: 320px;
-    height: 320px;
-  }
-  .magic-circle.outer-circle {
-    width: 230px;
-    height: 230px;
-  }
-  .magic-circle.inner-circle {
-    width: 190px;
-    height: 190px;
+    width: 330px;
+    height: 330px;
   }
   .disc {
     width: 155px;
@@ -1304,5 +1342,9 @@ body.bass-impact {
   }
   .album-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+  .spiritual-pet-wrapper {
+    bottom: 12px;
+    right: 12px;
   }
 }
