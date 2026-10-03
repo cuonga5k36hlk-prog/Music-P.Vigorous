@@ -1,5 +1,5 @@
 /* =========================================================
-   PHÀM NHÂN THÍNH ÂM CÁC - VIP PRO MAX EDITION (TẤT CẢ TÍNH NĂNG)
+   PHÀM NHÂN THÍNH ÂM CÁC - NGỰ KIẾM PHI HÀNH (SWORD CURSOR)
 ========================================================= */
 
 const DEFAULT_PLAYLIST = [
@@ -8,24 +8,21 @@ const DEFAULT_PLAYLIST = [
     title: "Món quà",
     artist: "Dangrangto",
     src: "https://files.catbox.moe/9fvwip.mp3",
-    cover: "https://img.youtube.com/vi/a6pUdErpOgw/maxresdefault.jpg",
-    verse: "Khúc tình thâm trầm, như linh căn ấm áp giữa trời đông."
+    cover: "https://img.youtube.com/vi/a6pUdErpOgw/maxresdefault.jpg"
   },
   {
     id: 2,
     title: "Đánh rơi (feat. MICKEY)",
     artist: "Dangrangto",
     src: "https://files.catbox.moe/wdyj9j.mp3",
-    cover: "https://img.youtube.com/vi/Tv0w9-bpPpk/maxresdefault.jpg",
-    verse: "Phù du thế sự, đánh rơi tơ vương bước vào tiên đạo."
+    cover: "https://img.youtube.com/vi/Tv0w9-bpPpk/maxresdefault.jpg"
   },
   {
     id: 3,
     title: "Tinh Hải Phiêu Lưu Bi Ký",
     artist: "Loạn Tinh Hải Cổ Tu",
     src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
-    cover: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=600&auto=format&fit=crop",
-    verse: "Sóng cuộn Tinh Hải, vạn dặm ngự kiếm tìm kiếm trường sinh."
+    cover: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=600&auto=format&fit=crop"
   }
 ];
 
@@ -69,10 +66,10 @@ const sleepTimerSelect = document.getElementById("sleep-timer-select");
 const timerDisplay = document.getElementById("timer-display");
 const lightningOverlay = document.getElementById("lightning-overlay");
 const cinematicToggle = document.getElementById("cinematic-toggle");
-const calligraphyText = document.getElementById("calligraphy-text");
 const speedToggleBtn = document.getElementById("speed-toggle-btn");
 const speedText = document.getElementById("speed-text");
 const parallaxWrapper = document.getElementById("parallax-wrapper");
+const swordCursor = document.getElementById("sword-cursor");
 
 // Waveform Box & Canvas
 const waveformBox = document.getElementById("waveform-box");
@@ -136,10 +133,6 @@ function loadTrack(index) {
   trackTitle.textContent = track.title;
   trackArtist.textContent = track.artist;
   trackCover.src = track.cover || "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=600&auto=format&fit=crop";
-
-  if (calligraphyText) {
-    calligraphyText.textContent = `"${track.verse || 'Đạo tâm an tịnh, vạn ma bất xâm.'}"`;
-  }
 
   savePlaylistToStorage();
   updatePlaylistHighlight();
@@ -269,7 +262,6 @@ repeatBtn.addEventListener("click", () => {
 });
 
 audio.addEventListener("ended", () => {
-  // Hoàn thành bài hát được tặng 1 viên Tụ Khí Đan
   petPills++;
   updatePetPillDisplay();
 
@@ -343,7 +335,74 @@ function formatTime(seconds) {
 }
 
 /* =========================================================
-   2. SIÊU TÍNH NĂNG 1: CHƯỞNG THIÊN BÌNH - TỐC ĐỘ PHÁT (SPEED)
+   2. SIÊU TÍNH NĂNG: NGỰ KIẾM PHI HÀNH (SWORD TRAIL CURSOR)
+========================================================= */
+let mouseX = window.innerWidth / 2;
+let mouseY = window.innerHeight / 2;
+let prevMouseX = mouseX;
+let prevMouseY = mouseY;
+let swordAngle = -Math.PI / 4;
+let swordTrailPoints = [];
+
+window.addEventListener("mousemove", (e) => {
+  mouseX = e.clientX;
+  mouseY = e.clientY;
+
+  // Tính góc xoay của tiểu phi kiếm theo hướng di chuột
+  const dx = mouseX - prevMouseX;
+  const dy = mouseY - prevMouseY;
+  const dist = Math.hypot(dx, dy);
+
+  if (dist > 1.5) {
+    swordAngle = Math.atan2(dy, dx) + Math.PI / 2;
+  }
+
+  // Cập nhật vị trí tiểu phi kiếm con trỏ
+  if (swordCursor) {
+    swordCursor.style.left = `${mouseX}px`;
+    swordCursor.style.top = `${mouseY}px`;
+    swordCursor.style.transform = `translate(-50%, -50%) rotate(${swordAngle}rad)`;
+  }
+
+  // Tạo vệt rồng kiếm khí khi di chuột
+  if (dist > 2) {
+    swordTrailPoints.push({
+      x: mouseX,
+      y: mouseY,
+      life: 1.0,
+      size: Math.min(12, 3 + dist * 0.25)
+    });
+  }
+
+  prevMouseX = mouseX;
+  prevMouseY = mouseY;
+
+  // 3D Parallax cho đĩa nhạc
+  if (!document.body.classList.contains("cinematic-mode") && parallaxWrapper) {
+    const xRot = (mouseX - window.innerWidth / 2) / 25;
+    const yRot = (mouseY - window.innerHeight / 2) / 25;
+    parallaxWrapper.style.transform = `rotateY(${xRot}deg) rotateX(${-yRot}deg)`;
+  }
+});
+
+// Click chuột phát kiếm quang trảm kích
+window.addEventListener("mousedown", (e) => {
+  for (let i = 0; i < 8; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const length = Math.random() * 90 + 50;
+    swordSlashes.push({
+      x: e.clientX,
+      y: e.clientY,
+      angle: angle,
+      length: length,
+      life: 1.0,
+      speed: 0.05
+    });
+  }
+});
+
+/* =========================================================
+   3. CHƯỞNG THIÊN BÌNH - TỐC ĐỘ PHÁT (SPEED SHIFTER)
 ========================================================= */
 const SPEEDS = [1.0, 1.25, 1.5, 0.75];
 let currentSpeedIndex = 0;
@@ -356,21 +415,7 @@ speedToggleBtn.addEventListener("click", () => {
 });
 
 /* =========================================================
-   3. SIÊU TÍNH NĂNG 2: TIÊN CẢNH 3D PARALLAX (RÊ CHUỘT)
-========================================================= */
-window.addEventListener("mousemove", (e) => {
-  if (document.body.classList.contains("cinematic-mode")) return;
-  const { innerWidth, innerHeight } = window;
-  const x = (e.clientX - innerWidth / 2) / 25;
-  const y = (e.clientY - innerHeight / 2) / 25;
-
-  if (parallaxWrapper) {
-    parallaxWrapper.style.transform = `rotateY(${x}deg) rotateX(${-y}deg)`;
-  }
-});
-
-/* =========================================================
-   4. SIÊU TÍNH NĂNG 3: DẢI SÓNG ÂM WAVEFORM CANVAS
+   4. DẢI SÓNG ÂM WAVEFORM CANVAS
 ========================================================= */
 function drawStaticWaveform() {
   const w = waveformCanvas.width;
@@ -395,15 +440,15 @@ function drawStaticWaveform() {
 }
 
 /* =========================================================
-   5. SIÊU TÍNH NĂNG 4: LINH THÚ TIẾN HÓA & CHO ĂN ĐAN DƯỢC
+   5. LINH THÚ TIẾN HÓA & CHO ĂN ĐAN DƯỢC
 ========================================================= */
 let petPills = parseInt(localStorage.getItem("pntt_pet_pills")) || 5;
 let petEvolutionStage = parseInt(localStorage.getItem("pntt_pet_stage")) || 1;
 
 const PET_STAGES = [
-  { name: "Ấu Trùng Phệ Kim", icon: "fa-dragon", expReq: 3 },
-  { name: "Kim Giáp Phệ Kim Trùng", icon: "fa-shield-halved", expReq: 8 },
-  { name: "Cửu Chuyển Kim Sí Bằng", icon: "fa-feather-pointed", expReq: 999 }
+  { name: "Ấu Trùng Phệ Kim", icon: "fa-dragon" },
+  { name: "Kim Giáp Phệ Kim Trùng", icon: "fa-shield-halved" },
+  { name: "Cửu Chuyển Kim Sí Bằng", icon: "fa-feather-pointed" }
 ];
 
 function updatePetPillDisplay() {
@@ -427,7 +472,6 @@ petFeedBtn.addEventListener("click", (e) => {
   playPetChimeSound();
   spiritualPet.classList.add("pet-petted");
 
-  const currentInfo = PET_STAGES[petEvolutionStage - 1];
   petSpeech.textContent = "Ngoạm! Linh lực tăng tiến~ (｡♥‿♥｡)";
 
   if (petEvolutionStage < PET_STAGES.length && Math.random() > 0.4) {
@@ -643,7 +687,7 @@ function drawVisualizer() {
 }
 
 /* =========================================================
-   7. HẠT TRỌNG LỰC NGHỊCH CHUYỂN
+   7. HẠT TRỌNG LỰC & VỆT RỒNG KIẾM KHÍ (SWORD TRAIL 60FPS)
 ========================================================= */
 const canvas = document.getElementById("ambient-canvas");
 const ctx = canvas.getContext("2d");
@@ -699,6 +743,55 @@ class QiParticle {
 
 const particles = Array.from({ length: 65 }, () => new QiParticle());
 
+// Vẽ vệt rồng kiếm khí uốn lượn sau đuôi chuột
+function drawDragonSwordTrail() {
+  const style = getComputedStyle(document.body);
+  const rgb = style.getPropertyValue("--sword-trail-color").trim() || "16, 185, 129";
+
+  for (let i = swordTrailPoints.length - 1; i >= 0; i--) {
+    const pt = swordTrailPoints[i];
+    pt.life -= 0.038; // Tốc độ tan vào hư không
+
+    if (pt.life <= 0) {
+      swordTrailPoints.splice(i, 1);
+      continue;
+    }
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(pt.x, pt.y, pt.size * pt.life, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(${rgb}, ${pt.life * 0.75})`;
+    ctx.shadowColor = `rgba(${rgb}, 0.9)`;
+    ctx.shadowBlur = 14;
+    ctx.fill();
+
+    // Hạt lõi trắng phát quang
+    ctx.beginPath();
+    ctx.arc(pt.x, pt.y, (pt.size * pt.life) / 2.8, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255, 255, 255, ${pt.life * 0.9})`;
+    ctx.fill();
+    ctx.restore();
+  }
+
+  // Nối đường cong rồng kiếm khí
+  if (swordTrailPoints.length > 2) {
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(swordTrailPoints[0].x, swordTrailPoints[0].y);
+    for (let i = 1; i < swordTrailPoints.length - 1; i++) {
+      const xc = (swordTrailPoints[i].x + swordTrailPoints[i + 1].x) / 2;
+      const yc = (swordTrailPoints[i].y + swordTrailPoints[i + 1].y) / 2;
+      ctx.quadraticCurveTo(swordTrailPoints[i].x, swordTrailPoints[i].y, xc, yc);
+    }
+    ctx.strokeStyle = `rgba(${rgb}, 0.5)`;
+    ctx.lineWidth = 3.5;
+    ctx.shadowColor = `rgba(${rgb}, 0.8)`;
+    ctx.shadowBlur = 10;
+    ctx.stroke();
+    ctx.restore();
+  }
+}
+
 function drawSwordSlashes() {
   for (let i = swordSlashes.length - 1; i >= 0; i--) {
     const s = swordSlashes[i];
@@ -741,19 +834,11 @@ function animateLoop() {
     p.update();
     p.draw();
   });
+  drawDragonSwordTrail();
   drawSwordSlashes();
   requestAnimationFrame(animateLoop);
 }
 animateLoop();
-
-window.addEventListener("click", (e) => {
-  if (e.target.closest("button") || e.target.closest("input") || e.target.closest("select") || e.target.closest(".modal-box") || e.target.closest(".spiritual-pet-wrapper")) {
-    return;
-  }
-  const angle = Math.random() * Math.PI * 2;
-  const length = Math.random() * 80 + 70;
-  swordSlashes.push({ x: e.clientX, y: e.clientY, angle, length, life: 1.0, speed: 0.04 });
-});
 
 /* =========================================================
    8. NÚT ĐIỆN ẢNH & PHÍM TẮT
