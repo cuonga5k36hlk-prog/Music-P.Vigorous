@@ -1,5 +1,5 @@
 /* =========================================================
-   GIAO DIỆN THEME PHÀM NHÂN TU TIÊN (TINH GỌN & LINH THÚ)
+   GIAO DIỆN THEME PHÀM NHÂN TU TIÊN (STUDIO HI-END EDITION)
 ========================================================= */
 
 body, body.mood-thanhvan {
@@ -77,7 +77,6 @@ body {
   transition: background-image 0.8s ease, color 0.3s ease;
 }
 
-/* Dải đen điện ảnh 21:9 */
 .cinematic-bar {
   position: fixed;
   left: 0;
@@ -336,7 +335,7 @@ body.bass-impact {
 }
 
 /* =========================================================
-   TRÌNH PHÁT TRUNG TÂM (ĐÃ BỎ SẠCH VÒNG TRÒN NÉT ĐỨT/LỆCH)
+   TRÌNH PHÁT TRUNG TÂM
 ========================================================= */
 .player-section {
   display: flex;
@@ -371,7 +370,6 @@ body.bass-impact {
   transition: background 0.6s ease;
 }
 
-/* Canvas bao phủ đĩa nhạc để vẽ phi kiếm */
 #visualizer-canvas {
   position: absolute;
   top: 50%;
@@ -383,7 +381,6 @@ body.bass-impact {
   z-index: 1;
 }
 
-/* Đĩa phát nhạc trung tâm */
 .disc {
   width: 190px;
   height: 190px;
@@ -534,6 +531,94 @@ body.bass-impact {
 }
 
 /* =========================================================
+   BỘ CÂN BẰNG ÂM THANH NGŨ HÀNH (5-BAND EQUALIZER)
+========================================================= */
+.eq-modal {
+  position: fixed;
+  top: 85px;
+  right: 25px;
+  width: 320px;
+  padding: 20px;
+  z-index: 95;
+  display: none;
+  animation: fadeIn 0.3s ease;
+}
+
+.eq-modal.open {
+  display: block;
+}
+
+.eq-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.eq-header h4 {
+  font-size: 0.92rem;
+  color: var(--accent-gold);
+}
+
+.eq-presets {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.preset-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--panel-border);
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  padding: 6px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.preset-btn:hover {
+  color: var(--text-main);
+}
+
+.preset-btn.active {
+  background: var(--primary-color);
+  color: #fff;
+  border-color: var(--primary-color);
+}
+
+.eq-sliders-wrap {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 140px;
+  padding: 0 10px;
+}
+
+.eq-band {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+}
+
+.eq-band span {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.eq-slider {
+  writing-mode: bt-lr; /* IE */
+  -webkit-appearance: slider-vertical; /* WebKit */
+  width: 6px;
+  height: 105px;
+  accent-color: var(--primary-color);
+  cursor: pointer;
+}
+
+/* =========================================================
    HỘ ĐẠO LINH THÚ (INTERACTIVE SPIRITUAL PET)
 ========================================================= */
 .spiritual-pet-wrapper {
@@ -553,7 +638,6 @@ body.bass-impact {
   transform: scale(1.08);
 }
 
-/* Hộp thoại bong bóng của Linh Thú */
 .pet-speech {
   background: rgba(15, 23, 42, 0.85);
   border: 1px solid var(--accent-gold);
@@ -595,7 +679,6 @@ body.bass-impact {
   letter-spacing: 0.5px;
 }
 
-/* Trạng thái 1: Đang Ngủ (Êm đềm) */
 .spiritual-pet-wrapper.sleeping .pet-body {
   animation: petBreathe 3.5s ease-in-out infinite;
   opacity: 0.82;
@@ -604,7 +687,6 @@ body.bass-impact {
   transform: rotate(-15deg);
 }
 
-/* Trạng thái 2: Thức tỉnh nhảy múa theo Bass mạnh */
 .spiritual-pet-wrapper.excited .pet-body {
   animation: petExcitedDance 0.35s ease-in-out infinite alternate;
   border-color: #f43f5e;
@@ -615,7 +697,6 @@ body.bass-impact {
   transform: scale(1.22) rotate(10deg);
 }
 
-/* Trạng thái 3: Vừa được click vuốt ve */
 .spiritual-pet-wrapper.pet-petted {
   animation: petBounce 0.45s ease;
 }
@@ -1346,5 +1427,10 @@ body.bass-impact {
   .spiritual-pet-wrapper {
     bottom: 12px;
     right: 12px;
+  }
+  .eq-modal {
+    width: 90%;
+    right: 5%;
+    top: 120px;
   }
 }
