@@ -610,8 +610,8 @@ body.bass-impact {
 }
 
 .eq-slider {
-  writing-mode: bt-lr; /* IE */
-  -webkit-appearance: slider-vertical; /* WebKit */
+  writing-mode: bt-lr;
+  -webkit-appearance: slider-vertical;
   width: 6px;
   height: 105px;
   accent-color: var(--primary-color);
