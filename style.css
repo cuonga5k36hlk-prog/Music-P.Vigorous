@@ -1,4 +1,8 @@
-/* --- Biến Giao Diện Chủ Đạo (Mặc định: Dark Mode - U Dạ Động Phủ) --- */
+/* =========================================================
+   GIAO DIỆN THEME PHÀM NHÂN TU TIÊN (HH3D AESTHETIC)
+========================================================= */
+
+/* Chế độ mặc định: Dark Mode (U Dạ Động Phủ) */
 :root {
   --bg-color: #070d12;
   --bg-gradient: radial-gradient(circle at 50% 20%, #0d2822 0%, #050d12 70%);
@@ -6,9 +10,9 @@
   --panel-border: rgba(16, 185, 129, 0.25);
   --text-main: #f0fdf4;
   --text-muted: #94a3b8;
-  --primary-color: #10b981; /* Ngọc Bích */
+  --primary-color: #10b981; /* Xanh ngọc bích linh khí */
   --primary-glow: rgba(16, 185, 129, 0.45);
-  --accent-gold: #f59e0b;   /* Huyền Kim */
+  --accent-gold: #f59e0b;   /* Màu vàng kim đan */
   --accent-gold-glow: rgba(245, 158, 11, 0.4);
   --hover-overlay: rgba(16, 185, 129, 0.12);
   --font-title: 'Cinzel', 'Noto Serif SC', serif;
@@ -16,7 +20,7 @@
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Light Theme (Bạch Nhật Độ Kiếp) */
+/* Chế độ Light Mode (Bạch Nhật Độ Kiếp) */
 body.light-theme {
   --bg-color: #f1f5f9;
   --bg-gradient: radial-gradient(circle at 50% 20%, #e2ece9 0%, #f1f5f9 70%);
@@ -48,7 +52,7 @@ body {
   transition: background 0.5s ease;
 }
 
-/* Canvas hiệu ứng linh khí bay lơ lửng */
+/* Nền linh khí lơ lửng */
 #ambient-canvas {
   position: fixed;
   top: 0;
@@ -105,7 +109,7 @@ body {
   letter-spacing: 1px;
 }
 
-/* Hiệu ứng khung kính mờ Tu Tiên */
+/* Khung kính mờ Glassmorphism */
 .glass-panel {
   background: var(--panel-bg);
   backdrop-filter: blur(16px);
@@ -115,7 +119,7 @@ body {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
-/* Layout chia 2 cột */
+/* Bố cục 2 cột chính */
 .main-content {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -124,7 +128,7 @@ body {
   flex: 1;
 }
 
-/* Section Player */
+/* Cột Trình phát nhạc */
 .player-section {
   display: flex;
   flex-direction: column;
@@ -143,7 +147,6 @@ body {
   align-items: center;
 }
 
-/* Vòng trận pháp xoay quanh đĩa nhạc */
 .magic-circle {
   position: absolute;
   width: 100%;
@@ -286,7 +289,7 @@ body {
   box-shadow: 0 0 25px var(--primary-glow);
 }
 
-/* Âm lượng */
+/* Điều khiển âm lượng */
 .volume-container {
   display: flex;
   align-items: center;
@@ -302,7 +305,7 @@ body {
   cursor: pointer;
 }
 
-/* Section Danh Sách */
+/* Cột Danh Sách Nhạc */
 .playlist-section {
   display: flex;
   flex-direction: column;
@@ -354,7 +357,6 @@ body {
   gap: 10px;
 }
 
-/* Custom Scrollbar */
 .playlist-items::-webkit-scrollbar {
   width: 4px;
 }
@@ -425,7 +427,7 @@ body {
   color: #ef4444;
 }
 
-/* Modal */
+/* Modal Popup */
 .modal {
   position: fixed;
   inset: 0;
@@ -545,13 +547,13 @@ body {
   margin-top: 10px;
 }
 
-/* Animations */
+/* Chuyển động xoay trận pháp */
 @keyframes slowSpin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
 
-/* Tối ưu Mobile */
+/* Responsive cho thiết bị di động */
 @media (max-width: 768px) {
   .main-content {
     grid-template-columns: 1fr;
@@ -566,6 +568,6 @@ body {
     height: 160px;
   }
   .playlist-section {
-    max-height: 420px;
+    max-height: 400px;
   }
 }
