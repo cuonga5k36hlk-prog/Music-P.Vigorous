@@ -27,19 +27,15 @@
   <div id="mist-layer" class="mist-layer"></div>
   <div id="lightning-overlay"></div>
 
-  <!-- Canvas Hạt Linh Khí & Vệt Rồng Kiếm Khí Ngự Kiếm Phi Hành -->
+  <!-- Canvas Nền: Sóng Nước, Bong Bóng Linh Khí, Vệt Rồng Kiếm Khí -->
   <canvas id="ambient-canvas"></canvas>
 
-  <!-- Tiểu Phi Kiếm Thay Thế Con Trỏ Chuột -->
+  <!-- Tiểu Phi Kiếm Con Trỏ Chuột -->
   <div id="sword-cursor" class="sword-cursor">
     <svg viewBox="0 0 40 40" class="sword-svg">
-      <!-- Mũi và lưỡi kiếm ánh kim bạc -->
       <polygon points="20,2 24,14 20,30 16,14" fill="#f8fafc" stroke="#38bdf8" stroke-width="1.2" />
-      <!-- Sống kiếm phát quang -->
       <line x1="20" y1="4" x2="20" y2="28" stroke="#00f2fe" stroke-width="1.5" />
-      <!-- Hộ thủ cánh sen vàng -->
       <polygon points="12,22 28,22 20,25" fill="#f59e0b" />
-      <!-- Chuôi kiếm & Ngọc bội chuôi -->
       <line x1="20" y1="25" x2="20" y2="34" stroke="#475569" stroke-width="2.5" />
       <circle cx="20" cy="35" r="2.2" fill="#10b981" />
     </svg>
@@ -68,6 +64,17 @@
       </div>
 
       <div class="header-actions">
+        <!-- Bộ Chọn Đạo Hữu Đồng Hành -->
+        <div class="character-selector" title="Mời Đạo Hữu Đồng Hành">
+          <i class="fa-solid fa-user-ninja"></i>
+          <select id="character-select">
+            <option value="hanlap">Hàn Lập (Hàn Chạy Chạy)</option>
+            <option value="namcung">Nam Cung Uyển</option>
+            <option value="tulinh">Tử Linh Tiên Tử</option>
+            <option value="daidien">Đại Diễn Thần Quân</option>
+          </select>
+        </div>
+
         <!-- Vấn Đạo Bốc Quẻ -->
         <button id="divine-oracle-btn" class="btn-icon gold-glow" title="Vấn Đạo Bốc Quẻ">
           <i class="fa-solid fa-scroll"></i>
@@ -114,11 +121,12 @@
     </header>
 
     <main class="main-content" id="main-content">
-      <!-- Cột Trái: Trình phát trung tâm 3D Parallax -->
+      <!-- Cột Trái: Trình phát trung tâm & Bát Quái Kiếm Trận -->
       <section class="player-section glass-panel" id="player-card">
         <div class="disc-wrapper" id="parallax-wrapper">
           <div class="ambient-glow" id="ambient-glow"></div>
-          <canvas id="visualizer-canvas" width="420" height="420"></canvas>
+          <!-- Canvas vẽ Bát Quái Trận Đồ & Vạn Kiếm Quy Tông -->
+          <canvas id="visualizer-canvas" width="440" height="440"></canvas>
 
           <div class="disc" id="disc">
             <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=600&auto=format&fit=crop" id="track-cover" alt="Bìa nhạc">
@@ -161,8 +169,7 @@
         </div>
 
         <div class="sub-controls-row">
-          <!-- Chưởng Thiên Bình - Thần Thâu Tốc Độ -->
-          <button class="btn-speed-badge" id="speed-toggle-btn" title="Chưởng Thiên Bình - Tăng/Giảm Tốc Độ Thính Âm">
+          <button class="btn-speed-badge" id="speed-toggle-btn" title="Chưởng Thiên Bình - Tốc Độ Thính Âm">
             <i class="fa-solid fa-forward"></i> <span id="speed-text">1.0x</span>
           </button>
 
@@ -173,7 +180,7 @@
         </div>
       </section>
 
-      <!-- Cột Phải: Bộ Quản Lý Album & Bài Hát -->
+      <!-- Cột Phải: Bộ Quản Lý Album & Danh Sách Bài Hát -->
       <section class="playlist-section glass-panel" id="playlist-card">
         <div class="playlist-header">
           <div class="view-switch-tabs">
@@ -212,7 +219,19 @@
     </main>
   </div>
 
-  <!-- HỘ ĐẠO LINH THÚ TIẾN HÓA & CHO ĂN ĐAN DƯỢC -->
+  <!-- THẺ HỘ ĐẠO TIÊN NHÂN 3D (GÓC DƯỚI BÊN TRÁI ĐỐI XỨNG LINH THÚ) -->
+  <div class="companion-card glass-panel" id="companion-card" title="Nhấp chuột để đàm đạo">
+    <div class="companion-avatar" id="companion-avatar">
+      <img src="https://images.unsplash.com/photo-1578632767115-351597cf2477?q=80&w=300&auto=format&fit=crop" id="companion-img" alt="Avatar Đạo Hữu">
+      <div class="companion-aura" id="companion-aura"></div>
+    </div>
+    <div class="companion-info">
+      <h5 id="companion-name">Hàn Lập</h5>
+      <p id="companion-dialogue">"Đạo tâm bất biến, cẩn trọng tâm ma quấy nhiễu..."</p>
+    </div>
+  </div>
+
+  <!-- HỘ ĐẠO LINH THÚ TIẾN HÓA (GÓC DƯỚI BÊN PHẢI) -->
   <div class="spiritual-pet-wrapper" id="spiritual-pet" title="Hộ Đạo Linh Thú">
     <div class="pet-speech" id="pet-speech">Zzz...</div>
     <div class="pet-body" id="pet-body">
@@ -223,7 +242,7 @@
       <span class="pet-name" id="pet-name">Ấu Trùng Phệ Kim</span>
       <div class="pet-feed-action">
         <button id="pet-feed-btn" class="btn-feed-pill" title="Cho ăn Tụ Khí Đan">
-          <i class="fa-solid fa-pills"></i> Cho Ăn (<span id="pill-count">3</span>)
+          <i class="fa-solid fa-pills"></i> Cho Ăn (<span id="pill-count">5</span>)
         </button>
       </div>
     </div>
