@@ -1,5 +1,5 @@
 /* =========================================================
-   PHÀM NHÂN THÍNH ÂM CÁC - GIAO DIỆN TĨNH TÂM & HH3D
+   PHÀM NHÂN THÍNH ÂM CÁC - GIAO DIỆN TĨNH TÂM & MƯỢT MÀ
 ========================================================= */
 
 body, body.mood-thanhvan {
@@ -11,7 +11,6 @@ body, body.mood-thanhvan {
   --primary-glow: rgba(16, 185, 129, 0.55);
   --accent-gold: #f59e0b;
   --accent-gold-glow: rgba(245, 158, 11, 0.45);
-  --particle-color: rgba(16, 185, 129, 0.8);
   --sword-trail-color: 16, 185, 129;
 }
 
@@ -24,7 +23,6 @@ body.mood-loantinhhai {
   --primary-glow: rgba(56, 189, 248, 0.65);
   --accent-gold: #38bdf8;
   --accent-gold-glow: rgba(56, 189, 248, 0.45);
-  --particle-color: rgba(56, 189, 248, 0.9);
   --sword-trail-color: 56, 189, 248;
 }
 
@@ -37,7 +35,6 @@ body.mood-dokiep {
   --primary-glow: rgba(192, 132, 252, 0.7);
   --accent-gold: #f43f5e;
   --accent-gold-glow: rgba(244, 63, 94, 0.5);
-  --particle-color: rgba(216, 180, 254, 0.9);
   --sword-trail-color: 192, 132, 252;
 }
 
@@ -64,26 +61,27 @@ body.light-theme {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* ẨN CON TRỎ MẶC ĐỊNH ĐỂ DÙNG PHI KIẾM NHƯNG VẪN GIỮ CHO CÁC THẺ INPUT/SELECT TƯƠNG TÁC CHUẨN */
 html, body {
-  cursor: none !important;
+  cursor: none;
 }
 
-a, button, input, select, .song-card, .album-card, .qte-circle-btn, .oracle-cylinder {
-  cursor: none !important;
+button, a, select, input, .song-card, .album-card, .qte-circle-btn, .oracle-cylinder {
+  cursor: pointer;
 }
 
-/* TIỂU PHI KIẾM CON TRỎ CHUỘT */
+/* TIỂU PHI KIẾM CON TRỎ CHUỘT: TÂM GHIM CHÍNH XÁC MŨI KIẾM (20px, 2px), 0ms LATENCY */
 .sword-cursor {
   position: fixed;
   top: 0;
   left: 0;
-  width: 34px;
-  height: 34px;
-  pointer-events: none;
-  z-index: 9999;
-  transform: translate(-50%, -50%);
+  width: 36px;
+  height: 36px;
+  pointer-events: none !important;
+  z-index: 99999;
+  transform-origin: 20px 2px;
   filter: drop-shadow(0 0 6px var(--primary-glow)) drop-shadow(0 0 12px var(--accent-gold-glow));
-  transition: transform 0.04s ease-out;
+  will-change: transform, left, top;
 }
 
 .sword-svg {
@@ -116,7 +114,7 @@ body {
   background: #000;
   z-index: 90;
   transition: height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-  pointer-events: none;
+  pointer-events: none !important;
 }
 #cinematic-bar-top { top: 0; }
 #cinematic-bar-bottom { bottom: 0; }
@@ -133,12 +131,6 @@ body.cinematic-mode .app-header {
   transition: opacity 0.5s ease, transform 0.5s ease;
 }
 
-body.cinematic-mode .companion-standee {
-  left: 60px;
-  transform: scale(1.12);
-  transition: all 0.5s ease;
-}
-
 body.cinematic-mode .main-content {
   grid-template-columns: 1fr;
   max-width: 550px;
@@ -153,7 +145,7 @@ body.cinematic-mode .main-content {
   height: 220px;
   background: radial-gradient(ellipse at bottom, var(--primary-glow) 0%, transparent 70%);
   opacity: 0.18;
-  pointer-events: none;
+  pointer-events: none !important;
   z-index: 2;
   filter: blur(40px);
   animation: mistDrift 20s linear infinite alternate;
@@ -169,7 +161,7 @@ body.cinematic-mode .main-content {
   inset: 0;
   background: rgba(192, 132, 252, 0.25);
   opacity: 0;
-  pointer-events: none;
+  pointer-events: none !important;
   z-index: 2;
   transition: opacity 0.08s ease;
 }
@@ -184,7 +176,7 @@ body.cinematic-mode .main-content {
   left: 0;
   width: 100%;
   height: 100%;
-  pointer-events: none;
+  pointer-events: none !important;
   z-index: 1;
 }
 
@@ -247,6 +239,7 @@ body.cinematic-mode .main-content {
   padding: 6px 14px;
   border-radius: 20px;
   transition: var(--transition);
+  cursor: pointer;
 }
 
 .cultivation-badge:hover {
@@ -299,34 +292,6 @@ body.cinematic-mode .main-content {
   flex-wrap: wrap;
 }
 
-/* BỘ CHỌN ĐỒNG HÀNH TRÊN HEADER */
-.character-selector {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid var(--accent-gold);
-  padding: 6px 12px;
-  border-radius: 20px;
-  color: var(--accent-gold);
-  font-size: 0.85rem;
-  box-shadow: 0 0 10px var(--accent-gold-glow);
-}
-
-.character-selector select {
-  background: transparent;
-  border: none;
-  color: var(--text-main);
-  outline: none;
-  font-size: 0.82rem;
-  font-weight: 600;
-}
-
-.character-selector select option {
-  background: #0f172a;
-  color: #fff;
-}
-
 .gold-glow {
   color: var(--accent-gold) !important;
 }
@@ -344,6 +309,8 @@ body.cinematic-mode .main-content {
   border-radius: 20px;
   color: var(--primary-color);
   font-size: 0.85rem;
+  position: relative;
+  z-index: 10;
 }
 
 .mood-selector select, .sleep-timer-wrapper select {
@@ -353,6 +320,7 @@ body.cinematic-mode .main-content {
   outline: none;
   font-size: 0.85rem;
   font-weight: 500;
+  cursor: pointer;
 }
 
 .mood-selector select option, .sleep-timer-wrapper select option {
@@ -487,7 +455,7 @@ body.cinematic-mode .main-content {
   font-size: 0.9rem;
 }
 
-/* DẢI SÓNG ÂM WAVEFORM CANVAS & HIỆU ỨNG LỤC DỊCH */
+/* DẢI SÓNG ÂM WAVEFORM */
 .waveform-container {
   width: 100%;
   display: flex;
@@ -508,6 +476,7 @@ body.cinematic-mode .main-content {
   overflow: hidden;
   display: flex;
   align-items: center;
+  cursor: pointer;
 }
 
 #waveform-canvas {
@@ -527,7 +496,6 @@ body.cinematic-mode .main-content {
   pointer-events: none;
 }
 
-/* Sóng gợn xanh ngọc khi Giọt Lục Dịch rơi trúng */
 .waveform-dew-glow {
   position: absolute;
   inset: 0;
@@ -561,6 +529,7 @@ body.cinematic-mode .main-content {
   color: var(--text-muted);
   font-size: 1.15rem;
   transition: var(--transition);
+  cursor: pointer;
 }
 
 .btn-ctrl:hover, .btn-icon:hover {
@@ -613,6 +582,7 @@ body.cinematic-mode .main-content {
   align-items: center;
   gap: 5px;
   transition: var(--transition);
+  cursor: pointer;
 }
 
 .btn-speed-badge:hover {
@@ -620,7 +590,6 @@ body.cinematic-mode .main-content {
   box-shadow: 0 0 10px var(--accent-gold-glow);
 }
 
-/* GIỌT LỤC DỊCH CHƯỞNG THIÊN BÌNH RƠI */
 .green-dewdrop {
   position: absolute;
   top: 100%;
@@ -654,6 +623,10 @@ body.cinematic-mode .main-content {
   flex: 1;
 }
 
+.volume-container i {
+  cursor: pointer;
+}
+
 .volume-container i:hover {
   color: var(--primary-color);
 }
@@ -662,134 +635,7 @@ body.cinematic-mode .main-content {
   flex: 1;
   accent-color: var(--primary-color);
   height: 4px;
-}
-
-/* =========================================================
-   HỘ ĐẠO TIÊN NHÂN HH3D STANDEE TO LỚN (320px - 350px)
-========================================================= */
-.companion-standee {
-  position: fixed;
-  bottom: 20px;
-  left: 30px;
-  z-index: 85;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  user-select: none;
-  pointer-events: auto;
-  transition: transform 0.3s ease;
-}
-
-.companion-standee:hover {
-  transform: translateY(-6px);
-}
-
-.standee-speech {
-  max-width: 250px;
-  background: rgba(15, 23, 42, 0.88);
-  border: 1px solid var(--accent-gold);
-  color: #fef08a;
-  font-size: 0.75rem;
-  padding: 8px 14px;
-  border-radius: 14px;
-  margin-bottom: 6px;
-  box-shadow: 0 0 18px var(--accent-gold-glow);
-  text-align: center;
-  line-height: 1.35;
-  font-style: italic;
-  pointer-events: none;
-  animation: fadeIn 0.4s ease;
-}
-
-.standee-body {
-  position: relative;
-  width: 210px;
-  height: 330px;
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  animation: immortalFloat 4s ease-in-out infinite alternate;
-}
-
-.standee-aura {
-  position: absolute;
-  bottom: 25px;
-  width: 180px;
-  height: 250px;
-  border-radius: 50% 50% 40% 40%;
-  background: radial-gradient(ellipse at center, rgba(16, 185, 129, 0.4) 0%, transparent 75%);
-  filter: blur(30px);
-  z-index: 0;
-  pointer-events: none;
-  transition: background 0.6s ease;
-}
-
-.standee-figure {
-  position: relative;
-  z-index: 1;
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-  filter: drop-shadow(0 0 16px rgba(16, 185, 129, 0.5)) drop-shadow(0 15px 25px rgba(0, 0, 0, 0.85));
-  transition: filter 0.5s ease, transform 0.3s ease;
-}
-
-.companion-standee:hover .standee-figure {
-  transform: scale(1.04);
-  filter: drop-shadow(0 0 24px var(--accent-gold-glow)) drop-shadow(0 15px 25px rgba(0, 0, 0, 0.9));
-}
-
-.standee-pedestal {
-  position: absolute;
-  bottom: 2px;
-  width: 140px;
-  height: 20px;
-  border-radius: 50%;
-  background: radial-gradient(ellipse at center, rgba(245, 158, 11, 0.8) 0%, rgba(16, 185, 129, 0.3) 50%, transparent 80%);
-  filter: blur(4px);
-  border: 1px solid rgba(245, 158, 11, 0.7);
-  box-shadow: 0 0 20px var(--accent-gold-glow);
-  z-index: 0;
-}
-
-.standee-badge {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(15, 23, 42, 0.85);
-  border: 1px solid var(--accent-gold);
-  box-shadow: 0 0 14px var(--accent-gold-glow);
-  padding: 4px 12px;
-  border-radius: 16px;
-  margin-top: 4px;
-}
-
-.standee-name {
-  font-family: var(--font-title);
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: var(--accent-gold);
-  letter-spacing: 0.5px;
-}
-
-.standee-nav-btn {
-  background: transparent;
-  border: none;
-  color: var(--text-muted);
-  font-size: 0.75rem;
-  padding: 2px 6px;
-  transition: var(--transition);
-}
-
-.standee-nav-btn:hover {
-  color: var(--accent-gold);
-  transform: scale(1.2);
-}
-
-@keyframes immortalFloat {
-  0% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-8px) rotate(-0.5deg); }
-  100% { transform: translateY(0px) rotate(0.5deg); }
+  cursor: pointer;
 }
 
 /* =========================================================
@@ -833,6 +679,7 @@ body.cinematic-mode .main-content {
   align-items: center;
   gap: 6px;
   transition: var(--transition);
+  cursor: pointer;
 }
 
 .view-tab-btn:hover {
@@ -869,6 +716,7 @@ body.cinematic-mode .main-content {
   outline: none;
   font-size: 0.85rem;
   transition: var(--transition);
+  cursor: text;
 }
 
 .search-container input:focus {
@@ -914,6 +762,7 @@ body.cinematic-mode .main-content {
   display: flex;
   flex-direction: column;
   align-items: center;
+  cursor: pointer;
 }
 
 .album-card:hover {
@@ -978,6 +827,7 @@ body.cinematic-mode .main-content {
   border-radius: 12px;
   font-size: 0.8rem;
   transition: var(--transition);
+  cursor: pointer;
 }
 
 .btn-back-albums:hover {
@@ -1004,6 +854,7 @@ body.cinematic-mode .main-content {
   gap: 8px;
   box-shadow: 0 0 15px var(--primary-glow);
   transition: var(--transition);
+  cursor: pointer;
 }
 
 .btn-primary:hover {
@@ -1037,6 +888,7 @@ body.cinematic-mode .main-content {
   border: 1px solid transparent;
   border-radius: 12px;
   transition: var(--transition);
+  cursor: pointer;
 }
 
 .song-card:hover {
@@ -1082,6 +934,7 @@ body.cinematic-mode .main-content {
   color: var(--text-muted);
   padding: 6px;
   transition: var(--transition);
+  cursor: pointer;
 }
 
 .btn-remove:hover {
@@ -1089,7 +942,7 @@ body.cinematic-mode .main-content {
 }
 
 /* =========================================================
-   NGĂN KÉO LINH HẠP CHI ÂM & MODAL
+   NGĂN KÉO LINH HẠP CHI ÂM & CÁC MODAL
 ========================================================= */
 .ambient-drawer {
   position: fixed;
@@ -1100,10 +953,12 @@ body.cinematic-mode .main-content {
   z-index: 80;
   transform: translateY(350px);
   transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none !important;
 }
 
 .ambient-drawer.open {
   transform: translateY(0);
+  pointer-events: auto !important;
 }
 
 .ambient-drawer-header {
@@ -1123,6 +978,7 @@ body.cinematic-mode .main-content {
   border: none;
   color: var(--text-muted);
   font-size: 1.2rem;
+  cursor: pointer;
 }
 
 .ambient-track {
@@ -1142,9 +998,10 @@ body.cinematic-mode .main-content {
   width: 100%;
   accent-color: var(--primary-color);
   height: 4px;
+  cursor: pointer;
 }
 
-/* GIAO DIỆN THIÊN KIẾP (QTE) */
+/* GIAO DIỆN THIÊN KIẾP */
 .tribulation-overlay {
   position: fixed;
   inset: 0;
@@ -1157,11 +1014,13 @@ body.cinematic-mode .main-content {
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.5s ease;
+  pointer-events: none !important;
 }
 
 .tribulation-overlay.active {
   opacity: 1;
   visibility: visible;
+  pointer-events: auto !important;
 }
 
 .tribulation-core {
@@ -1218,6 +1077,7 @@ body.cinematic-mode .main-content {
   user-select: none;
   transition: transform 0.08s ease, box-shadow 0.08s ease;
   margin-bottom: 25px;
+  cursor: pointer;
 }
 
 .qte-circle-btn:active {
@@ -1278,6 +1138,7 @@ body.cinematic-mode .main-content {
   align-items: center;
   justify-content: center;
   transition: var(--transition);
+  cursor: pointer;
 }
 
 .oracle-cylinder:hover {
@@ -1341,11 +1202,13 @@ body.cinematic-mode .main-content {
   transition: var(--transition);
   z-index: 150;
   padding: 20px;
+  pointer-events: none !important;
 }
 
 .modal.open {
   opacity: 1;
   visibility: visible;
+  pointer-events: auto !important;
 }
 
 .modal-box {
@@ -1372,6 +1235,7 @@ body.cinematic-mode .main-content {
   border: none;
   font-size: 1.5rem;
   color: var(--text-muted);
+  cursor: pointer;
 }
 
 .modal-tabs {
@@ -1388,6 +1252,7 @@ body.cinematic-mode .main-content {
   color: var(--text-muted);
   border-radius: 8px;
   font-size: 0.85rem;
+  cursor: pointer;
 }
 
 .tab-btn.active {
@@ -1425,6 +1290,7 @@ body.cinematic-mode .main-content {
   color: var(--text-main);
   outline: none;
   transition: var(--transition);
+  cursor: text;
 }
 
 .input-group input:focus {
@@ -1442,6 +1308,7 @@ body.cinematic-mode .main-content {
   font-weight: 600;
   box-shadow: 0 0 15px var(--primary-glow);
   margin-top: 10px;
+  cursor: pointer;
 }
 
 @keyframes slowSpin {
@@ -1490,8 +1357,5 @@ body.cinematic-mode .main-content {
   }
   .album-grid {
     grid-template-columns: repeat(2, 1fr);
-  }
-  .companion-standee {
-    display: none;
   }
 }
