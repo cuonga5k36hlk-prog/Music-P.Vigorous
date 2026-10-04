@@ -1,5 +1,5 @@
 /* =========================================================
-   PHÀM NHÂN THÍNH ÂM CÁC - NHÂN VẬT & BÁT QUÁI HUYỀN ẢO
+   PHÀM NHÂN THÍNH ÂM CÁC - GIAO DIỆN TĨNH TÂM & HH3D
 ========================================================= */
 
 body, body.mood-thanhvan {
@@ -107,19 +107,6 @@ body {
   transition: background-image 0.8s ease, color 0.3s ease;
 }
 
-/* HIỆU ỨNG SÓNG CHẤN ĐỘNG MÀN HÌNH (BASS SHAKE) */
-body.bass-shake {
-  animation: cameraImpact 0.14s ease-in-out;
-}
-
-@keyframes cameraImpact {
-  0% { transform: translate(0, 0); }
-  25% { transform: translate(-3px, 2px) rotate(-0.2deg); }
-  50% { transform: translate(3px, -2px) rotate(0.2deg); }
-  75% { transform: translate(-1.5px, 1px); }
-  100% { transform: translate(0, 0); }
-}
-
 /* DẢI ĐIỆN ẢNH CINEMATIC 21:9 */
 .cinematic-bar {
   position: fixed;
@@ -139,12 +126,17 @@ body.cinematic-mode .cinematic-bar {
 }
 
 body.cinematic-mode .playlist-section,
-body.cinematic-mode .app-header,
-body.cinematic-mode .companion-card {
+body.cinematic-mode .app-header {
   opacity: 0;
   pointer-events: none;
   transform: translateY(-20px);
   transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+body.cinematic-mode .companion-standee {
+  left: 60px;
+  transform: scale(1.12);
+  transition: all 0.5s ease;
 }
 
 body.cinematic-mode .main-content {
@@ -495,7 +487,7 @@ body.cinematic-mode .main-content {
   font-size: 0.9rem;
 }
 
-/* DẢI SÓNG ÂM WAVEFORM CANVAS */
+/* DẢI SÓNG ÂM WAVEFORM CANVAS & HIỆU ỨNG LỤC DỊCH */
 .waveform-container {
   width: 100%;
   display: flex;
@@ -533,6 +525,26 @@ body.cinematic-mode .main-content {
   background: linear-gradient(90deg, rgba(16, 185, 129, 0.25), rgba(245, 158, 11, 0.35));
   border-right: 2px solid var(--accent-gold);
   pointer-events: none;
+}
+
+/* Sóng gợn xanh ngọc khi Giọt Lục Dịch rơi trúng */
+.waveform-dew-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 25% 50%, rgba(16, 185, 129, 0.6) 0%, transparent 80%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+
+.waveform-dew-glow.glow-active {
+  opacity: 1;
+  animation: dewPulse 0.8s ease-out;
+}
+
+@keyframes dewPulse {
+  0% { transform: scaleX(0.2); opacity: 1; }
+  100% { transform: scaleX(1); opacity: 0; }
 }
 
 .player-controls {
@@ -584,6 +596,11 @@ body.cinematic-mode .main-content {
   gap: 15px;
 }
 
+.speed-btn-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
 .btn-speed-badge {
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid var(--panel-border);
@@ -601,6 +618,32 @@ body.cinematic-mode .main-content {
 .btn-speed-badge:hover {
   background: rgba(245, 158, 11, 0.15);
   box-shadow: 0 0 10px var(--accent-gold-glow);
+}
+
+/* GIỌT LỤC DỊCH CHƯỞNG THIÊN BÌNH RƠI */
+.green-dewdrop {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  width: 6px;
+  height: 9px;
+  border-radius: 50% 50% 60% 60%;
+  background: #34d399;
+  box-shadow: 0 0 10px #10b981, 0 0 16px #34d399;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%);
+}
+
+.green-dewdrop.dripping {
+  animation: dewDrip 1.2s cubic-bezier(0.5, 0, 0.7, 1) forwards;
+}
+
+@keyframes dewDrip {
+  0% { transform: translate(-50%, 0) scale(0.4); opacity: 0; }
+  30% { transform: translate(-50%, 4px) scale(1.1); opacity: 1; }
+  85% { transform: translate(-50%, 48px) scale(0.9); opacity: 1; }
+  100% { transform: translate(-50%, 55px) scale(0.2); opacity: 0; }
 }
 
 .volume-container {
@@ -622,171 +665,131 @@ body.cinematic-mode .main-content {
 }
 
 /* =========================================================
-   THẺ HỘ ĐẠO TIÊN NHÂN 3D (COMPANION CARD GÓC TRÁI DƯỚI)
+   HỘ ĐẠO TIÊN NHÂN HH3D STANDEE TO LỚN (320px - 350px)
 ========================================================= */
-.companion-card {
-  position: fixed;
-  bottom: 25px;
-  left: 25px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 10px 18px;
-  max-width: 320px;
-  border-radius: 20px;
-  border: 1px solid var(--accent-gold);
-  box-shadow: 0 0 20px var(--accent-gold-glow);
-  z-index: 80;
-  transition: transform 0.3s ease, border-color 0.3s ease;
-  user-select: none;
-}
-
-.companion-card:hover {
-  transform: translateY(-4px) scale(1.02);
-}
-
-.companion-avatar {
-  position: relative;
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  overflow: hidden;
-  border: 2px solid var(--accent-gold);
-  flex-shrink: 0;
-}
-
-.companion-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.4s ease;
-}
-
-.companion-card:hover .companion-avatar img {
-  transform: scale(1.15);
-}
-
-.companion-aura {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  box-shadow: inset 0 0 12px var(--primary-glow);
-  pointer-events: none;
-}
-
-.companion-info h5 {
-  font-family: var(--font-title);
-  font-size: 0.9rem;
-  color: var(--accent-gold);
-  margin-bottom: 2px;
-}
-
-.companion-info p {
-  font-size: 0.73rem;
-  color: var(--text-main);
-  line-height: 1.3;
-  font-style: italic;
-}
-
-/* =========================================================
-   HỘ ĐẠO LINH THÚ GẬT GÙ THEO NHẠC (HEADBOBBING PET)
-========================================================= */
-.spiritual-pet-wrapper {
+.companion-standee {
   position: fixed;
   bottom: 20px;
-  right: 25px;
+  left: 30px;
   z-index: 85;
   display: flex;
   flex-direction: column;
   align-items: center;
   user-select: none;
+  pointer-events: auto;
+  transition: transform 0.3s ease;
 }
 
-.pet-speech {
-  background: rgba(15, 23, 42, 0.85);
+.companion-standee:hover {
+  transform: translateY(-6px);
+}
+
+.standee-speech {
+  max-width: 250px;
+  background: rgba(15, 23, 42, 0.88);
   border: 1px solid var(--accent-gold);
   color: #fef08a;
-  font-size: 0.72rem;
-  padding: 4px 10px;
-  border-radius: 12px;
+  font-size: 0.75rem;
+  padding: 8px 14px;
+  border-radius: 14px;
   margin-bottom: 6px;
-  box-shadow: 0 0 10px var(--accent-gold-glow);
-  white-space: nowrap;
+  box-shadow: 0 0 18px var(--accent-gold-glow);
+  text-align: center;
+  line-height: 1.35;
+  font-style: italic;
+  pointer-events: none;
+  animation: fadeIn 0.4s ease;
 }
 
-.pet-body {
+.standee-body {
   position: relative;
-  width: 58px;
-  height: 58px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(245, 158, 11, 0.25) 0%, rgba(16, 185, 129, 0.2) 100%);
-  border: 2px solid var(--accent-gold);
-  box-shadow: 0 0 20px var(--accent-gold-glow);
+  width: 210px;
+  height: 330px;
   display: flex;
-  align-items: center;
   justify-content: center;
-  transition: transform 0.08s ease-out;
+  align-items: flex-end;
+  animation: immortalFloat 4s ease-in-out infinite alternate;
 }
 
-.pet-icon {
-  font-size: 1.8rem;
-  color: var(--accent-gold);
-  transition: transform 0.1s ease-out, color 0.3s ease;
+.standee-aura {
+  position: absolute;
+  bottom: 25px;
+  width: 180px;
+  height: 250px;
+  border-radius: 50% 50% 40% 40%;
+  background: radial-gradient(ellipse at center, rgba(16, 185, 129, 0.4) 0%, transparent 75%);
+  filter: blur(30px);
+  z-index: 0;
+  pointer-events: none;
+  transition: background 0.6s ease;
 }
 
-.pet-meta-info {
+.standee-figure {
+  position: relative;
+  z-index: 1;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 0 16px rgba(16, 185, 129, 0.5)) drop-shadow(0 15px 25px rgba(0, 0, 0, 0.85));
+  transition: filter 0.5s ease, transform 0.3s ease;
+}
+
+.companion-standee:hover .standee-figure {
+  transform: scale(1.04);
+  filter: drop-shadow(0 0 24px var(--accent-gold-glow)) drop-shadow(0 15px 25px rgba(0, 0, 0, 0.9));
+}
+
+.standee-pedestal {
+  position: absolute;
+  bottom: 2px;
+  width: 140px;
+  height: 20px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(245, 158, 11, 0.8) 0%, rgba(16, 185, 129, 0.3) 50%, transparent 80%);
+  filter: blur(4px);
+  border: 1px solid rgba(245, 158, 11, 0.7);
+  box-shadow: 0 0 20px var(--accent-gold-glow);
+  z-index: 0;
+}
+
+.standee-badge {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  margin-top: 5px;
-  gap: 3px;
+  gap: 8px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid var(--accent-gold);
+  box-shadow: 0 0 14px var(--accent-gold-glow);
+  padding: 4px 12px;
+  border-radius: 16px;
+  margin-top: 4px;
 }
 
-.pet-name {
-  font-size: 0.7rem;
-  color: var(--text-main);
+.standee-name {
+  font-family: var(--font-title);
+  font-size: 0.8rem;
   font-weight: 700;
+  color: var(--accent-gold);
   letter-spacing: 0.5px;
 }
 
-.btn-feed-pill {
-  background: linear-gradient(135deg, #f59e0b, #d97706);
+.standee-nav-btn {
+  background: transparent;
   border: none;
-  color: #000;
-  font-size: 0.65rem;
-  font-weight: 800;
-  padding: 3px 8px;
-  border-radius: 10px;
-  box-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  padding: 2px 6px;
   transition: var(--transition);
 }
 
-.btn-feed-pill:hover {
-  transform: scale(1.08);
+.standee-nav-btn:hover {
+  color: var(--accent-gold);
+  transform: scale(1.2);
 }
 
-.spiritual-pet-wrapper.sleeping .pet-body {
-  animation: petBreathe 3.5s ease-in-out infinite;
-  opacity: 0.82;
-}
-.spiritual-pet-wrapper.sleeping .pet-icon {
-  transform: rotate(-15deg);
-}
-
-.spiritual-pet-wrapper.pet-petted {
-  animation: petBounce 0.45s ease;
-}
-
-@keyframes petBreathe {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.06); }
-}
-
-@keyframes petBounce {
-  0% { transform: scale(1); }
-  40% { transform: scale(1.25) translateY(-14px); }
-  70% { transform: scale(0.95); }
-  100% { transform: scale(1); }
+@keyframes immortalFloat {
+  0% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-8px) rotate(-0.5deg); }
+  100% { transform: translateY(0px) rotate(0.5deg); }
 }
 
 /* =========================================================
@@ -1091,7 +1094,7 @@ body.cinematic-mode .main-content {
 .ambient-drawer {
   position: fixed;
   bottom: 25px;
-  right: 100px;
+  right: 25px;
   width: 280px;
   padding: 18px;
   z-index: 80;
@@ -1488,7 +1491,7 @@ body.cinematic-mode .main-content {
   .album-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  .companion-card {
+  .companion-standee {
     display: none;
   }
 }
