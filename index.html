@@ -27,7 +27,7 @@
   <div id="mist-layer" class="mist-layer"></div>
   <div id="lightning-overlay"></div>
 
-  <!-- Canvas Nền: Sóng Nước, Bong Bóng Linh Khí, Vệt Rồng Kiếm Khí -->
+  <!-- Canvas Nền: Sóng Nước, Khói Trầm & Vệt Rồng Kiếm Khí -->
   <canvas id="ambient-canvas"></canvas>
 
   <!-- Tiểu Phi Kiếm Con Trỏ Chuột -->
@@ -47,7 +47,7 @@
         <i class="fa-solid fa-yin-yang logo-icon"></i>
         <div class="logo-text">
           <h1>THÍNH ÂM CÁC</h1>
-          <span>Phàm Nhân Tu Tiên • Ngự Kiếm Phi Hành</span>
+          <span>Phàm Nhân Tu Tiên • HH3D Đỉnh Phong</span>
         </div>
       </div>
 
@@ -125,7 +125,7 @@
       <section class="player-section glass-panel" id="player-card">
         <div class="disc-wrapper" id="parallax-wrapper">
           <div class="ambient-glow" id="ambient-glow"></div>
-          <!-- Canvas vẽ Bát Quái Trận Đồ & Vạn Kiếm Quy Tông -->
+          <!-- Canvas vẽ Bát Quái Trận Đồ & Vạn Kiếm Quy Tông (kèm Tàn Ảnh) -->
           <canvas id="visualizer-canvas" width="440" height="440"></canvas>
 
           <div class="disc" id="disc">
@@ -145,6 +145,7 @@
           <div class="waveform-box" id="waveform-box">
             <canvas id="waveform-canvas" width="280" height="26"></canvas>
             <div class="waveform-progress" id="waveform-progress"></div>
+            <div class="waveform-dew-glow" id="waveform-dew-glow"></div>
           </div>
           <span id="duration">00:00</span>
         </div>
@@ -169,9 +170,13 @@
         </div>
 
         <div class="sub-controls-row">
-          <button class="btn-speed-badge" id="speed-toggle-btn" title="Chưởng Thiên Bình - Tốc Độ Thính Âm">
-            <i class="fa-solid fa-forward"></i> <span id="speed-text">1.0x</span>
-          </button>
+          <!-- Nút Chưởng Thiên Bình ngưng tụ Lục Dịch -->
+          <div class="speed-btn-wrapper">
+            <button class="btn-speed-badge" id="speed-toggle-btn" title="Chưởng Thiên Bình - Tốc Độ Thính Âm">
+              <i class="fa-solid fa-bottle-droplet bottle-icon"></i> <span id="speed-text">1.0x</span>
+            </button>
+            <div class="green-dewdrop" id="green-dewdrop"></div>
+          </div>
 
           <div class="volume-container">
             <i class="fa-solid fa-volume-high" id="vol-icon" title="Tắt/Bật tiếng [M]"></i>
@@ -219,32 +224,18 @@
     </main>
   </div>
 
-  <!-- THẺ HỘ ĐẠO TIÊN NHÂN 3D (GÓC DƯỚI BÊN TRÁI ĐỐI XỨNG LINH THÚ) -->
-  <div class="companion-card glass-panel" id="companion-card" title="Nhấp chuột để đàm đạo">
-    <div class="companion-avatar" id="companion-avatar">
-      <img src="https://images.unsplash.com/photo-1578632767115-351597cf2477?q=80&w=300&auto=format&fit=crop" id="companion-img" alt="Avatar Đạo Hữu">
-      <div class="companion-aura" id="companion-aura"></div>
+  <!-- HỘ ĐẠO TIÊN NHÂN HH3D TO LỚN (GÓC DƯỚI BÊN TRÁI) -->
+  <div class="companion-standee" id="companion-standee" title="Nhấp chuột để đàm đạo cùng Đạo Hữu">
+    <div class="standee-speech" id="companion-dialogue">"Đạo tâm bất biến, cẩn trọng tâm ma quấy nhiễu..."</div>
+    <div class="standee-body">
+      <div class="standee-aura" id="standee-aura"></div>
+      <img src="https://images.unsplash.com/photo-1578632767115-351597cf2477?q=80&w=600&auto=format&fit=crop" id="companion-img" class="standee-figure" alt="Hộ Đạo Tiên Nhân">
+      <div class="standee-pedestal" id="standee-pedestal"></div>
     </div>
-    <div class="companion-info">
-      <h5 id="companion-name">Hàn Lập</h5>
-      <p id="companion-dialogue">"Đạo tâm bất biến, cẩn trọng tâm ma quấy nhiễu..."</p>
-    </div>
-  </div>
-
-  <!-- HỘ ĐẠO LINH THÚ TIẾN HÓA (GÓC DƯỚI BÊN PHẢI) -->
-  <div class="spiritual-pet-wrapper" id="spiritual-pet" title="Hộ Đạo Linh Thú">
-    <div class="pet-speech" id="pet-speech">Zzz...</div>
-    <div class="pet-body" id="pet-body">
-      <div class="pet-glow"></div>
-      <i class="fa-solid fa-dragon pet-icon" id="pet-icon"></i>
-    </div>
-    <div class="pet-meta-info">
-      <span class="pet-name" id="pet-name">Ấu Trùng Phệ Kim</span>
-      <div class="pet-feed-action">
-        <button id="pet-feed-btn" class="btn-feed-pill" title="Cho ăn Tụ Khí Đan">
-          <i class="fa-solid fa-pills"></i> Cho Ăn (<span id="pill-count">5</span>)
-        </button>
-      </div>
+    <div class="standee-badge">
+      <button class="standee-nav-btn" id="prev-char-btn" title="Đạo hữu trước"><i class="fa-solid fa-chevron-left"></i></button>
+      <div class="standee-name" id="companion-name">Hàn Lập</div>
+      <button class="standee-nav-btn" id="next-char-btn" title="Đạo hữu kế tiếp"><i class="fa-solid fa-chevron-right"></i></button>
     </div>
   </div>
 
