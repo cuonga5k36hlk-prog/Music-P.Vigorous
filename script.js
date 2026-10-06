@@ -47,6 +47,14 @@ const DEFAULT_PLAYLIST = [
 [00:46.00] Nhập đạo trường sinh quy nhất thể.`
   }
 ];
+{
+  id: 4,
+  title: "Xương Rồng (Intro)",
+  artist: "Dangrangto",
+  src: "./xuong-rong.mp3",
+  cover: "https://img.youtube.com/vi/Tv0w9-bpPpk/maxresdefault.jpg",
+  lrc: ""
+},
 
 let playlist = [];
 try {
