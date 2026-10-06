@@ -1,60 +1,37 @@
 /* =========================================================
-   PHÀM NHÂN THÍNH ÂM CÁC - THẦN NIỆM THI TỪ (KARAOKE LRC SYNC)
+   PHÀM NHÂN THÍNH ÂM CÁC - BẢN TINH GỌN (ĐÃ LƯỢC BỎ LỜI NHẠC)
 ========================================================= */
 
-// Danh sách khúc nhạc kèm khẩu quyết đồng bộ LRC mẫu
-// (Bạn có thể tìm kiếm trọn vẹn lời bài hát bản quyền trên Google để cập nhật mốc thời gian tùy ý)
 const DEFAULT_PLAYLIST = [
   {
     id: 1,
     title: "Món quà",
     artist: "Dangrangto",
     src: "https://files.catbox.moe/9fvwip.mp3",
-    cover: "https://img.youtube.com/vi/a6pUdErpOgw/maxresdefault.jpg",
-    // Bài hát là những hoài niệm tình cảm chân thành của Dangrangto
-    lrc: `[00:00.00] Khúc ca: Món Quà - Dangrangto
-[00:05.00] Dạo đầu âm luật...
-[00:10.50] Từng dòng ký ức như món quà trao nhau
-[00:16.80] Gửi trọn yêu thương vào từng khúc ca
-[00:23.20] Ngân vang giai điệu giữa cõi thế trần
-[00:30.00] Tĩnh tâm lắng nghe tiếng lòng...`
+    cover: "https://img.youtube.com/vi/a6pUdErpOgw/maxresdefault.jpg"
   },
   {
     id: 2,
     title: "Đánh rơi (feat. MICKEY)",
     artist: "Dangrangto",
     src: "https://files.catbox.moe/wdyj9j.mp3",
-    cover: "https://img.youtube.com/vi/Tv0w9-bpPpk/maxresdefault.jpg",
-    // Ca khúc tự sự về những cảm xúc tiếc nuối và đánh rơi ký ức
-    lrc: `[00:00.00] Khúc ca: Đánh Rơi - Dangrangto ft. MICKEY
-[00:06.00] Tiếng mưa rả rích bên ngoài động phủ...
-[00:12.40] Đánh rơi nụ cười ở nơi góc phố
-[00:18.50] Để lại tiếc nuối theo từng bước chân
-[00:24.00] Tìm lại mảnh ghép đã từng đánh rơi...`
+    cover: "https://img.youtube.com/vi/Tv0w9-bpPpk/maxresdefault.jpg"
   },
   {
     id: 3,
     title: "Tinh Hải Phiêu Lưu Bi Ký",
     artist: "Loạn Tinh Hải Cổ Tu",
     src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
-    cover: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=600&auto=format&fit=crop",
-    lrc: `[00:00.00] Tiêu Dao Tinh Hải - Cổ Tu Khúc
-[00:08.00] Vạn dặm tinh hà sóng vỗ mênh mông
-[00:15.50] Ngự kiếm phi hành qua biển mây
-[00:23.00] Đạo tâm kiên định qua ngàn kiếp
-[00:30.50] Trúc Phong kiếm trận trấn bát hoang
-[00:38.00] Thiên kiếp lôi đình có xá chi!
-[00:46.00] Nhập đạo trường sinh quy nhất thể.`
+    cover: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=600&auto=format&fit=crop"
+  },
+  {
+    id: 4,
+    title: "Xương Rồng (Intro)",
+    artist: "Dangrangto",
+    src: "./xuong-rong.mp3",
+    cover: "https://img.youtube.com/vi/Tv0w9-bpPpk/maxresdefault.jpg"
   }
 ];
-{
-  id: 4,
-  title: "Xương Rồng (Intro)",
-  artist: "Dangrangto",
-  src: "./xuong-rong.mp3",
-  cover: "https://img.youtube.com/vi/Tv0w9-bpPpk/maxresdefault.jpg",
-  lrc: ""
-},
 
 let playlist = [];
 try {
@@ -71,11 +48,6 @@ let isPlaying = false;
 let isShuffle = false;
 let isRepeat = false;
 let lastVolume = 0.7;
-
-// LRC Parser Data
-let currentParsedLyrics = [];
-let activeLyricIndex = -1;
-let isLyricsViewActive = false;
 
 // DOM Elements
 const audio = document.getElementById("audio-engine");
@@ -108,11 +80,6 @@ const swordCursor = document.getElementById("sword-cursor");
 const greenDewdrop = document.getElementById("green-dewdrop");
 const waveformDewGlow = document.getElementById("waveform-dew-glow");
 
-// Lời Nhạc Elements
-const playerCard = document.getElementById("player-card");
-const lyricsToggleBtn = document.getElementById("lyrics-toggle-btn");
-const lyricsContainer = document.getElementById("lyrics-container");
-
 // Waveform Box & Canvas
 const waveformBox = document.getElementById("waveform-box");
 const waveformCanvas = document.getElementById("waveform-canvas");
@@ -138,7 +105,7 @@ const urlForm = document.getElementById("url-form");
 const fileForm = document.getElementById("file-form");
 
 /* =========================================================
-   1. QUẢN LÝ PHÁT NHẠC & THẦN NIỆM THI TỪ (LRC)
+   1. QUẢN LÝ PHÁT NHẠC
 ========================================================= */
 function savePlaylistToStorage() {
   try {
@@ -148,100 +115,6 @@ function savePlaylistToStorage() {
   } catch (e) {
     console.log("LocalStorage error:", e);
   }
-}
-
-// Hàm phân tích định dạng LRC thành mảng thời gian
-function parseLRC(lrcText) {
-  if (!lrcText) return [];
-  const lines = lrcText.split("\n");
-  const result = [];
-  const timeRegex = /\[(\d{2}):(\d{2})\.?(\d{0,3})\]/;
-
-  for (const line of lines) {
-    const match = timeRegex.exec(line);
-    if (match) {
-      const min = parseInt(match[1], 10);
-      const sec = parseInt(match[2], 10);
-      const ms = match[3] ? parseInt(match[3].padEnd(3, '0').slice(0, 3), 10) : 0;
-      const time = min * 60 + sec + ms / 1000;
-      const text = line.replace(timeRegex, "").trim();
-      if (text) {
-        result.push({ time, text });
-      }
-    }
-  }
-  return result.sort((a, b) => a.time - b.time);
-}
-
-// Hiển thị danh sách câu hát ra giao diện
-function renderLyrics() {
-  if (!lyricsContainer) return;
-  lyricsContainer.innerHTML = "";
-  activeLyricIndex = -1;
-
-  if (currentParsedLyrics.length === 0) {
-    lyricsContainer.innerHTML = `<div class="lyric-line placeholder">Khúc nhạc này chưa có khẩu quyết lời ca...</div>`;
-    return;
-  }
-
-  currentParsedLyrics.forEach((item, idx) => {
-    const p = document.createElement("p");
-    p.className = "lyric-line";
-    p.textContent = item.text;
-    p.setAttribute("data-idx", idx);
-
-    // Bấm vào câu hát để tua đến mốc thời gian đó
-    p.addEventListener("click", () => {
-      audio.currentTime = item.time;
-      if (!isPlaying) playTrack();
-    });
-
-    lyricsContainer.appendChild(p);
-  });
-}
-
-// Cập nhật câu hát đang phát sáng và tự cuộn
-function syncLyrics(currentTime) {
-  if (currentParsedLyrics.length === 0 || !lyricsContainer) return;
-
-  let newIndex = -1;
-  for (let i = 0; i < currentParsedLyrics.length; i++) {
-    if (currentTime >= currentParsedLyrics[i].time) {
-      newIndex = i;
-    } else {
-      break;
-    }
-  }
-
-  if (newIndex !== activeLyricIndex) {
-    const prevEl = lyricsContainer.querySelector(`.lyric-line.active`);
-    if (prevEl) prevEl.classList.remove("active");
-
-    activeLyricIndex = newIndex;
-    if (activeLyricIndex >= 0) {
-      const currentEl = lyricsContainer.querySelector(`.lyric-line[data-idx="${activeLyricIndex}"]`);
-      if (currentEl) {
-        currentEl.classList.add("active");
-        currentEl.scrollIntoView({ behavior: "smooth", block: "center" });
-      }
-    }
-  }
-}
-
-// Nút chuyển đổi giao diện Đĩa Nhạc <-> Lời Nhạc
-if (lyricsToggleBtn && playerCard) {
-  lyricsToggleBtn.addEventListener("click", () => {
-    isLyricsViewActive = !isLyricsViewActive;
-    playerCard.classList.toggle("show-lyrics", isLyricsViewActive);
-    lyricsToggleBtn.classList.toggle("active", isLyricsViewActive);
-
-    if (isLyricsViewActive && activeLyricIndex >= 0) {
-      setTimeout(() => {
-        const activeEl = lyricsContainer.querySelector(`.lyric-line.active`);
-        if (activeEl) activeEl.scrollIntoView({ behavior: "smooth", block: "center" });
-      }, 100);
-    }
-  });
 }
 
 function initPlayer() {
@@ -261,10 +134,6 @@ function loadTrack(index) {
   trackTitle.textContent = track.title;
   trackArtist.textContent = track.artist;
   trackCover.src = track.cover || "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=600&auto=format&fit=crop";
-
-  // Phân tích lời nhạc LRC của bài hát mới
-  currentParsedLyrics = parseLRC(track.lrc || "");
-  renderLyrics();
 
   savePlaylistToStorage();
   updatePlaylistHighlight();
@@ -405,7 +274,6 @@ audio.addEventListener("ended", () => {
   }
 });
 
-// Cập nhật tiến trình và đồng bộ từng câu hát
 audio.addEventListener("timeupdate", () => {
   if (audio.duration) {
     const current = audio.currentTime;
@@ -415,9 +283,6 @@ audio.addEventListener("timeupdate", () => {
 
     currentTimeEl.textContent = formatTime(current);
     durationEl.textContent = formatTime(duration);
-
-    // Đồng bộ lời nhạc chạy chữ
-    syncLyrics(current);
   }
 });
 
@@ -491,7 +356,7 @@ setInterval(() => {
 }, 11000);
 
 /* =========================================================
-   3. NGỰ KIẾM PHI HÀNH (CHUẨN MŨI CHUỘT)
+   3. NGỰ KIẾM PHI HÀNH (CHUẨN TÂM CLICK)
 ========================================================= */
 let mouseX = window.innerWidth / 2;
 let mouseY = window.innerHeight / 2;
@@ -531,16 +396,15 @@ window.addEventListener("mousemove", (e) => {
   prevMouseX = mouseX;
   prevMouseY = mouseY;
 
-  if (!document.body.classList.contains("cinematic-mode") && parallaxWrapper && !isLyricsViewActive) {
+  if (!document.body.classList.contains("cinematic-mode") && parallaxWrapper) {
     const xRot = (mouseX - window.innerWidth / 2) / 25;
     const yRot = (mouseY - window.innerHeight / 2) / 25;
     parallaxWrapper.style.transform = `rotateY(${xRot}deg) rotateX(${-yRot}deg)`;
   }
 });
 
-// Click chuột tạo Mặt Hồ Gợn Sóng (bỏ qua khi bấm nút điều khiển)
 window.addEventListener("mousedown", (e) => {
-  if (e.target.closest("button, select, input, a, .song-card, .album-card, .ambient-drawer, .modal-box, .volume-container, .waveform-box, .lyric-line")) {
+  if (e.target.closest("button, select, input, a, .song-card, .album-card, .ambient-drawer, .modal-box, .volume-container, .waveform-box")) {
     return;
   }
 
@@ -609,7 +473,7 @@ function drawStaticWaveform() {
 }
 
 /* =========================================================
-   6. BÁT QUÁI TRẬN ĐỒ & TÀN ẢNH PHI KIẾM (ĐẠI CANH KIẾM TRẬN)
+   6. BÁT QUÁI TRẬN ĐỒ & TÀN ẢNH PHI KIẾM
 ========================================================= */
 const vCanvas = document.getElementById("visualizer-canvas");
 const vCtx = vCanvas ? vCanvas.getContext("2d") : null;
@@ -760,19 +624,16 @@ function drawVisualizer() {
     const style = getComputedStyle(document.body);
     const primaryColor = style.getPropertyValue("--primary-color").trim() || "#10b981";
 
-    // Tàn ảnh 2
     const ghostAngle2 = angle - 0.07;
     const gx2 = centerX + Math.cos(ghostAngle2) * distance;
     const gy2 = centerY + Math.sin(ghostAngle2) * distance;
     drawFlyingSword(vCtx, gx2, gy2, swordPointingAngle - 0.07, swordLength * 0.9, primaryColor, 0.2);
 
-    // Tàn ảnh 1
     const ghostAngle1 = angle - 0.035;
     const gx1 = centerX + Math.cos(ghostAngle1) * distance;
     const gy1 = centerY + Math.sin(ghostAngle1) * distance;
     drawFlyingSword(vCtx, gx1, gy1, swordPointingAngle - 0.035, swordLength * 0.95, primaryColor, 0.45);
 
-    // Phi kiếm thật
     drawFlyingSword(vCtx, swordX, swordY, swordPointingAngle, swordLength, primaryColor, 1.0);
   }
 }
@@ -949,7 +810,7 @@ if (btnBackAlbums) {
 }
 
 /* =========================================================
-   9. PHÍM TẮT & CHẾ ĐỘ ĐIỆN ẢNH
+   9. NÚT ĐIỆN ẢNH & PHÍM TẮT
 ========================================================= */
 if (cinematicToggle) {
   cinematicToggle.addEventListener("click", () => {
@@ -979,10 +840,6 @@ window.addEventListener("keydown", (e) => {
       e.preventDefault();
       document.body.classList.toggle("cinematic-mode");
       if (cinematicToggle) cinematicToggle.classList.toggle("active");
-      break;
-    case "KeyL": // Phím L để bật/tắt Lời Ca
-      e.preventDefault();
-      if (lyricsToggleBtn) lyricsToggleBtn.click();
       break;
     case "ArrowRight":
       e.preventDefault();
@@ -1362,7 +1219,7 @@ if (urlForm) {
     const src = document.getElementById("url-audio").value.trim();
     const cover = document.getElementById("url-cover").value.trim() || "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=600&auto=format&fit=crop";
 
-    const newSong = { id: Date.now(), title, artist, src, cover, lrc: "" };
+    const newSong = { id: Date.now(), title, artist, src, cover };
     playlist.push(newSong);
     savePlaylistToStorage();
     renderPlaylist(searchInput.value);
@@ -1392,8 +1249,7 @@ if (fileForm) {
       title,
       artist,
       src: blobUrl,
-      cover: "https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=600&auto=format&fit=crop",
-      lrc: ""
+      cover: "https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=600&auto=format&fit=crop"
     };
 
     playlist.push(newSong);
