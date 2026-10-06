@@ -27,7 +27,7 @@
   <div id="mist-layer" class="mist-layer"></div>
   <div id="lightning-overlay"></div>
 
-  <!-- Canvas Nền: Sóng Nước & Vệt Rồng Kiếm Khí -->
+  <!-- Canvas Nền: Sóng Nước & Vệt Kiếm Khí -->
   <canvas id="ambient-canvas"></canvas>
 
   <!-- Tiểu Phi Kiếm Con Trỏ Chuột -->
@@ -124,7 +124,7 @@
 
         <div class="track-meta">
           <h2 id="track-title" class="track-title">Phàm Nhân Tu Tiên Tấu Khúc</h2>
-          <p id="track-artist" class="track-artist">Hàn Lập • Thanh Vân Môn</p>
+          <p id="track-artist" class="track-artist">Dangrangto</p>
         </div>
 
         <!-- DẢI SÓNG ÂM WAVEFORM CANVAS BAR -->
@@ -200,136 +200,4 @@
 
         <div class="view-content" id="albums-view">
           <div class="album-detail-header" id="album-detail-header" style="display: none;">
-            <button class="btn-back-albums" id="btn-back-albums">
-              <i class="fa-solid fa-chevron-left"></i> Toàn Bộ Album
-            </button>
-            <h4 id="album-detail-title">Dangrangto</h4>
-          </div>
-          <div class="album-grid" id="album-grid"></div>
-        </div>
-      </section>
-    </main>
-  </div>
-
-  <!-- THẺ AUDIO TỰ NHIÊN -->
-  <audio id="audio-engine" preload="metadata"></audio>
-
-  <!-- LINH HẠP CHI ÂM -->
-  <div class="ambient-drawer glass-panel" id="ambient-drawer">
-    <div class="ambient-drawer-header">
-      <h4><i class="fa-solid fa-wind"></i> Linh Hạp Chi Âm</h4>
-      <button id="close-ambient-drawer" class="btn-close-sm">&times;</button>
-    </div>
-    <div class="ambient-track">
-      <div class="ambient-info"><i class="fa-solid fa-cloud-rain"></i> Linh Vũ Trúc Lâm</div>
-      <input type="range" class="ambient-slider" id="amb-rain" min="0" max="1" step="0.05" value="0">
-    </div>
-    <div class="ambient-track">
-      <div class="ambient-info"><i class="fa-solid fa-fire"></i> Luyện Đan Lô Hỏa</div>
-      <input type="range" class="ambient-slider" id="amb-fire" min="0" max="1" step="0.05" value="0">
-    </div>
-    <div class="ambient-track">
-      <div class="ambient-info"><i class="fa-solid fa-water"></i> Loạn Tinh Ba Đào</div>
-      <input type="range" class="ambient-slider" id="amb-waves" min="0" max="1" step="0.05" value="0">
-    </div>
-    <div class="ambient-track">
-      <div class="ambient-info"><i class="fa-solid fa-bell"></i> Thanh Phong Linh</div>
-      <input type="range" class="ambient-slider" id="amb-wind" min="0" max="1" step="0.05" value="0">
-    </div>
-  </div>
-
-  <!-- THIÊN KIẾP LÔI ĐÌNH (QTE) -->
-  <div class="tribulation-overlay" id="tribulation-overlay">
-    <div class="tribulation-core">
-      <div class="thunder-vortex"></div>
-      <h2 class="tribulation-title">THIÊN KIẾP GIÁNG THẾ!</h2>
-      <p class="tribulation-subtitle">Vận chuyển linh lực chống đỡ 9 đạo Thần Lôi</p>
-      <div class="qte-circle-btn" id="qte-strike-btn">
-        <i class="fa-solid fa-bolt-lightning"></i>
-        <span>VẬN CÔNG [SPACE]</span>
-      </div>
-      <div class="qte-progress-bar">
-        <div class="qte-progress-fill" id="qte-progress-fill" style="width: 0%;"></div>
-      </div>
-      <div class="qte-timer" id="qte-timer">10s</div>
-    </div>
-  </div>
-
-  <!-- VẤN ĐẠO BỐC QUẺ -->
-  <div class="modal" id="oracle-modal">
-    <div class="modal-box glass-panel oracle-box">
-      <div class="modal-header">
-        <h4>Vấn Đạo Tiên Tri</h4>
-        <button class="modal-close" id="close-oracle-btn">&times;</button>
-      </div>
-      <div class="oracle-body">
-        <div class="oracle-cylinder" id="oracle-cylinder">
-          <i class="fa-solid fa-scroll"></i>
-          <span>LẮC QUẺ</span>
-        </div>
-        <div class="oracle-result" id="oracle-result" style="display: none;">
-          <div class="oracle-tag" id="oracle-grade">Thượng Thượng Quẻ</div>
-          <div class="oracle-verse" id="oracle-verse">"Đạo tâm an tịnh, vạn ma bất xâm."</div>
-          <p class="oracle-advice" id="oracle-advice">Linh thức thư thái, hữu duyên ngộ nhập khúc ca sau:</p>
-          <button class="btn-submit" id="oracle-play-btn">Phát Khúc Nhân Duyên</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal Nạp Nhạc -->
-  <div class="modal" id="add-modal">
-    <div class="modal-box glass-panel">
-      <div class="modal-header">
-        <h4>Nạp Thêm Linh Điệu</h4>
-        <button class="modal-close" id="close-modal-btn">&times;</button>
-      </div>
-
-      <div class="modal-tabs">
-        <button class="tab-btn active" data-tab="url">Dẫn Khí (Link URL)</button>
-        <button class="tab-btn" data-tab="file">Bản Địa (Tệp MP3)</button>
-      </div>
-
-      <div class="modal-body">
-        <form id="url-form" class="tab-content active">
-          <div class="input-group">
-            <label>Khúc Danh (Tên bài)*</label>
-            <input type="text" id="url-title" placeholder="VD: Món quà, Đánh rơi..." required>
-          </div>
-          <div class="input-group">
-            <label>Đạo Lữ / Ca Giả (Tên Album/Ca sĩ)*</label>
-            <input type="text" id="url-artist" placeholder="VD: Dangrangto" required>
-          </div>
-          <div class="input-group">
-            <label>Phù Lục Âm Thanh (URL MP3)*</label>
-            <input type="url" id="url-audio" placeholder="https://files.catbox.moe/..." required>
-          </div>
-          <div class="input-group">
-            <label>Bìa Linh Ảnh (URL Hình ảnh)</label>
-            <input type="url" id="url-cover" placeholder="https://img.youtube.com/vi/...">
-          </div>
-          <button type="submit" class="btn-submit">Khắc Sâu Vào Phổ</button>
-        </form>
-
-        <form id="file-form" class="tab-content">
-          <div class="input-group">
-            <label>Khúc Danh (Tên bài)</label>
-            <input type="text" id="file-title" placeholder="Để trống sẽ tự nhận diện theo file">
-          </div>
-          <div class="input-group">
-            <label>Đạo Lữ / Ca Giả (Tên Album/Ca sĩ)</label>
-            <input type="text" id="file-artist" placeholder="VD: Dangrangto">
-          </div>
-          <div class="input-group">
-            <label>Chọn Tệp Âm Thanh (.mp3, .wav)*</label>
-            <input type="file" id="local-audio-file" accept="audio/*" required>
-          </div>
-          <button type="submit" class="btn-submit">Dung Nạp Tệp</button>
-        </form>
-      </div>
-    </div>
-  </div>
-
-  <script src="script.js"></script>
-</body>
-</html>
+            <button
