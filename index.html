@@ -110,10 +110,8 @@
     </header>
 
     <main class="main-content" id="main-content">
-      <!-- Cột Trái: Trình phát trung tâm & Thần Niệm Thi Từ -->
+      <!-- Cột Trái: Trình phát trung tâm -->
       <section class="player-section glass-panel" id="player-card">
-        
-        <!-- Khung Đĩa Nhạc & Bát Quái Trận -->
         <div class="disc-wrapper" id="parallax-wrapper">
           <div class="ambient-glow" id="ambient-glow"></div>
           <canvas id="visualizer-canvas" width="440" height="440"></canvas>
@@ -121,13 +119,6 @@
           <div class="disc" id="disc">
             <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=600&auto=format&fit=crop" id="track-cover" alt="Bìa nhạc">
             <div class="disc-core"></div>
-          </div>
-        </div>
-
-        <!-- Khung Lời Nhạc Đồng Bộ LRC (Ẩn/Hiện khi bấm nút Lời Nhạc) -->
-        <div class="lyrics-view" id="lyrics-view">
-          <div class="lyrics-scroll-container" id="lyrics-container">
-            <div class="lyric-line placeholder">Chưa nạp khẩu quyết thi từ...</div>
           </div>
         </div>
 
@@ -147,7 +138,7 @@
           <span id="duration">00:00</span>
         </div>
 
-        <!-- BỘ ĐIỀU KHIỂN & NÚT BẬT LỜI NHẠC -->
+        <!-- BỘ ĐIỀU KHIỂN & CHƯỞNG THIÊN BÌNH TỐC ĐỘ -->
         <div class="player-controls">
           <button id="shuffle-btn" class="btn-ctrl" title="Hư Không Luân Hồi (Ngẫu nhiên)">
             <i class="fa-solid fa-shuffle"></i>
@@ -167,12 +158,6 @@
         </div>
 
         <div class="sub-controls-row">
-          <!-- Chuyển đổi xem Lời Nhạc / Đĩa Nhạc -->
-          <button class="btn-lyrics-toggle" id="lyrics-toggle-btn" title="Thần Niệm Thi Từ (Lời Nhạc Chạy Chữ) [L]">
-            <i class="fa-solid fa-quote-left"></i> <span>Lời Ca</span>
-          </button>
-
-          <!-- Nút Chưởng Thiên Bình ngưng tụ Lục Dịch -->
           <div class="speed-btn-wrapper">
             <button class="btn-speed-badge" id="speed-toggle-btn" title="Chưởng Thiên Bình - Tốc Độ Thính Âm">
               <i class="fa-solid fa-bottle-droplet bottle-icon"></i> <span id="speed-text">1.0x</span>
