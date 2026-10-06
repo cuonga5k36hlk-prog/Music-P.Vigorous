@@ -61,7 +61,6 @@ body.light-theme {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* ẨN CON TRỎ MẶC ĐỊNH ĐỂ DÙNG PHI KIẾM NHƯNG VẪN GIỮ CHO CÁC THẺ INPUT/SELECT TƯƠNG TÁC CHUẨN */
 html, body {
   cursor: none;
 }
@@ -70,7 +69,7 @@ button, a, select, input, .song-card, .album-card, .qte-circle-btn, .oracle-cyli
   cursor: pointer;
 }
 
-/* TIỂU PHI KIẾM CON TRỎ CHUỘT: TÂM GHIM CHÍNH XÁC MŨI KIẾM (20px, 2px), 0ms LATENCY */
+/* TIỂU PHI KIẾM CON TRỎ CHUỘT: TÂM MŨI KIẾM (20px, 2px) */
 .sword-cursor {
   position: fixed;
   top: 0;
@@ -354,7 +353,7 @@ body.cinematic-mode .main-content {
 }
 
 /* =========================================================
-   TRÌNH PHÁT TRUNG TÂM (3D PARALLAX)
+   TRÌNH PHÁT TRUNG TÂM (3D PARALLAX & LỜI NHẠC)
 ========================================================= */
 .player-section {
   display: flex;
@@ -363,6 +362,7 @@ body.cinematic-mode .main-content {
   padding: 35px 25px;
   text-align: center;
   transform-style: preserve-3d;
+  position: relative;
 }
 
 .disc-wrapper {
@@ -374,7 +374,72 @@ body.cinematic-mode .main-content {
   justify-content: center;
   align-items: center;
   transform-style: preserve-3d;
-  transition: transform 0.12s ease-out;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.player-section.show-lyrics .disc-wrapper {
+  display: none;
+}
+
+/* KHUNG THẦN NIỆM THI TỪ (LỜI NHẠC LRC CHẠY CHỮ) */
+.lyrics-view {
+  display: none;
+  width: 100%;
+  height: 330px;
+  margin: 10px 0 25px 0;
+  position: relative;
+  overflow: hidden;
+  mask-image: linear-gradient(180deg, transparent 0%, rgba(0,0,0,1) 20%, rgba(0,0,0,1) 80%, transparent 100%);
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, rgba(0,0,0,1) 20%, rgba(0,0,0,1) 80%, transparent 100%);
+}
+
+.player-section.show-lyrics .lyrics-view {
+  display: block;
+}
+
+.lyrics-scroll-container {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  padding: 130px 15px;
+  text-align: center;
+  scrollbar-width: none;
+}
+
+.lyrics-scroll-container::-webkit-scrollbar {
+  display: none;
+}
+
+.lyric-line {
+  font-family: var(--font-title);
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin: 12px 0;
+  transition: all 0.35s ease;
+  cursor: pointer;
+  opacity: 0.5;
+  user-select: none;
+}
+
+.lyric-line:hover {
+  opacity: 0.85;
+  color: var(--text-main);
+}
+
+.lyric-line.active {
+  color: #fef08a !important;
+  font-size: 1.25rem !important;
+  font-weight: 700;
+  opacity: 1 !important;
+  transform: scale(1.08);
+  text-shadow: 0 0 18px var(--accent-gold-glow), 0 0 30px rgba(245, 158, 11, 0.4);
+}
+
+.lyric-line.placeholder {
+  font-style: italic;
+  font-size: 0.85rem;
 }
 
 .ambient-glow {
@@ -561,8 +626,36 @@ body.cinematic-mode .main-content {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 85%;
+  width: 90%;
   gap: 15px;
+}
+
+/* NÚT CHUYỂN ĐỔI LỜI NHẠC */
+.btn-lyrics-toggle {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--panel-border);
+  color: var(--text-muted);
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: var(--transition);
+  cursor: pointer;
+}
+
+.btn-lyrics-toggle:hover {
+  color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.btn-lyrics-toggle.active {
+  color: var(--accent-gold);
+  border-color: var(--accent-gold);
+  background: rgba(245, 158, 11, 0.15);
+  box-shadow: 0 0 10px var(--accent-gold-glow);
 }
 
 .speed-btn-wrapper {
@@ -942,7 +1035,7 @@ body.cinematic-mode .main-content {
 }
 
 /* =========================================================
-   NGĂN KÉO LINH HẠP CHI ÂM & CÁC MODAL
+   NGĂN KÉO LINH HẠP CHI ÂM & MODAL
 ========================================================= */
 .ambient-drawer {
   position: fixed;
