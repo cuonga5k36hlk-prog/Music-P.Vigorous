@@ -44,47 +44,47 @@ const DEFAULT_PLAYLIST = [
     artist: "Dangrangto",
     src: "https://files.catbox.moe/1hi6ga.mp3",
     cover: "https://img.youtube.com/vi/lx-q6mLwhTU/maxresdefault.jpg"
-  }
-   {
+  },
+  {
     id: 7,
     title: "EP V.O.I.D",
     artist: "CoolKid",
     src: "https://files.catbox.moe/3dmpat.mp3",
     cover: "https://img.youtube.com/vi/46_sOv_vxJ0/maxresdefault.jpg"
-  }
-{
+  },
+  {
     id: 8,
     title: "Ngu Nger",
     artist: "A Sốt (feat. Phấn Đào)",
     src: "https://files.catbox.moe/u4q32p.mp3",
     cover: "https://img.youtube.com/vi/GrFiIFFMUDg/maxresdefault.jpg"
-  }
-{
+  },
+  {
     id: 9,
     title: "Không Vấn Đề",
     artist: "RHYDER (feat. CoolKid)",
     src: "https://files.catbox.moe/kdnicx.mp3",
     cover: "https://img.youtube.com/vi/JIrPrfaYz0Y/maxresdefault.jpg"
-  }
-{
+  },
+  {
     id: 10,
     title: "Quá Khứ Kia Của Anh",
     artist: "WOKEUP (feat. RHYDER, CoolKid...)",
     src: "https://files.catbox.moe/lsie1a.mp3",
     cover: "https://img.youtube.com/vi/Exzei8kuxGw/maxresdefault.jpg"
-  }
-{
+  },
+  {
     id: 11,
     title: "Chẳng Tin Vào Tình Yêu",
     artist: "RHYDER (feat. CoolKid)",
     src: "https://files.catbox.moe/9zbl36.mp3",
     cover: "https://img.youtube.com/vi/OULRkydnOyM/maxresdefault.jpg"
-  }
-{
+  },
+  {
     id: 12,
     title: "Move On",
     artist: "Hoàng Tôn, OSAD, Thái Lê Minh Hiếu",
-    src: "DÁN_LINK_CATBOX_MP3_VÀO_ĐÂY",
+    src: "https://files.catbox.moe/9zbl36.mp3",
     cover: "https://img.youtube.com/vi/mp5njDAH97w/maxresdefault.jpg"
   }
 ];
@@ -443,7 +443,7 @@ window.addEventListener("mousemove", (e) => {
   }
 });
 
-// Nhấn chuột: Nhún kiếm tạo phản hồi chạm
+// Nhấn chuột: Lóe kiếm khí ngay tại điểm bấm, không xê dịch mũi kiếm
 window.addEventListener("mousedown", (e) => {
   if (swordCursor) {
     swordCursor.classList.add("clicking");
