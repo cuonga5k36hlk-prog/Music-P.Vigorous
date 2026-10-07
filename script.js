@@ -1,5 +1,5 @@
 /* =========================================================
-   PHÀM NHÂN THÍNH ÂM CÁC - BẢN TINH GỌN (ĐÃ LƯỢC BỎ LỜI NHẠC)
+   PHÀM NHÂN THÍNH ÂM CÁC - JAVASCRIPT CHUẨN TÂM CHUỘT
 ========================================================= */
 
 const DEFAULT_PLAYLIST = [
@@ -28,7 +28,7 @@ const DEFAULT_PLAYLIST = [
     id: 4,
     title: "Xương Rồng (Intro)",
     artist: "Dangrangto",
-    src: "./xuong-rong.mp3",
+    src: "https://tmpfiles.org/dl/wUAyI367AT3S/dangrangto-xuongrongintroprod.donal.mp3",
     cover: "https://img.youtube.com/vi/Tv0w9-bpPpk/maxresdefault.jpg"
   }
 ];
@@ -356,13 +356,10 @@ setInterval(() => {
 }, 11000);
 
 /* =========================================================
-   3. NGỰ KIẾM PHI HÀNH (CHUẨN TÂM CLICK)
+   3. NGỰ KIẾM PHI HÀNH (KHÔNG NHẢY CHUỘT, CHUẨN MŨI CLICK)
 ========================================================= */
 let mouseX = window.innerWidth / 2;
 let mouseY = window.innerHeight / 2;
-let prevMouseX = mouseX;
-let prevMouseY = mouseY;
-let swordAngle = -Math.PI / 4;
 let swordTrailPoints = [];
 let waterRipples = [];
 
@@ -370,40 +367,33 @@ window.addEventListener("mousemove", (e) => {
   mouseX = e.clientX;
   mouseY = e.clientY;
 
-  const dx = mouseX - prevMouseX;
-  const dy = mouseY - prevMouseY;
-  const dist = Math.hypot(dx, dy);
-
-  if (dist > 1.5) {
-    swordAngle = Math.atan2(dy, dx) + Math.PI / 2;
-  }
-
+  // Ghim cố định đỉnh mũi nhọn của kiếm vào đúng tọa độ chuột
   if (swordCursor) {
     swordCursor.style.left = `${mouseX}px`;
     swordCursor.style.top = `${mouseY}px`;
-    swordCursor.style.transform = `translate(-20px, -2px) rotate(${swordAngle}rad)`;
   }
 
-  if (dist > 2) {
-    swordTrailPoints.push({
-      x: mouseX,
-      y: mouseY,
-      life: 1.0,
-      size: Math.min(10, 3 + dist * 0.2)
-    });
-  }
-
-  prevMouseX = mouseX;
-  prevMouseY = mouseY;
+  swordTrailPoints.push({
+    x: mouseX,
+    y: mouseY,
+    life: 1.0,
+    size: 7
+  });
 
   if (!document.body.classList.contains("cinematic-mode") && parallaxWrapper) {
-    const xRot = (mouseX - window.innerWidth / 2) / 25;
-    const yRot = (mouseY - window.innerHeight / 2) / 25;
+    const xRot = (mouseX - window.innerWidth / 2) / 30;
+    const yRot = (mouseY - window.innerHeight / 2) / 30;
     parallaxWrapper.style.transform = `rotateY(${xRot}deg) rotateX(${-yRot}deg)`;
   }
 });
 
+// Nhấn chuột: Nhún kiếm tạo phản hồi chạm
 window.addEventListener("mousedown", (e) => {
+  if (swordCursor) {
+    swordCursor.classList.add("clicking");
+  }
+
+  // Bỏ qua tạo kiếm chém nếu click trúng nút bấm, thanh trượt, menu
   if (e.target.closest("button, select, input, a, .song-card, .album-card, .ambient-drawer, .modal-box, .volume-container, .waveform-box")) {
     return;
   }
@@ -411,22 +401,26 @@ window.addEventListener("mousedown", (e) => {
   waterRipples.push({
     x: e.clientX,
     y: e.clientY,
-    radius: 5,
-    maxRadius: 85,
-    alpha: 0.85
+    radius: 4,
+    maxRadius: 75,
+    alpha: 0.8
   });
 
-  for (let i = 0; i < 6; i++) {
-    const angle = Math.random() * Math.PI * 2;
-    const length = Math.random() * 80 + 40;
+  for (let i = 0; i < 5; i++) {
     swordSlashes.push({
       x: e.clientX,
       y: e.clientY,
-      angle: angle,
-      length: length,
+      angle: Math.random() * Math.PI * 2,
+      length: Math.random() * 60 + 35,
       life: 1.0,
-      speed: 0.05
+      speed: 0.06
     });
+  }
+});
+
+window.addEventListener("mouseup", () => {
+  if (swordCursor) {
+    swordCursor.classList.remove("clicking");
   }
 });
 
