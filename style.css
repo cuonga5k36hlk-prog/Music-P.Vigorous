@@ -61,15 +61,13 @@ body.light-theme {
   -webkit-tap-highlight-color: transparent;
 }
 
-html, body {
-  cursor: none;
+/* TRIỆT TIÊU TOÀN BỘ CON TRỎ MẶC ĐỊNH */
+*, *::before, *::after, html, body, button, a, select, input, 
+.song-card, .album-card, .qte-circle-btn, .oracle-cylinder {
+  cursor: none !important;
 }
 
-button, a, select, input, .song-card, .album-card, .qte-circle-btn, .oracle-cylinder {
-  cursor: pointer;
-}
-
-/* TIỂU PHI KIẾM CON TRỎ CHUỘT: TÂM MŨI KIẾM (20px, 2px) */
+/* TIỂU PHI KIẾM CHUẨN TÂM CLICK: CỐ ĐỊNH MŨI KIẾM (20px, 2px), KHÔNG TRỄ */
 .sword-cursor {
   position: fixed;
   top: 0;
@@ -77,10 +75,18 @@ button, a, select, input, .song-card, .album-card, .qte-circle-btn, .oracle-cyli
   width: 36px;
   height: 36px;
   pointer-events: none !important;
-  z-index: 99999;
+  z-index: 999999;
   transform-origin: 20px 2px;
+  transform: translate(-20px, -2px) rotate(-20deg);
   filter: drop-shadow(0 0 6px var(--primary-glow)) drop-shadow(0 0 12px var(--accent-gold-glow));
   will-change: transform, left, top;
+  transition: transform 0.08s ease-out;
+}
+
+/* PHẢN HỒI CLICK NHÚN KIẾM ÊM ÁI */
+.sword-cursor.clicking {
+  transform: translate(-20px, -2px) rotate(-12deg) scale(0.82) !important;
+  filter: drop-shadow(0 0 14px #38bdf8) drop-shadow(0 0 22px var(--primary-glow)) !important;
 }
 
 .sword-svg {
@@ -238,7 +244,6 @@ body.cinematic-mode .main-content {
   padding: 6px 14px;
   border-radius: 20px;
   transition: var(--transition);
-  cursor: pointer;
 }
 
 .cultivation-badge:hover {
@@ -319,7 +324,6 @@ body.cinematic-mode .main-content {
   outline: none;
   font-size: 0.85rem;
   font-weight: 500;
-  cursor: pointer;
 }
 
 .mood-selector select option, .sleep-timer-wrapper select option {
@@ -353,7 +357,7 @@ body.cinematic-mode .main-content {
 }
 
 /* =========================================================
-   TRÌNH PHÁT TRUNG TÂM (3D PARALLAX & LỜI NHẠC)
+   TRÌNH PHÁT TRUNG TÂM (3D PARALLAX)
 ========================================================= */
 .player-section {
   display: flex;
@@ -362,7 +366,6 @@ body.cinematic-mode .main-content {
   padding: 35px 25px;
   text-align: center;
   transform-style: preserve-3d;
-  position: relative;
 }
 
 .disc-wrapper {
@@ -374,72 +377,7 @@ body.cinematic-mode .main-content {
   justify-content: center;
   align-items: center;
   transform-style: preserve-3d;
-  transition: opacity 0.4s ease, transform 0.4s ease;
-}
-
-.player-section.show-lyrics .disc-wrapper {
-  display: none;
-}
-
-/* KHUNG THẦN NIỆM THI TỪ (LỜI NHẠC LRC CHẠY CHỮ) */
-.lyrics-view {
-  display: none;
-  width: 100%;
-  height: 330px;
-  margin: 10px 0 25px 0;
-  position: relative;
-  overflow: hidden;
-  mask-image: linear-gradient(180deg, transparent 0%, rgba(0,0,0,1) 20%, rgba(0,0,0,1) 80%, transparent 100%);
-  -webkit-mask-image: linear-gradient(180deg, transparent 0%, rgba(0,0,0,1) 20%, rgba(0,0,0,1) 80%, transparent 100%);
-}
-
-.player-section.show-lyrics .lyrics-view {
-  display: block;
-}
-
-.lyrics-scroll-container {
-  width: 100%;
-  height: 100%;
-  overflow-y: auto;
-  scroll-behavior: smooth;
-  padding: 130px 15px;
-  text-align: center;
-  scrollbar-width: none;
-}
-
-.lyrics-scroll-container::-webkit-scrollbar {
-  display: none;
-}
-
-.lyric-line {
-  font-family: var(--font-title);
-  font-size: 0.95rem;
-  color: var(--text-muted);
-  line-height: 1.6;
-  margin: 12px 0;
-  transition: all 0.35s ease;
-  cursor: pointer;
-  opacity: 0.5;
-  user-select: none;
-}
-
-.lyric-line:hover {
-  opacity: 0.85;
-  color: var(--text-main);
-}
-
-.lyric-line.active {
-  color: #fef08a !important;
-  font-size: 1.25rem !important;
-  font-weight: 700;
-  opacity: 1 !important;
-  transform: scale(1.08);
-  text-shadow: 0 0 18px var(--accent-gold-glow), 0 0 30px rgba(245, 158, 11, 0.4);
-}
-
-.lyric-line.placeholder {
-  font-style: italic;
-  font-size: 0.85rem;
+  transition: transform 0.12s ease-out;
 }
 
 .ambient-glow {
@@ -541,7 +479,6 @@ body.cinematic-mode .main-content {
   overflow: hidden;
   display: flex;
   align-items: center;
-  cursor: pointer;
 }
 
 #waveform-canvas {
@@ -594,7 +531,6 @@ body.cinematic-mode .main-content {
   color: var(--text-muted);
   font-size: 1.15rem;
   transition: var(--transition);
-  cursor: pointer;
 }
 
 .btn-ctrl:hover, .btn-icon:hover {
@@ -626,36 +562,8 @@ body.cinematic-mode .main-content {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 90%;
+  width: 85%;
   gap: 15px;
-}
-
-/* NÚT CHUYỂN ĐỔI LỜI NHẠC */
-.btn-lyrics-toggle {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid var(--panel-border);
-  color: var(--text-muted);
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  transition: var(--transition);
-  cursor: pointer;
-}
-
-.btn-lyrics-toggle:hover {
-  color: var(--primary-color);
-  border-color: var(--primary-color);
-}
-
-.btn-lyrics-toggle.active {
-  color: var(--accent-gold);
-  border-color: var(--accent-gold);
-  background: rgba(245, 158, 11, 0.15);
-  box-shadow: 0 0 10px var(--accent-gold-glow);
 }
 
 .speed-btn-wrapper {
@@ -675,7 +583,6 @@ body.cinematic-mode .main-content {
   align-items: center;
   gap: 5px;
   transition: var(--transition);
-  cursor: pointer;
 }
 
 .btn-speed-badge:hover {
@@ -716,10 +623,6 @@ body.cinematic-mode .main-content {
   flex: 1;
 }
 
-.volume-container i {
-  cursor: pointer;
-}
-
 .volume-container i:hover {
   color: var(--primary-color);
 }
@@ -728,7 +631,6 @@ body.cinematic-mode .main-content {
   flex: 1;
   accent-color: var(--primary-color);
   height: 4px;
-  cursor: pointer;
 }
 
 /* =========================================================
@@ -772,7 +674,6 @@ body.cinematic-mode .main-content {
   align-items: center;
   gap: 6px;
   transition: var(--transition);
-  cursor: pointer;
 }
 
 .view-tab-btn:hover {
@@ -809,7 +710,6 @@ body.cinematic-mode .main-content {
   outline: none;
   font-size: 0.85rem;
   transition: var(--transition);
-  cursor: text;
 }
 
 .search-container input:focus {
@@ -855,7 +755,6 @@ body.cinematic-mode .main-content {
   display: flex;
   flex-direction: column;
   align-items: center;
-  cursor: pointer;
 }
 
 .album-card:hover {
@@ -920,7 +819,6 @@ body.cinematic-mode .main-content {
   border-radius: 12px;
   font-size: 0.8rem;
   transition: var(--transition);
-  cursor: pointer;
 }
 
 .btn-back-albums:hover {
@@ -947,7 +845,6 @@ body.cinematic-mode .main-content {
   gap: 8px;
   box-shadow: 0 0 15px var(--primary-glow);
   transition: var(--transition);
-  cursor: pointer;
 }
 
 .btn-primary:hover {
@@ -981,7 +878,6 @@ body.cinematic-mode .main-content {
   border: 1px solid transparent;
   border-radius: 12px;
   transition: var(--transition);
-  cursor: pointer;
 }
 
 .song-card:hover {
@@ -1027,7 +923,6 @@ body.cinematic-mode .main-content {
   color: var(--text-muted);
   padding: 6px;
   transition: var(--transition);
-  cursor: pointer;
 }
 
 .btn-remove:hover {
@@ -1071,7 +966,6 @@ body.cinematic-mode .main-content {
   border: none;
   color: var(--text-muted);
   font-size: 1.2rem;
-  cursor: pointer;
 }
 
 .ambient-track {
@@ -1091,7 +985,6 @@ body.cinematic-mode .main-content {
   width: 100%;
   accent-color: var(--primary-color);
   height: 4px;
-  cursor: pointer;
 }
 
 /* GIAO DIỆN THIÊN KIẾP */
@@ -1170,7 +1063,6 @@ body.cinematic-mode .main-content {
   user-select: none;
   transition: transform 0.08s ease, box-shadow 0.08s ease;
   margin-bottom: 25px;
-  cursor: pointer;
 }
 
 .qte-circle-btn:active {
@@ -1231,7 +1123,6 @@ body.cinematic-mode .main-content {
   align-items: center;
   justify-content: center;
   transition: var(--transition);
-  cursor: pointer;
 }
 
 .oracle-cylinder:hover {
@@ -1328,7 +1219,6 @@ body.cinematic-mode .main-content {
   border: none;
   font-size: 1.5rem;
   color: var(--text-muted);
-  cursor: pointer;
 }
 
 .modal-tabs {
@@ -1345,7 +1235,6 @@ body.cinematic-mode .main-content {
   color: var(--text-muted);
   border-radius: 8px;
   font-size: 0.85rem;
-  cursor: pointer;
 }
 
 .tab-btn.active {
@@ -1383,7 +1272,6 @@ body.cinematic-mode .main-content {
   color: var(--text-main);
   outline: none;
   transition: var(--transition);
-  cursor: text;
 }
 
 .input-group input:focus {
@@ -1401,7 +1289,6 @@ body.cinematic-mode .main-content {
   font-weight: 600;
   box-shadow: 0 0 15px var(--primary-glow);
   margin-top: 10px;
-  cursor: pointer;
 }
 
 @keyframes slowSpin {
