@@ -31,6 +31,13 @@ const DEFAULT_PLAYLIST = [
     src: "https://files.catbox.moe/zk9mxm.mp3",
     cover: "https://img.youtube.com/vi/4jjOH2FR6-E/maxresdefault.jpg"
   }
+   {
+    id: 5,
+    title: "Giá Như (feat. Dangrangto)",
+    artist: "CoolKid",
+    src: "https://files.catbox.moe/8d1mkp.mp3",
+    cover: "https://img.youtube.com/vi/yh7aIakn8yY/maxresdefault.jpg"
+  }
 ];
 
 let playlist = [];
