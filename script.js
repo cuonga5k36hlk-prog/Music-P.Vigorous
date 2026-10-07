@@ -30,13 +30,20 @@ const DEFAULT_PLAYLIST = [
     artist: "Dangrangto",
     src: "https://files.catbox.moe/zk9mxm.mp3",
     cover: "https://img.youtube.com/vi/4jjOH2FR6-E/maxresdefault.jpg"
-  }
-   {
+  },
+  {
     id: 5,
     title: "Giá Như (feat. Dangrangto)",
     artist: "CoolKid",
     src: "https://files.catbox.moe/8d1mkp.mp3",
     cover: "https://img.youtube.com/vi/yh7aIakn8yY/maxresdefault.jpg"
+  },
+  {
+    id: 6,
+    title: "Baby Anh Đợi Có Lâu?",
+    artist: "Dangrangto",
+    src: "https://files.catbox.moe/1hi6ga.mp3",
+    cover: "https://img.youtube.com/vi/lx-q6mLwhTU/maxresdefault.jpg"
   }
 ];
 
