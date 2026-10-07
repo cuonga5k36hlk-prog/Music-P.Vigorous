@@ -28,8 +28,8 @@ const DEFAULT_PLAYLIST = [
     id: 4,
     title: "Xương Rồng (Intro)",
     artist: "Dangrangto",
-    src: "https://tmpfiles.org/dl/wUAyI367AT3S/dangrangto-xuongrongintroprod.donal.mp3",
-    cover: "https://img.youtube.com/vi/Tv0w9-bpPpk/maxresdefault.jpg"
+    src: "https://files.catbox.moe/zk9mxm.mp3",
+    cover: "https://img.youtube.com/vi/4jjOH2FR6-E/maxresdefault.jpg"
   }
 ];
 
