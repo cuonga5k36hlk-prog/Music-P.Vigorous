@@ -1,7 +1,9 @@
 /* =========================================================
-   PHÀM NHÂN THÍNH ÂM CÁC - SCRIPT.JS (BẢN ĐẦY ĐỦ 13 BÀI HÁT)
-   CHUẨN HÓA CON TRỎ PHI KIẾM GPU 144Hz & NÚT LÀM MỚI TỰ ĐỘNG
+   PHÀM NHÂN THÍNH ÂM CÁC - SCRIPT.JS (BẢN CHUẨN 13 BÀI HÁT)
+   TỰ ĐỘNG ĐỒNG BỘ PLAYLIST_VERSION - CHUẨN TÂM CHUỘT TUYỆT ĐỐI
 ========================================================= */
+
+const PLAYLIST_VERSION = "v1.5"; // Khi tăng phiên bản, web tự động nạp đủ bài mới ngay lập tức
 
 const DEFAULT_PLAYLIST = [
   {
@@ -97,12 +99,22 @@ const DEFAULT_PLAYLIST = [
   }
 ];
 
+// CƠ CHẾ ĐỒNG BỘ TỰ ĐỘNG THÔNG MINH
 let playlist = [];
 try {
-  const saved = localStorage.getItem("pntt_playlist");
-  playlist = (saved && JSON.parse(saved).length > 0) ? JSON.parse(saved) : DEFAULT_PLAYLIST;
+  const savedVersion = localStorage.getItem("pntt_version");
+  const savedPlaylist = localStorage.getItem("pntt_playlist");
+
+  // Nếu là phiên bản mới hoặc chưa có bài hát, cập nhật toàn bộ DEFAULT_PLAYLIST ngay lập tức
+  if (savedVersion !== PLAYLIST_VERSION || !savedPlaylist) {
+    playlist = [...DEFAULT_PLAYLIST];
+    localStorage.setItem("pntt_playlist", JSON.stringify(playlist));
+    localStorage.setItem("pntt_version", PLAYLIST_VERSION);
+  } else {
+    playlist = JSON.parse(savedPlaylist);
+  }
 } catch (e) {
-  playlist = DEFAULT_PLAYLIST;
+  playlist = [...DEFAULT_PLAYLIST];
 }
 
 let currentIndex = parseInt(localStorage.getItem("pntt_current_index")) || 0;
@@ -203,7 +215,6 @@ function loadTrack(index) {
   updatePlaylistHighlight();
   resetProgress();
 
-  // Tự động cuộn danh sách tới bài đang phát
   setTimeout(() => {
     const activeCard = playlistContainer ? playlistContainer.querySelector(`.song-card.active`) : null;
     if (activeCard) {
@@ -428,7 +439,7 @@ setInterval(() => {
 }, 11000);
 
 /* =========================================================
-   3. NGỰ KIẾM PHI HÀNH (CHUẨN TÂM TỪNG PIXEL, KHÔNG TRỄ)
+   3. NGỰ KIẾM PHI HÀNH (CHUẨN TÂM TỪNG PIXEL & KHÔNG TRỄ)
 ========================================================= */
 let mouseX = window.innerWidth / 2;
 let mouseY = window.innerHeight / 2;
@@ -439,12 +450,13 @@ window.addEventListener("mousemove", (e) => {
   mouseX = e.clientX;
   mouseY = e.clientY;
 
-  // Sử dụng translate3d ghim trực tiếp đỉnh nhọn mũi kiếm vào vị trí bấm chuột
+  // Đỉnh mũi nhọn SVG là (20, 2), xoay quanh (20, 2), nên đặt top-left tại (mouseX - 20, mouseY - 2) sẽ khớp 100%
   if (swordCursor) {
-    swordCursor.style.transform = `translate3d(${mouseX - 20}px, ${mouseY - 2}px, 0) rotate(-45deg)`;
+    swordCursor.style.left = `${mouseX - 20}px`;
+    swordCursor.style.top = `${mouseY - 2}px`;
+    swordCursor.classList.add("active");
   }
 
-  // Đổi linh quang khi rê chuột qua các nút điều khiển
   const target = e.target;
   if (target && target.closest("button, select, input, a, .song-card, .album-card, .qte-circle-btn, .oracle-cylinder, .waveform-box")) {
     swordCursor.classList.add("hovering");
@@ -466,13 +478,16 @@ window.addEventListener("mousemove", (e) => {
   }
 }, { passive: true });
 
-// Nhấn chuột: Lóe kiếm khí ngay tại điểm bấm, không xê dịch mũi kiếm
-window.addEventListener("mousedown", (e) => {
-  if (swordCursor) {
-    swordCursor.classList.add("clicking");
-  }
+document.addEventListener("mouseleave", () => {
+  if (swordCursor) swordCursor.classList.remove("active");
+});
+document.addEventListener("mouseenter", () => {
+  if (swordCursor) swordCursor.classList.add("active");
+});
 
-  // Bỏ qua tạo kiếm chém nếu click trúng nút bấm, thanh trượt, menu
+window.addEventListener("mousedown", (e) => {
+  if (swordCursor) swordCursor.classList.add("clicking");
+
   if (e.target.closest("button, select, input, a, .song-card, .album-card, .ambient-drawer, .modal-box, .volume-container, .waveform-box")) {
     return;
   }
@@ -498,9 +513,7 @@ window.addEventListener("mousedown", (e) => {
 });
 
 window.addEventListener("mouseup", () => {
-  if (swordCursor) {
-    swordCursor.classList.remove("clicking");
-  }
+  if (swordCursor) swordCursor.classList.remove("clicking");
 });
 
 /* =========================================================
@@ -1366,7 +1379,7 @@ if (themeToggle) {
 }
 
 /* =========================================================
-   15. NÚT LÀM MỚI TIÊN CÁC (RELOAD & CẬP NHẬT TỨC THÌ)
+   15. NÚT LÀM MỚI TIÊN CÁC
 ========================================================= */
 const reloadAppBtn = document.getElementById("reload-app-btn");
 if (reloadAppBtn) {
@@ -1376,6 +1389,6 @@ if (reloadAppBtn) {
   });
 }
 
-// Khởi chạy hệ thống chuẩn xác
+// Khởi chạy hệ thống
 initPlayer();
 updateCultivationUI();
