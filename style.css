@@ -61,7 +61,7 @@ body.light-theme {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* TRIỆT TIÊU TOÀN BỘ CON TRỎ MẶC ĐỊNH & CHỐNG BÔI ĐEN CHỮ */
+/* ẨN CON TRỎ MẶC ĐỊNH & CHỐNG BÔI ĐEN VĂN BẢN */
 *, *::before, *::after, html, body, button, a, select, input, 
 .song-card, .album-card, .qte-circle-btn, .oracle-cylinder {
   cursor: none !important;
@@ -69,7 +69,7 @@ body.light-theme {
   -webkit-user-select: none !important;
 }
 
-/* TIỂU PHI KIẾM CON TRỎ CHUỘT: TÂM MŨI KIẾM CHUẨN XÁC, GÓC NGHIÊNG -45 ĐỘ */
+/* TIỂU PHI KIẾM CHUẨN TÂM TUYỆT ĐỐI */
 .sword-cursor {
   position: fixed;
   top: 0;
@@ -79,25 +79,28 @@ body.light-theme {
   pointer-events: none !important;
   z-index: 999999;
   transform-origin: 20px 2px;
-  transform: translate3d(-100px, -100px, 0) rotate(-45deg);
+  transform: rotate(-45deg);
   filter: drop-shadow(0 0 6px var(--primary-glow)) drop-shadow(0 0 12px var(--accent-gold-glow));
-  will-change: transform;
-  transition: none !important;
+  will-change: left, top;
+  transition: opacity 0.15s ease;
+  opacity: 0;
 }
 
-/* KHI RÀ TRÚNG NÚT BẤM / BÀI HÁT */
+.sword-cursor.active {
+  opacity: 1;
+}
+
 .sword-cursor.hovering {
   filter: drop-shadow(0 0 10px #38bdf8) drop-shadow(0 0 20px #00f2fe) brightness(1.25);
 }
 
-/* KHI NHẤP CHUỘT: CHỈ LÓE SÁNG, KHÔNG XÊ DỊCH MŨI KIẾM */
 .sword-cursor.clicking {
   filter: drop-shadow(0 0 16px #f59e0b) drop-shadow(0 0 28px #ef4444) brightness(1.4) !important;
 }
 
 .sword-svg {
-  width: 100%;
-  height: 100%;
+  width: 40px;
+  height: 40px;
   display: block;
 }
 
@@ -117,7 +120,6 @@ body {
   transition: background-image 0.8s ease, color 0.3s ease;
 }
 
-/* DẢI ĐIỆN ẢNH CINEMATIC 21:9 */
 .cinematic-bar {
   position: fixed;
   left: 0;
@@ -363,9 +365,7 @@ body.cinematic-mode .main-content {
   flex: 1;
 }
 
-/* =========================================================
-   TRÌNH PHÁT TRUNG TÂM (ĐĨA NHẠC TRÒN 190PX)
-========================================================= */
+/* TRÌNH PHÁT TRUNG TÂM */
 .player-section {
   display: flex;
   flex-direction: column;
@@ -424,7 +424,6 @@ body.cinematic-mode .main-content {
   transition: transform 0.12s ease-out;
 }
 
-/* ĐỊNH DẠNG ẢNH BÌA GỐC TRÁNH BỊ TRÀN MÀN HÌNH */
 .disc img {
   width: 100% !important;
   height: 100% !important;
@@ -642,9 +641,7 @@ body.cinematic-mode .main-content {
   height: 4px;
 }
 
-/* =========================================================
-   HỆ THỐNG ALBUM CA SĨ & PLAYLIST
-========================================================= */
+/* DANH SÁCH BÀI HÁT & ALBUM */
 .playlist-section {
   display: flex;
   flex-direction: column;
@@ -938,9 +935,7 @@ body.cinematic-mode .main-content {
   color: #ef4444;
 }
 
-/* =========================================================
-   NGĂN KÉO LINH HẠP CHI ÂM & MODAL
-========================================================= */
+/* CÁC PANEL & MODAL */
 .ambient-drawer {
   position: fixed;
   bottom: 25px;
@@ -996,7 +991,6 @@ body.cinematic-mode .main-content {
   height: 4px;
 }
 
-/* GIAO DIỆN THIÊN KIẾP */
 .tribulation-overlay {
   position: fixed;
   inset: 0;
@@ -1114,7 +1108,6 @@ body.cinematic-mode .main-content {
   color: #fbbf24;
 }
 
-/* VẤN ĐẠO BỐC QUẺ */
 .oracle-box {
   text-align: center;
 }
@@ -1181,7 +1174,6 @@ body.cinematic-mode .main-content {
   margin-bottom: 15px;
 }
 
-/* Modal Popup */
 .modal {
   position: fixed;
   inset: 0;
