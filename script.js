@@ -1,5 +1,5 @@
 /* =========================================================
-   PHÀM NHÂN THÍNH ÂM CÁC - JAVASCRIPT CHUẨN TÂM CHUỘT
+   PHÀM NHÂN THÍNH ÂM CÁC - SCRIPT.JS (CHUẨN 100% CÚ PHÁP)
 ========================================================= */
 
 const DEFAULT_PLAYLIST = [
