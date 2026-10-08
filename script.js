@@ -1,5 +1,6 @@
 /* =========================================================
-   PHÀM NHÂN THÍNH ÂM CÁC - SCRIPT.JS (CHUẨN 100% CÚ PHÁP)
+   PHÀM NHÂN THÍNH ÂM CÁC - SCRIPT.JS (BẢN ĐẦY ĐỦ 13 BÀI HÁT)
+   CHUẨN HÓA CON TRỎ PHI KIẾM GPU 144Hz & NÚT LÀM MỚI TỰ ĐỘNG
 ========================================================= */
 
 const DEFAULT_PLAYLIST = [
@@ -201,6 +202,14 @@ function loadTrack(index) {
   savePlaylistToStorage();
   updatePlaylistHighlight();
   resetProgress();
+
+  // Tự động cuộn danh sách tới bài đang phát
+  setTimeout(() => {
+    const activeCard = playlistContainer ? playlistContainer.querySelector(`.song-card.active`) : null;
+    if (activeCard) {
+      activeCard.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  }, 100);
 }
 
 function renderPlaylist(filterKeyword = "", targetContainer = playlistContainer, filterArtist = null) {
@@ -419,7 +428,7 @@ setInterval(() => {
 }, 11000);
 
 /* =========================================================
-   3. NGỰ KIẾM PHI HÀNH (KHÔNG NHẢY CHUỘT, CHUẨN MŨI CLICK)
+   3. NGỰ KIẾM PHI HÀNH (CHUẨN TÂM TỪNG PIXEL, KHÔNG TRỄ)
 ========================================================= */
 let mouseX = window.innerWidth / 2;
 let mouseY = window.innerHeight / 2;
@@ -430,17 +439,24 @@ window.addEventListener("mousemove", (e) => {
   mouseX = e.clientX;
   mouseY = e.clientY;
 
-  // Ghim cố định đỉnh mũi nhọn của kiếm vào đúng tọa độ chuột
+  // Sử dụng translate3d ghim trực tiếp đỉnh nhọn mũi kiếm vào vị trí bấm chuột
   if (swordCursor) {
-    swordCursor.style.left = `${mouseX}px`;
-    swordCursor.style.top = `${mouseY}px`;
+    swordCursor.style.transform = `translate3d(${mouseX - 20}px, ${mouseY - 2}px, 0) rotate(-45deg)`;
+  }
+
+  // Đổi linh quang khi rê chuột qua các nút điều khiển
+  const target = e.target;
+  if (target && target.closest("button, select, input, a, .song-card, .album-card, .qte-circle-btn, .oracle-cylinder, .waveform-box")) {
+    swordCursor.classList.add("hovering");
+  } else {
+    swordCursor.classList.remove("hovering");
   }
 
   swordTrailPoints.push({
     x: mouseX,
     y: mouseY,
     life: 1.0,
-    size: 7
+    size: 6
   });
 
   if (!document.body.classList.contains("cinematic-mode") && parallaxWrapper) {
@@ -448,7 +464,7 @@ window.addEventListener("mousemove", (e) => {
     const yRot = (mouseY - window.innerHeight / 2) / 30;
     parallaxWrapper.style.transform = `rotateY(${xRot}deg) rotateX(${-yRot}deg)`;
   }
-});
+}, { passive: true });
 
 // Nhấn chuột: Lóe kiếm khí ngay tại điểm bấm, không xê dịch mũi kiếm
 window.addEventListener("mousedown", (e) => {
