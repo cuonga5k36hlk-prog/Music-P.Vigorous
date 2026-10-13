@@ -1,9 +1,9 @@
 /* =========================================================
-   PHÀM NHÂN THÍNH ÂM CÁC - SCRIPT.JS (BẢN CHUẨN 13 BÀI HÁT)
-   TỰ ĐỘNG ĐỒNG BỘ PLAYLIST_VERSION - CHUẨN TÂM CHUỘT TUYỆT ĐỐI
+   PHÀM NHÂN THÍNH ÂM CÁC - SCRIPT.JS (BẢN ĐẦY ĐỦ 14 BÀI HÁT)
+   PHIÊN BẢN V1.6 - CON TRỎ CHUỘT HỆ THỐNG MƯỢT MÀ
 ========================================================= */
 
-const PLAYLIST_VERSION = "v1.5"; // Khi tăng phiên bản, web tự động nạp đủ bài mới ngay lập tức
+const PLAYLIST_VERSION = "v1.6"; // Tự động xóa bộ nhớ đệm và nạp đủ 14 bài ngay khi mở web
 
 const DEFAULT_PLAYLIST = [
   {
@@ -96,16 +96,22 @@ const DEFAULT_PLAYLIST = [
     artist: "CoolKid (Prod. Smoce)",
     src: "https://files.catbox.moe/d59p4k.mp3",
     cover: "https://img.youtube.com/vi/RdlD71SedNo/maxresdefault.jpg"
+  },
+  {
+    id: 14,
+    title: "Ngọn Gió Đêm Qua Trăng Sáng Đêm Nay",
+    artist: "Nghiêm Tổng & Trần Tiểu Muội (MCK)",
+    src: "https://files.catbox.moe/hyywcd.mp3",
+    cover: "https://img.youtube.com/vi/kZnpzY7A1u4/maxresdefault.jpg"
   }
 ];
 
-// CƠ CHẾ ĐỒNG BỘ TỰ ĐỘNG THÔNG MINH
+// CƠ CHẾ ĐỒNG BỘ PLAYLIST THÔNG MINH
 let playlist = [];
 try {
   const savedVersion = localStorage.getItem("pntt_version");
   const savedPlaylist = localStorage.getItem("pntt_playlist");
 
-  // Nếu là phiên bản mới hoặc chưa có bài hát, cập nhật toàn bộ DEFAULT_PLAYLIST ngay lập tức
   if (savedVersion !== PLAYLIST_VERSION || !savedPlaylist) {
     playlist = [...DEFAULT_PLAYLIST];
     localStorage.setItem("pntt_playlist", JSON.stringify(playlist));
@@ -152,7 +158,6 @@ const cinematicToggle = document.getElementById("cinematic-toggle");
 const speedToggleBtn = document.getElementById("speed-toggle-btn");
 const speedText = document.getElementById("speed-text");
 const parallaxWrapper = document.getElementById("parallax-wrapper");
-const swordCursor = document.getElementById("sword-cursor");
 const greenDewdrop = document.getElementById("green-dewdrop");
 const waveformDewGlow = document.getElementById("waveform-dew-glow");
 
@@ -439,82 +444,15 @@ setInterval(() => {
 }, 11000);
 
 /* =========================================================
-   3. NGỰ KIẾM PHI HÀNH (CHUẨN TÂM TỪNG PIXEL & KHÔNG TRỄ)
+   3. NGHIÊNG 3D PARALLAX (DÙNG CHUỘT THƯỜNG SIÊU NHẸ)
 ========================================================= */
-let mouseX = window.innerWidth / 2;
-let mouseY = window.innerHeight / 2;
-let swordTrailPoints = [];
-let waterRipples = [];
-
 window.addEventListener("mousemove", (e) => {
-  mouseX = e.clientX;
-  mouseY = e.clientY;
-
-  // Đỉnh mũi nhọn SVG là (20, 2), xoay quanh (20, 2), nên đặt top-left tại (mouseX - 20, mouseY - 2) sẽ khớp 100%
-  if (swordCursor) {
-    swordCursor.style.left = `${mouseX - 20}px`;
-    swordCursor.style.top = `${mouseY - 2}px`;
-    swordCursor.classList.add("active");
-  }
-
-  const target = e.target;
-  if (target && target.closest("button, select, input, a, .song-card, .album-card, .qte-circle-btn, .oracle-cylinder, .waveform-box")) {
-    swordCursor.classList.add("hovering");
-  } else {
-    swordCursor.classList.remove("hovering");
-  }
-
-  swordTrailPoints.push({
-    x: mouseX,
-    y: mouseY,
-    life: 1.0,
-    size: 6
-  });
-
   if (!document.body.classList.contains("cinematic-mode") && parallaxWrapper) {
-    const xRot = (mouseX - window.innerWidth / 2) / 30;
-    const yRot = (mouseY - window.innerHeight / 2) / 30;
+    const xRot = (e.clientX - window.innerWidth / 2) / 35;
+    const yRot = (e.clientY - window.innerHeight / 2) / 35;
     parallaxWrapper.style.transform = `rotateY(${xRot}deg) rotateX(${-yRot}deg)`;
   }
 }, { passive: true });
-
-document.addEventListener("mouseleave", () => {
-  if (swordCursor) swordCursor.classList.remove("active");
-});
-document.addEventListener("mouseenter", () => {
-  if (swordCursor) swordCursor.classList.add("active");
-});
-
-window.addEventListener("mousedown", (e) => {
-  if (swordCursor) swordCursor.classList.add("clicking");
-
-  if (e.target.closest("button, select, input, a, .song-card, .album-card, .ambient-drawer, .modal-box, .volume-container, .waveform-box")) {
-    return;
-  }
-
-  waterRipples.push({
-    x: e.clientX,
-    y: e.clientY,
-    radius: 4,
-    maxRadius: 75,
-    alpha: 0.8
-  });
-
-  for (let i = 0; i < 5; i++) {
-    swordSlashes.push({
-      x: e.clientX,
-      y: e.clientY,
-      angle: Math.random() * Math.PI * 2,
-      length: Math.random() * 60 + 35,
-      life: 1.0,
-      speed: 0.06
-    });
-  }
-});
-
-window.addEventListener("mouseup", () => {
-  if (swordCursor) swordCursor.classList.remove("clicking");
-});
 
 /* =========================================================
    4. CHƯỞNG THIÊN BÌNH - TỐC ĐỘ PHÁT
@@ -725,11 +663,11 @@ function drawVisualizer() {
 }
 
 /* =========================================================
-   7. MẶT HỒ SÓNG NƯỚC & VỆT KIẾM CHUỘT
+   7. MẶT HỒ SÓNG NƯỚC KHI CLICK CHUỘT
 ========================================================= */
 const canvas = document.getElementById("ambient-canvas");
 const ctx = canvas ? canvas.getContext("2d") : null;
-let swordSlashes = [];
+let waterRipples = [];
 
 function resizeCanvas() {
   if (!canvas) return;
@@ -738,6 +676,19 @@ function resizeCanvas() {
 }
 window.addEventListener("resize", resizeCanvas);
 resizeCanvas();
+
+window.addEventListener("mousedown", (e) => {
+  if (e.target.closest("button, select, input, a, .song-card, .album-card, .ambient-drawer, .modal-box, .volume-container, .waveform-box")) {
+    return;
+  }
+  waterRipples.push({
+    x: e.clientX,
+    y: e.clientY,
+    radius: 4,
+    maxRadius: 75,
+    alpha: 0.8
+  });
+});
 
 function drawEffectsLoop() {
   if (!ctx || !canvas) return;
@@ -759,48 +710,6 @@ function drawEffectsLoop() {
     ctx.arc(r.x, r.y, r.radius, 0, Math.PI * 2);
     ctx.strokeStyle = `rgba(${rgb}, ${r.alpha})`;
     ctx.lineWidth = 2;
-    ctx.shadowBlur = 10;
-    ctx.shadowColor = `rgba(${rgb}, 0.8)`;
-    ctx.stroke();
-    ctx.restore();
-  }
-
-  for (let i = swordTrailPoints.length - 1; i >= 0; i--) {
-    const pt = swordTrailPoints[i];
-    pt.life -= 0.038;
-    if (pt.life <= 0) {
-      swordTrailPoints.splice(i, 1);
-      continue;
-    }
-    ctx.save();
-    ctx.beginPath();
-    ctx.arc(pt.x, pt.y, pt.size * pt.life, 0, Math.PI * 2);
-    ctx.fillStyle = `rgba(${rgb}, ${pt.life * 0.75})`;
-    ctx.shadowColor = `rgba(${rgb}, 0.9)`;
-    ctx.shadowBlur = 14;
-    ctx.fill();
-    ctx.restore();
-  }
-
-  for (let i = swordSlashes.length - 1; i >= 0; i--) {
-    const s = swordSlashes[i];
-    s.life -= s.speed;
-    if (s.life <= 0) {
-      swordSlashes.splice(i, 1);
-      continue;
-    }
-    const currentLen = s.length * (1 - s.life * 0.2);
-    const dx = Math.cos(s.angle) * (currentLen / 2);
-    const dy = Math.sin(s.angle) * (currentLen / 2);
-
-    ctx.save();
-    ctx.shadowBlur = 18;
-    ctx.shadowColor = `rgba(${rgb}, ${s.life})`;
-    ctx.strokeStyle = `rgba(255, 255, 255, ${s.life})`;
-    ctx.lineWidth = 3 * s.life;
-    ctx.beginPath();
-    ctx.moveTo(s.x - dx, s.y - dy);
-    ctx.lineTo(s.x + dx, s.y + dy);
     ctx.stroke();
     ctx.restore();
   }
@@ -1389,6 +1298,6 @@ if (reloadAppBtn) {
   });
 }
 
-// Khởi chạy hệ thống
+// Khởi chạy hệ thống chuẩn xác
 initPlayer();
 updateCultivationUI();
