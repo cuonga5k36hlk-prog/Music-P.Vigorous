@@ -22,10 +22,10 @@ const DEFAULT_PLAYLIST = [
   },
   {
     id: 3,
-    title: "Tinh Hải Phiêu Lưu Bi Ký",
-    artist: "Loạn Tinh Hải Cổ Tu",
-    src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
-    cover: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=600&auto=format&fit=crop"
+    title: "In Love",
+    artist: "Low G (feat. JustaTee)",
+    src: "https://files.catbox.moe/o6f603.mp3",
+    cover: "https://img.youtube.com/vi/T7ksmtaVeOk/maxresdefault.jpg"
   },
   {
     id: 4,
