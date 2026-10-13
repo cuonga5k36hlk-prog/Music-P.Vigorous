@@ -61,47 +61,22 @@ body.light-theme {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* ẨN CON TRỎ MẶC ĐỊNH & CHỐNG BÔI ĐEN VĂN BẢN */
-*, *::before, *::after, html, body, button, a, select, input, 
-.song-card, .album-card, .qte-circle-btn, .oracle-cylinder {
-  cursor: none !important;
-  user-select: none !important;
-  -webkit-user-select: none !important;
+/* =========================================================
+   KHÔI PHỤC CON TRỎ CHUỘT MẶC ĐỊNH & BÀN TAY KHI TRỎ VÀO NÚT
+========================================================= */
+html, body {
+  cursor: default;
 }
 
-/* TIỂU PHI KIẾM CHUẨN TÂM TUYỆT ĐỐI */
+button, a, select, input[type="range"], input[type="file"],
+.song-card, .album-card, .qte-circle-btn, .oracle-cylinder,
+.view-tab-btn, .btn-ctrl, .btn-icon, .btn-speed-badge, .waveform-box, .cultivation-badge {
+  cursor: pointer !important;
+}
+
+/* ẨN HOÀN TOÀN CON TRỎ KIẾM CŨ */
 .sword-cursor {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 40px;
-  height: 40px;
-  pointer-events: none !important;
-  z-index: 999999;
-  transform-origin: 20px 2px;
-  transform: rotate(-45deg);
-  filter: drop-shadow(0 0 6px var(--primary-glow)) drop-shadow(0 0 12px var(--accent-gold-glow));
-  will-change: left, top;
-  transition: opacity 0.15s ease;
-  opacity: 0;
-}
-
-.sword-cursor.active {
-  opacity: 1;
-}
-
-.sword-cursor.hovering {
-  filter: drop-shadow(0 0 10px #38bdf8) drop-shadow(0 0 20px #00f2fe) brightness(1.25);
-}
-
-.sword-cursor.clicking {
-  filter: drop-shadow(0 0 16px #f59e0b) drop-shadow(0 0 28px #ef4444) brightness(1.4) !important;
-}
-
-.sword-svg {
-  width: 40px;
-  height: 40px;
-  display: block;
+  display: none !important;
 }
 
 body {
@@ -365,7 +340,9 @@ body.cinematic-mode .main-content {
   flex: 1;
 }
 
-/* TRÌNH PHÁT TRUNG TÂM */
+/* =========================================================
+   TRÌNH PHÁT TRUNG TÂM
+========================================================= */
 .player-section {
   display: flex;
   flex-direction: column;
@@ -641,7 +618,9 @@ body.cinematic-mode .main-content {
   height: 4px;
 }
 
-/* DANH SÁCH BÀI HÁT & ALBUM */
+/* =========================================================
+   DANH SÁCH BÀI HÁT & ALBUM
+========================================================= */
 .playlist-section {
   display: flex;
   flex-direction: column;
@@ -935,7 +914,9 @@ body.cinematic-mode .main-content {
   color: #ef4444;
 }
 
-/* CÁC PANEL & MODAL */
+/* =========================================================
+   CÁC PANEL & MODAL
+========================================================= */
 .ambient-drawer {
   position: fixed;
   bottom: 25px;
@@ -1303,40 +1284,3 @@ body.cinematic-mode .main-content {
 }
 
 @media (max-width: 768px) {
-  html, body, a, button, input, select {
-    cursor: auto !important;
-  }
-  .sword-cursor {
-    display: none !important;
-  }
-  .app-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  .header-actions {
-    width: 100%;
-    justify-content: space-between;
-  }
-  .main-content {
-    grid-template-columns: 1fr;
-    gap: 20px;
-  }
-  .disc-wrapper {
-    width: 270px;
-    height: 270px;
-  }
-  #visualizer-canvas {
-    width: 330px;
-    height: 330px;
-  }
-  .disc {
-    width: 155px !important;
-    height: 155px !important;
-  }
-  .playlist-section {
-    max-height: 480px;
-  }
-  .album-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
