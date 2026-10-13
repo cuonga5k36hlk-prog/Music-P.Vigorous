@@ -103,6 +103,13 @@ const DEFAULT_PLAYLIST = [
     artist: "Nghiêm Tổng & Trần Tiểu Muội (MCK)",
     src: "https://files.catbox.moe/hyywcd.mp3",
     cover: "https://img.youtube.com/vi/kZnpzY7A1u4/maxresdefault.jpg"
+  },
+   {
+    id: 15,
+    title: "Lý Lữ Ca",
+    artist: "2gsang (Obito)",
+    src: "https://files.catbox.moe/3iiaq6.mp3",
+    cover: "https://img.youtube.com/vi/kxuyoJZ5S4w/maxresdefault.jpg"
   }
 ];
 
