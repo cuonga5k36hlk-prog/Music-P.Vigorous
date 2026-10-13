@@ -1284,3 +1284,34 @@ body.cinematic-mode .main-content {
 }
 
 @media (max-width: 768px) {
+  .app-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .main-content {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .disc-wrapper {
+    width: 270px;
+    height: 270px;
+  }
+  #visualizer-canvas {
+    width: 330px;
+    height: 330px;
+  }
+  .disc {
+    width: 155px !important;
+    height: 155px !important;
+  }
+  .playlist-section {
+    max-height: 480px;
+  }
+  .album-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
